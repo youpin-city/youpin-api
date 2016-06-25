@@ -65,16 +65,27 @@ class Service {
     })
     .catch(function(err) {
       console.log(err);
+      return new errors.NotImplemented(err);
     });
   }
 
   update(id, data, params) {
     const self = this;
-    return self.fdb.ref("pin_infos").child(id).set(data)
+    return self.fdb.ref("pin_infos/" + id).once("value")
+      .then(function(snapshot) {
+        if (snapshot.val() == null) {
+          throw "Pin does not exist; key " + id;
+        }
+        console.log("Checked pin_infos key does exists " + id);
+        return self.fdb.ref("pin_infos").child(id).set(data);
+      })
       .then(function() {
+        console.log("Updated pin_infos with key " + id);
         return {name: id};
       })
       .catch(function(err) {
+        console.log(err);
+        return new errors.NotImplemented(err);
       });
   }
 
