@@ -13,8 +13,39 @@ class Service {
     this.geofire = new Geofire(firebase.database().ref("pin_geofires"));
     this.fdb = firebase.database();
   }
-
+  // route for search nearby
+  // TODO: devide into pins/nearbysearch && pins/search
+  // pins/ will return maybe just 10 first results accordings to some limited params
   find(params) {
+    var self = this;
+    // check location format is "<number>,<number>"
+    if (!params.query.location && !params.query.radius) {
+      throw new errors.BadRequest("Location or radius data is missing");
+    }
+    var location_array = params.query.location.split(",");
+    if (location_array.length != 2
+        || isNaN(location_array[0]) || isNaN(location_array[1])) {
+        // return incorrect format
+        throw new errors.BadRequest("Invalid location format");
+    }
+    var latitude, longitude;
+    latitude = parseFloat(location_array[0]);
+    longitude = parseFloat(location_array[1]);
+    // check radius is number
+    if (isNaN(params.query.radius)) {
+        // return incorrect format
+        throw new errors.BadRequest("radius is not a number");
+    }
+    var radius = parseFloat(params.query.radius);
+    var geoquery = self.geofire.query({
+      center: [latitude, longitude],
+      radius: radius
+    });
+    console.log(geoquery.radius());
+    console.log(geoquery.center());
+    // TODO(A): make it searchable using geohash
+    return geoquery.on("ready", function() {
+    })
     return Promise.resolve([]);
   }
 
@@ -51,6 +82,7 @@ class Service {
       locationData = data.location;
       delete data.location;
     } else {
+      // TODO(A): Try to return null instead
       locationData = [0, 0];
     }
     var newChild = self.fdb.ref("pin_infos").push();
@@ -85,7 +117,7 @@ class Service {
       })
       .catch(function(err) {
         console.log(err);
-        return new errors.NotImplemented(err);
+        throw new errors.NotImplemented(err);
       });
   }
 
