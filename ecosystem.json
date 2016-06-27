@@ -1,47 +1,30 @@
 {
-  /**
-   * Application configuration section
-   * http://pm2.keymetrics.io/docs/usage/application-declaration/
-   */
-  apps : [
-
-    // First application
+  "apps" : [
     {
-      name      : "API",
-      script    : "src/",
-      watch     : true,
-      ignore_watch : ["node_modules", "data"],
-      env: {
-        COMMON_VARIABLE: "true"
+      "name"      : "youpin-api",
+      "script"    : "src/",
+      "log_date_format" : "YYYY-MM-DD HH:mm",
+      "watch"     : true,
+      "ignore_watch" : ["node_modules", "data", ".git"],
+      "env": {
+        NODE_ENV: "local"
       },
-      env_production : {
-        NODE_ENV: "production"
+      "env_development": {
+        NODE_ENV: "development"
       }
     }
   ],
-
-  /**
-   * Deployment section
-   * http://pm2.keymetrics.io/docs/usage/deployment/
-   */
-  deploy : {
-    production : {
-      user : "node",
-      host : "212.83.163.1",
-      ref  : "origin/master",
-      repo : "git@github.com:repo.git",
-      path : "/var/www/production",
-      "post-deploy" : "npm install && pm2 startOrRestart ecosystem.json --env production"
-    },
-    dev : {
-      user : "node",
-      host : "212.83.163.1",
-      ref  : "origin/master",
-      repo : "git@github.com:repo.git",
-      path : "/var/www/development",
-      "post-deploy" : "npm install && pm2 startOrRestart ecosystem.json --env dev",
-      env  : {
-        NODE_ENV: "dev"
+  "deploy" : {
+    "development" : {
+      "user" : "root",
+      "host" : ["128.199.87.142"],
+      "ref"  : "origin/master",
+      "repo" : "git@github.com:youpin-city/youpin-api.git",
+      "path" : "/opt/api.youpin.city",
+      "post-deploy" : "npm install --production && pm2 startOrRestart ecosystem.json --env development",
+      "pre-deploy-local" : "echo '[development] deploy completed.'",
+      "env"  : {
+        NODE_ENV: "development"
       }
     }
   }
