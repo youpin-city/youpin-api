@@ -17,8 +17,9 @@ const services = require('./services');
 // firebase
 const firebase = require('firebase');
 var config = {
-  databaseURL: "https://you-pin.firebaseio.com",
-  serviceAccount: "./youpin_credentials.json",
+  databaseURL: 'https://you-pin.firebaseio.com',
+  storageBucket: 'you-pin.appspot.com',
+  serviceAccount: './youpin_credentials.json',
 };
 firebase.initializeApp(config);
 // firebase end
