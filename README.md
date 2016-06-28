@@ -2,47 +2,87 @@
 
 > YouPin API
 
-## About
+All API access is over HTTP (for now), and accessed from the `http://api.youpin.city`. All data is sent and received as JSON.
 
-This project uses [Feathers](http://feathersjs.com). An open source web framework for building modern real-time applications.
+## Temporary Documents
+In the end, we will use https://github.com/apidoc/apidoc to host api documentation.
+This is just temporary for a small collaboration.
 
-## Getting Started
-
-Getting up and running is as easy as 1, 2, 3.
-
-1. Make sure you have [NodeJS](https://nodejs.org/) and [npm](https://www.npmjs.com/) installed.
-2. Install your dependencies
-    
-    ```
-    cd path/to/youpin-api; npm install
-    ```
-
-3. Start your app
-    
-    ```
-    npm start
-    ```
-
-## Testing
-
-Simply run `npm test` and all your tests in the `test/` directory will be run.
-
-## Scaffolding
-
-Feathers has a powerful command line interface. Here are a few things it can do:
-
-```
-$ npm install -g feathers-cli             # Install Feathers CLI
-
-$ feathers generate service               # Generate a new Service
-$ feathers generate hook                  # Generate a new Hook
-$ feathers generate model                 # Generate a new Model
-$ feathers help                           # Show all commands
+### Pin
+* `GET` /pins
+```bash
+curl -i -X GET http://api.youpin.city/pins
 ```
 
-## Help
+* `GET` /pins/:id
+```bash
+curl -i -X GET http://api.youpin.city/pins/1
+```
 
-For more information on all the things you can do with Feathers visit [docs.feathersjs.com](http://docs.feathersjs.com).
+* `POST` /pins
+```bash
+curl -i -X POST \
+  -H "Content-Type: application/json" \
+  -d "@data.json"
+  http://api.youpin.city/pins
+```
+
+* `PUT` /pins/:id
+```bash
+curl -i -X PUT \
+  -H "Content-Type: application/json" \
+  -d "@data.json"
+  http://api.youpin.city/pins
+```
+
+* `DELETE` /pins/:id
+```bash
+curl -i -X DELETE http://api.youpin.city/pins/1
+```
+
+### User
+* `GET` /users
+
+* `GET` /users/:id
+
+* `POST` /users
+
+* `PUT` /users/:id
+
+* `DELETE` /users/:id
+
+### Comment
+* `GET` /comments
+
+* `GET` /comments/:id
+
+* `POST` /comments
+
+* `PUT` /comments/:id
+
+* `DELETE` /comments/:id
+
+### Photo
+* `GET` /photos
+
+* `GET` /photos/:id
+
+* `POST` /photos
+
+* `PUT` /photos/:id
+
+* `DELETE` /photos/:id
+
+### Video
+* `GET` /videos
+
+* `GET` /videos/:id
+
+* `POST` /videos
+
+* `PUT` /videos/:id
+
+* `DELETE` /videos/:id
 
 ## Changelog
 
