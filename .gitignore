@@ -1,6 +1,6 @@
 # Credentials
 youpin_credentials.json
-
+youpin_gcs_credentials.json
 # Logs
 logs
 *.log

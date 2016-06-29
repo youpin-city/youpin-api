@@ -5,21 +5,44 @@ const hooks = require('./hooks');
 const Promise = require('bluebird');
 const firebase = require('firebase');
 const errors = require('feathers-errors');
+const gcloud = require('gcloud');
 
 class Service {
   constructor(options) {
     this.options = options || {};
     this.fdb = firebase.database();
+    this.gcs = gcloud.storage({
+      projectId: 'You-pin',
+      keyFilename: './youpin_gcs_credentials.json'
+    });
   }
 
   find(params) {
-    return Promise.resolve([]);
+    const self = this;
+    return new Promise(function(resolve, reject) {
+      self.gcs.createBucket('test', function(err, bucket) {
+        if (err) return reject(err);
+        resolve([]);
+      });
+    });
+    /*self.gcs.createBucket('test', function(err, bucket) {
+      if (err) {
+        console.log(err);
+      }
+      return Promise.resolve([]);
+    });*/
   }
 
   get(id, params) {
-    return Promise.resolve({
-      id, text: `A new message with ID: ${id}!`
-    });
+    /*gcs.createbucket('test', function(err, bucket) {
+      if (err) {
+        console.log(err);
+      }
+      return promise.resolve({
+        id, text: `a new message with id: ${id}!`
+      });
+    });*/
+    return Promise.resolve([]);
   }
 
   create(data, params) {
