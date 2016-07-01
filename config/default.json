@@ -1,6 +1,6 @@
 {
   "host": "localhost",
-  "port": 3030,
+  "port": 9100,
   "nedb": "../data/",
   "public": "../public/",
   "auth": {
