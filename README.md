@@ -64,14 +64,23 @@ curl -i -X DELETE http://api.youpin.city/pins/1
 
 ### Photo
 * `GET` /photos
-
+TBI
 * `GET` /photos/:id
-
+TBI
 * `POST` /photos
+- Single Photo
+```bash
+curl -i -X POST \
+  -H "Content-Type: multipart/form-data" \
+  -F "image=@icon_world.gif" http://api.youpin.city/photos
+```
+- Multiple Photos
+TBI
 
 * `PUT` /photos/:id
-
+TBI
 * `DELETE` /photos/:id
+TBI
 
 ### Video
 * `GET` /videos
