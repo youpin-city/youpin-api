@@ -37,6 +37,7 @@
     "firebase": "^3.0.5",
     "gcloud": "^0.36.0",
     "geofire": "^4.1.1",
+    "multer": "^1.1.0",
     "nedb": "^1.8.0",
     "passport": "^0.3.2",
     "passport-facebook": "^2.1.1",

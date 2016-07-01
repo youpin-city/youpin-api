@@ -3,6 +3,7 @@
     {
       "name"      : "youpin-api",
       "script"    : "src/",
+      "no-daemon" : true,
       "log_date_format" : "YYYY-MM-DD HH:mm",
       "watch"     : true,
       "ignore_watch" : ["node_modules", "data", ".git"],

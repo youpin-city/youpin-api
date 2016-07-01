@@ -6,80 +6,65 @@ const Promise = require('bluebird');
 const firebase = require('firebase');
 const errors = require('feathers-errors');
 const gcloud = require('gcloud');
+const fdb = firebase.database();
+const gcs = gcloud.storage({
+  projectId: 'You-pin',
+  keyFilename: './youpin_gcs_credentials.json'
+});
+const multer = require('multer');
 
-class Service {
-  constructor(options) {
-    this.options = options || {};
-    this.fdb = firebase.database();
-    this.gcs = gcloud.storage({
-      projectId: 'You-pin',
-      keyFilename: './youpin_gcs_credentials.json'
-    });
-  }
+var CLOUD_BUCKET = 'staging.you-pin.appspot.com';
 
-  find(params) {
-    const self = this;
-    return new Promise(function(resolve, reject) {
-      self.gcs.createBucket('test', function(err, bucket) {
-        if (err) return reject(err);
-        resolve([]);
-      });
-    });
-    /*self.gcs.createBucket('test', function(err, bucket) {
-      if (err) {
-        console.log(err);
+const uploader = multer({
+  inMemory: true,
+      fileSize: 5 * 1024 * 1024, // no larger than 5MB
+      rename: function (fieldname, filename) {
+        // generate a unique filename
+        return filename.replace(/\W+/g, '-').toLowerCase() + Date.now();
       }
-      return Promise.resolve([]);
-    });*/
+});
+const bucket = gcs.bucket(CLOUD_BUCKET);
+function getPublicUrl (filename) {
+  return 'https://storage.googleapis.com/' + CLOUD_BUCKET + '/' + filename;
+}
+function sendUploadToGCS (req, res, next) {
+  if (!req.file) {
+    return next();
   }
 
-  get(id, params) {
-    /*gcs.createbucket('test', function(err, bucket) {
-      if (err) {
-        console.log(err);
-      }
-      return promise.resolve({
-        id, text: `a new message with id: ${id}!`
-      });
-    });*/
-    return Promise.resolve([]);
-  }
+  var gcsname = Date.now() + req.file.originalname;
+  var file = bucket.file(gcsname);
+  var stream = file.createWriteStream();
 
-  create(data, params) {
-    if(Array.isArray(data)) {
-      return Promise.all(data.map(current => this.create(current)));
-    }
+  stream.on('error', function (err) {
+    req.file.cloudStorageError = err;
+    next(err);
+  });
 
-    return Promise.resolve(data);
-  }
+  stream.on('finish', function () {
+    req.file.cloudStorageObject = gcsname;
+    req.file.cloudStoragePublicUrl = getPublicUrl(gcsname);
+    next();
+  });
 
-  update(id, data, params) {
-    return Promise.resolve(data);
-  }
-
-  patch(id, data, params) {
-    return Promise.resolve(data);
-  }
-
-  remove(id, params) {
-    return Promise.resolve({ id });
-  }
+  stream.end(req.file.buffer);
 }
 
 module.exports = function(){
   const app = this;
-
-  // Initialize our service with any options it requires
-  app.use('/photos', new Service());
-
-  // Get our initialize service to that we can bind hooks
-  const photoService = app.service('/photos');
-
-  // Set up our before hooks
-  photoService.before(hooks.before);
-
-  // Set up our after hooks
-  photoService.after(hooks.after);
+  app.post('/photos', uploader.single('image'),
+      sendUploadToGCS,
+      function(req, res, next) {
+        // we don't care req.body for now.
+        // (care only file content)
+        var imageUrl;
+        if (req.file && req.file.cloudStoragePublicUrl) {
+          imageUrl = req.file.cloudStoragePublicUrl;
+        }
+        res.json({
+          url: imageUrl,
+          mimetype: req.file.mimetype,
+          size: req.file.size
+        });
+      });
 };
-
-module.exports.Service = Service;

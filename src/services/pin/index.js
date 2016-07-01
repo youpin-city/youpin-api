@@ -180,7 +180,6 @@ module.exports = function(){
   // Initialize our service with any options it requires
   app.use('/pins', new Service());
 
-
   // Get our initialize service to that we can bind hooks
   const pinService = app.service('/pins');
 
