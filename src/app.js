@@ -30,13 +30,8 @@ app.configure(configuration(path.join(__dirname, '..')));
 
 // stormpath init
 // TODO(A): Change to all credentials to ENV VAR
-app.use(stormpath.init(app, {
-  client: {
-    apiKey: {
-      file: './stormpath_credentials.properties'
-    }
-  }
-}));
+app.use(stormpath.init(app, {}));
+
 app.on('stormpath.ready', function () {
   console.log('Stormpath Ready!');
 });

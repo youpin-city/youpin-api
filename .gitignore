@@ -1,7 +1,9 @@
 # Credentials
 youpin_credentials.json
 youpin_gcs_credentials.json
-stormpath_credentials.properties
+stormpath_credentials.json
+stormpath.properties
+deploy_dev.sh
 # Logs
 logs
 *.log
