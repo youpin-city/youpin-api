@@ -1,7 +1,5 @@
 'use strict';
 
-const hooks = require('./hooks');
-
 const Promise = require('bluebird');
 const firebase = require('firebase');
 const errors = require('feathers-errors');
@@ -52,6 +50,8 @@ function sendUploadToGCS (req, res, next) {
 
 module.exports = function(){
   const app = this;
+  //TODO(A): Need id and need to support multiple photos uplaod
+  //TODO(A): Also need to support photo url and download it instead of 3rd party app
   app.post('/photos', uploader.single('image'),
       sendUploadToGCS,
       function(req, res, next) {

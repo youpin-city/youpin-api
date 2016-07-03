@@ -12,21 +12,28 @@ const rest = require('feathers-rest');
 const bodyParser = require('body-parser');
 const socketio = require('feathers-socketio');
 const middleware = require('./middleware');
+const stormpath = require('express-stormpath');
 // firebase
 const firebase = require('firebase');
-var config = {
+const firebaseConfig = {
   databaseURL: 'https://you-pin.firebaseio.com',
   storageBucket: 'you-pin.appspot.com',
   serviceAccount: './youpin_credentials.json',
 };
-firebase.initializeApp(config);
+firebase.initializeApp(firebaseConfig);
 // firebase end
 const services = require('./services');
-
 
 const app = feathers();
 
 app.configure(configuration(path.join(__dirname, '..')));
+
+// stormpath init
+app.use(stormpath.init(app, {}));
+app.on('stormpath.ready', function () {
+  console.log('Stormpath Ready!');
+});
+// stormpath end
 
 app.use(compress())
   .options('*', cors())
