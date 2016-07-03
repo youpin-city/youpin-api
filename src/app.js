@@ -22,7 +22,6 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 // firebase end
-const services = require('./services');
 
 const app = feathers();
 
@@ -30,15 +29,17 @@ app.configure(configuration(path.join(__dirname, '..')));
 
 // stormpath init
 // TODO(A): Change to all credentials to ENV VAR
-app.use(stormpath.init(app, {}));
-
+//app.use(stormpath.init(app, {}));
 app.on('stormpath.ready', function () {
   console.log('Stormpath Ready!');
 });
 // stormpath end
 
+const services = require('./services');
+
 app.use(compress())
   .options('*', cors())
+  .use(stormpath.init(app, {})) // stormpath init
   .use(cors())
   .use(favicon( path.join(app.get('public'), 'favicon.ico') ))
   .use('/', serveStatic( app.get('public') ))
