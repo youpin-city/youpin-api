@@ -29,7 +29,11 @@ const app = feathers();
 app.configure(configuration(path.join(__dirname, '..')));
 
 // stormpath init
-app.use(stormpath.init(app, {}));
+app.use(stormpath.init(app, {
+  client: {
+    apiKey: './stormpath_credentials.json'
+  }
+}));
 app.on('stormpath.ready', function () {
   console.log('Stormpath Ready!');
 });
