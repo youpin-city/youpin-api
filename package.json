@@ -48,7 +48,8 @@
     "passport-google-oauth20": "^1.0.0",
     "passport-google-token": "^0.1.2",
     "serve-favicon": "^2.3.0",
-    "winston": "^2.2.0"
+    "winston": "^2.2.0",
+    "superagent": "^2.0.0"
   },
   "devDependencies": {
     "jshint": "^2.9.2",

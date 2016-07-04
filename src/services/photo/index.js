@@ -3,15 +3,19 @@
 const Promise = require('bluebird');
 const firebase = require('firebase');
 const errors = require('feathers-errors');
+const stormpath = require('express-stormpath');
+const request = require('superagent');
 const gcloud = require('gcloud');
+const fs = require('fs');
 const fdb = firebase.database();
+const urlparser = require('url');
 const gcs = gcloud.storage({
   projectId: 'You-pin',
   keyFilename: './youpin_gcs_credentials.json'
 });
 const multer = require('multer');
 
-var CLOUD_BUCKET = 'staging.you-pin.appspot.com';
+const CLOUD_BUCKET = 'staging.you-pin.appspot.com';
 
 const uploader = multer({
   inMemory: true,
@@ -30,9 +34,9 @@ function sendUploadToGCS (req, res, next) {
     return next();
   }
 
-  var gcsname = Date.now() + req.file.originalname;
-  var file = bucket.file(gcsname);
-  var stream = file.createWriteStream();
+  const gcsname = Date.now() + '_' + req.file.originalname;
+  const file = bucket.file(gcsname);
+  const stream = file.createWriteStream();
 
   stream.on('error', function (err) {
     req.file.cloudStorageError = err;
@@ -52,7 +56,9 @@ module.exports = function(){
   const app = this;
   //TODO(A): Need id and need to support multiple photos uplaod
   //TODO(A): Also need to support photo url and download it instead of 3rd party app
-  app.post('/photos', uploader.single('image'),
+  app.post('/photos',
+      stormpath.apiAuthenticationRequired,
+      uploader.single('image'),
       sendUploadToGCS,
       function(req, res, next) {
         // we don't care req.body for now.
@@ -66,5 +72,55 @@ module.exports = function(){
           mimetype: req.file.mimetype,
           size: req.file.size
         });
+      });
+
+  // This service receives image url. Then, it downloads and stores image for you.
+  // TODO(A): support downloading multiple urls
+  app.post('/photos/uploadfromurl',
+      stormpath.apiAuthenticationRequired,
+      function (req, res, next) {
+        const data = req.body;
+        var photoUrls = [];
+        console.log(data);
+        if (Array.isArray(data)) {
+          photoUrls = data;
+          return res.send(new errors.NotImplemented('Array is not supported yet'));
+        } else {
+          photoUrls.push(data);
+        }
+        const url = photoUrls[0];
+        // TODO(A): Change to promise and ES6 style
+        request
+          .head(url)
+          .end(function (err, photoHeaderResp) {
+            if (err) {
+              return res.send(err);
+            }
+            const pathArray = urlparser.parse(url).pathname.split('/');
+            const filename = pathArray[pathArray.length - 1];
+            const mimetype = photoHeaderResp.header['content-type'];
+            const size = photoHeaderResp.header['content-length'];
+            const gcsname = Date.now() + '_' + filename;
+            const gcsfile = bucket.file(gcsname);
+            const filePublicUrl = getPublicUrl(gcsname);
+            console.log('Downloading photo...');
+            console.log('Name: ' + filename);
+            console.log('Mimetype: ' + mimetype);
+            console.log('Size: ' + size);
+            console.log('To: ' + filePublicUrl);
+            var uploadPipe = request.get(url).pipe(gcsfile.createWriteStream());
+            uploadPipe.on('error', function(err) {
+              console.log(err);
+              res.send(err);
+            });
+            uploadPipe.on('finish', function() {
+              console.log('Uploading to the cloud starge is complete!');
+              res.json({
+                url: filePublicUrl,
+                mimetype: mimetype,
+                size: size
+              });
+            });
+          });
       });
 };

@@ -15,7 +15,7 @@ module.exports = function() {
   // Route for nearby search
   // /pins/nearbysearch?location=<number>,<number>&radius=<number>
   // /pins/ will return maybe just 10 first results accordings to some limited params
-  app.get('/pins/nearbysearch', function(req, res, next) {
+  app.get('/pins/nearbysearch', stormpath.apiAuthenticationRequired, function(req, res, next) {
     var self = this;
     // check location format is '<number>,<number>'
     if (!req.query.location && !req.query.radius) {
@@ -48,7 +48,7 @@ module.exports = function() {
   });
 
   // /pins returns N results accordings to limit parameter (default: 10)
-  app.get('/pins', stormpath.apiAuthenticationRequired, function(req, res, next) {
+  app.get('/pins', function(req, res, next) {
     const self = this;
     const limit = req.query.limit || 10;
     const cache = {};
@@ -91,7 +91,7 @@ module.exports = function() {
       });
   });
 
-  app.post('/pins', function(req, res, next) {
+  app.post('/pins', stormpath.apiAuthenticationRequired, function(req, res, next) {
     const data = req.body;
     // TODO(A): Make it work with Array
     console.log(data);
@@ -119,7 +119,7 @@ module.exports = function() {
       });
   });
 
-  app.delete('/pins/:id', function(req, res, next) {
+  app.delete('/pins/:id', stormpath.apiAuthenticationRequired, function(req, res, next) {
     const self = this;
     const id = req.params.id;
     fdb.ref('pin_infos/' + id)
@@ -137,7 +137,7 @@ module.exports = function() {
       });
   });
 
-  app.put('/pins/:id', function(req, res, next) {
+  app.put('/pins/:id', stormpath.apiAuthenticationRequired, function(req, res, next) {
     const self = this;
     const id = req.params.id;
     fdb.ref('pin_infos/' + id).once('value')
