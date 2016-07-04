@@ -52,13 +52,11 @@ module.exports = function() {
   // It can also search the key by startAt or endAt
   app.get('/pins', function(req, res, next) {
     const self = this;
-    const limit = req.query.limit || 10;
-    const startAt = req.query.startAt || '';
-    const endAt = req.query.endAt || '';
+    const limit = parseInt(req.query.limit) || 10;
+    /*const startAt = req.query.startAt || '';
+    const endAt = req.query.endAt || '';*/
     const cache = {};
     fdb.ref('pin_infos').orderByKey()
-      .startAt(startAt)
-      .endAt(endAt)
       .limitToFirst(limit).once('value')
       .then(function(snapshot) {
         console.log('Retrieving pin_infos data...');

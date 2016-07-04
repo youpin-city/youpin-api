@@ -12,12 +12,11 @@ All routings that do insert/update need APIKEY:SECRET.
 Please ask @parnurzeal to give you one.
 
 ### Pin
-* `GET` /pins?limits=[limit_number]&startAt=[startAt_number]&endAt=[endAt_number]
+* `GET` /pins?limits=[limit_number]
 
   Returns the first [limit_number] pins from the data storage
-  starting at [startAt_number] and ending at [endAt_number]
 
-  Default: limit=10, startAt='', endAt=''
+  Default: limit=10
   ```bash
   curl -i -X GET http://api.youpin.city/pins
   ```

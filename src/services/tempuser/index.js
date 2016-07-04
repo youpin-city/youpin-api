@@ -10,9 +10,9 @@ module.exports = function(){
   const fdb = firebase.database();
 
   // /tempuser returns N results according limit params (default limit: 10)
-  app.get('/tempuser', stormpath.apiAuthenticationRequired, function (req, res, next) {
+  app.get('/tempusers', stormpath.apiAuthenticationRequired, function (req, res, next) {
     const limit = req.query.limit || 10;
-    fdb.ref('tempuser').limitToFirst(10).once('value')
+    fdb.ref('tempusers').limitToFirst(10).once('value')
       .then(function(snapshot) {
         console.log('Retrieving tempuser data...');
         var user = snapshot.val();
@@ -27,9 +27,9 @@ module.exports = function(){
   });
 
   // /tempuser/:id returns user with mactching YouPin id
-  app.get('/tempuser/:id', stormpath.apiAuthenticationRequired, function(req, res, next) {
+  app.get('/tempusers/:id', stormpath.apiAuthenticationRequired, function(req, res, next) {
     const id = req.params.id;
-    fdb.ref('tempuser/' + id).once('value')
+    fdb.ref('tempusers/' + id).once('value')
       .then(function(snapshot) {
         console.log('Retrieving tempuser with YouPin id - ' + id);
         res.json({
@@ -43,9 +43,9 @@ module.exports = function(){
   });
 
   // /tempuser/fbid/:id returns user with matching FB id
-  app.get('/tempuser/fbid/:id', stormpath.apiAuthenticationRequired, function(req, res, next) {
+  app.get('/tempusers/fbid/:id', stormpath.apiAuthenticationRequired, function(req, res, next) {
     const id = req.params.id;
-    fdb.ref('tempuser').orderByChild('fb_id').equalTo(id).once('value')
+    fdb.ref('tempusers').orderByChild('fb_id').equalTo(id).once('value')
       .then(function(snapshot) {
         console.log('Retrieving tempuser with facebook id - ' + id);
         res.json({
@@ -58,11 +58,11 @@ module.exports = function(){
       });
   })
 
-  app.post('/tempuser', stormpath.apiAuthenticationRequired, function(req, res, next) {
+  app.post('/tempusers', stormpath.apiAuthenticationRequired, function(req, res, next) {
     const data = req.body;
     // TODO(A): Make it work with Array
     console.log(data);
-    var newChild = fdb.ref('tempuser').push();
+    var newChild = fdb.ref('tempusers').push();
     newChild.set(data)
       .then(function() {
         console.log('Created user with key ' + newChild.key);
@@ -76,10 +76,10 @@ module.exports = function(){
       });
   });
   // Delete tempuser by id
-  app.delete('/tempuser/:id', stormpath.apiAuthenticationRequired, function(req, res, next) {
+  app.delete('/tempusers/:id', stormpath.apiAuthenticationRequired, function(req, res, next) {
     const self = this;
     const id = req.params.id;
-    fdb.ref('tempuser/' + id)
+    fdb.ref('tempusers/' + id)
       .set(null)
       .then(function() {
         console.log('Removed tempuser with id ' + id);
@@ -90,10 +90,10 @@ module.exports = function(){
       });
   });
 
-  app.put('/tempuser/:id', stormpath.apiAuthenticationRequired, function(req, res, next) {
+  app.put('/tempusers/:id', stormpath.apiAuthenticationRequired, function(req, res, next) {
     const self = this;
     const id = req.params.id;
-    fdb.ref('tempuser/' + id).once('value')
+    fdb.ref('tempusers/' + id).once('value')
       .then(function(snapshot) {
         if (snapshot.val() == null) {
           throw 'Pin does not exist; youpin_id ' + id;
