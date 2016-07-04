@@ -11,6 +11,9 @@ This is just temporary for a small collaboration.
 All routings that do insert/update need APIKEY:SECRET.
 Please ask @parnurzeal to give you one.
 
+Firebase console: https://you-pin.firebaseio.com/
+Google Cloud Storage Bucket: https://console.cloud.google.com/storage/browser/staging.you-pin.appspot.com
+
 ### Pin
 * `GET` /pins?limits=[limit_number]
 
@@ -56,8 +59,14 @@ Please ask @parnurzeal to give you one.
   ```
 
 ### Temp Users (for Rapee app only)
-* `GET` /tempuser
+* `GET` /tempuser?limit=[limit_number]
+  Retrieve [limit_number] first user in the data store
+
+  Default: limit=10
 * `GET` /tempuser/:id
+  Search by Youpin id
+* `GET` /tempuser/fbid/:id
+  Search by facebook id
 * `POST` /tempuser
 * `PUT` /tempuser/:id
 * `DELETE` /tempuser/:id
