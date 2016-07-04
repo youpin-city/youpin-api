@@ -24,6 +24,8 @@ Please ask @parnurzeal to give you one.
   curl -i -X GET http://api.youpin.city/pins/1
   ```
 
+* `GET` /pins/nearbysearch?location=x,y&area=z (TBI)
+
 * `POST` /pins
   ```bash
   curl -i -X POST \
@@ -51,12 +53,12 @@ Please ask @parnurzeal to give you one.
     http://api.youpin.city/pins/1
   ```
 
-### User
-* `GET` /users (TBI)
-* `GET` /users/:id (TBI)
-* `POST` /users (TBI)
-* `PUT` /users/:id (TBI)
-* `DELETE` /users/:id (TBI)
+### Temp Users (for Rapee app only)
+* `GET` /tempuser
+* `GET` /tempuser/:id
+* `POST` /tempuser
+* `PUT` /tempuser/:id
+* `DELETE` /tempuser/:id
 
 ### Photo
 * `GET` /photos (TBI)
@@ -91,6 +93,15 @@ Please ask @parnurzeal to give you one.
 * `POST` /videos (TBI)
 * `PUT` /videos/:id (TBI)
 * `DELETE` /videos/:id (TBI)
+
+### User
+We will use this when we have a full functioning authentication system.
+* `GET` /users (TBI)
+* `GET` /users/:id (TBI)
+* `POST` /users (TBI)
+* `PUT` /users/:id (TBI)
+* `DELETE` /users/:id (TBI)
+
 
 ## Changelog
 
