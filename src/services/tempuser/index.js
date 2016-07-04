@@ -17,7 +17,7 @@ module.exports = function(){
         console.log('Retrieving tempuser data...');
         var user = snapshot.val();
         res.json({
-          users: snapshot.val()
+          user: snapshot.val()
         });
       })
       .catch(function(err) {
@@ -31,9 +31,9 @@ module.exports = function(){
     const id = req.params.id;
     fdb.ref('tempuser/' + id).once('value')
       .then(function(snapshot) {
-        console.log('Retrieving tempuser of YouPin id - ' + id);
+        console.log('Retrieving tempuser with YouPin id - ' + id);
         res.json({
-          users: snapshot.val()
+          user: snapshot.val()
         });
       })
       .catch(function(err) {
@@ -44,7 +44,18 @@ module.exports = function(){
 
   // /tempuser/fbid/:id returns user with matching FB id
   app.get('/tempuser/fbid/:id', stormpath.apiAuthenticationRequired, function(req, res, next) {
-    res.send(new errors.NotImplemented());
+    const id = req.params.id;
+    fdb.ref('tempuser').orderByChild('fb_id').equalTo(id).once('value')
+      .then(function(snapshot) {
+        console.log('Retrieving tempuser with facebook id - ' + id);
+        res.json({
+          user: snaphost.val()
+        });
+      })
+      .catch(function(err) {
+        console.log(err);
+        res.send(new errors.NotImplemented());
+      });
   })
 
   app.post('/tempuser', stormpath.apiAuthenticationRequired, function(req, res, next) {
@@ -64,6 +75,7 @@ module.exports = function(){
         res.send(new errors.NotImplemented(err));
       });
   });
+  // Delete tempuser by id
   app.delete('/tempuser/:id', stormpath.apiAuthenticationRequired, function(req, res, next) {
     const self = this;
     const id = req.params.id;
