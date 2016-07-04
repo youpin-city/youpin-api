@@ -1,0 +1,29 @@
+{
+  "categories": ["pedestrain", "หาบเร่"],
+  "created_time": "6/12/2016, 6:29 PM",
+  "detail": "afjaldfja;dkfja;jfal;sjdf;aksjdf;daj",
+  "followers": ["id1", "id2"],
+  "level": "severe",
+  "mentions": ["bangkok_org", "1555"],
+  "neighborhood": "Silom",
+  "owner": "id1",
+  "photos": ["photo1", "photo2"],
+  "status": "open",
+  "tags": ["tag1","tag2"],
+  "title": "broken pedestrain near SamYan",
+  "updated_time": "6/12/2016, 6:29 PM",
+  "videos": ["video1"],
+  "voters": [
+  {"user_id": "id10","vote_type": "love"},
+  {"user_id": "id8", "vote_type": "angry"}
+  ],
+  "location": [10, 10],
+  "comments": [
+      { "commented_by": "id8",
+        "detail": "Good. I like it!",
+        "mentions": ["bangkok_org"],
+        "photos": ["photo1","photo2"],
+        "tags": ["agree"],
+        "voter": [{"user_id": "id10", "vote_type": "love"}]
+        }]
+}
