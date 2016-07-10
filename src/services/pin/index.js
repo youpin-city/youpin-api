@@ -80,7 +80,6 @@ module.exports = function() {
     fdb.ref('pin_infos/' + id).once('value')
       .then(function(snapshot) {
         if (!snapshot.exists()) {
-          res.sendStatus(404);
           throw new errors.NotFound('pin_infos/' + id + ' does not exist');
         }
 
@@ -91,7 +90,6 @@ module.exports = function() {
       })
       .then(function(snapshot) {
         if (!snapshot.exists()) {
-          res.sendStatus(404);
           throw new errors.NotFound('pin_geofires/' + id + ' does not exist');
         }
 
@@ -105,6 +103,7 @@ module.exports = function() {
       })
       .catch(function(err) {
         console.log(err);
+        res.send(err);
       });
   });
 
