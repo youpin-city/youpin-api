@@ -76,15 +76,28 @@ module.exports = function() {
     const self = this;
     const cache = {};
     const id = req.params.id;
+
     fdb.ref('pin_infos/' + id).once('value')
       .then(function(snapshot) {
+        if (!snapshot.exists()) {
+          res.sendStatus(404);
+          throw new errors.NotFound('pin_infos/' + id + ' does not exist');
+        }
+
         console.log('Retrieving pin_infos of id - ' + id);
         cache.pin_infos = snapshot.val();
+
         return fdb.ref('pin_geofires/' + id).once('value');
       })
       .then(function(snapshot) {
+        if (!snapshot.exists()) {
+          res.sendStatus(404);
+          throw new errors.NotFound('pin_geofires/' + id + ' does not exist');
+        }
+
         console.log('Retrieving pin_geofires of id -' + id);
         cache.pin_geofires= snapshot.val();
+
         res.json({
           pin_info: cache.pin_infos,
           location: cache.pin_geofires,
@@ -92,7 +105,6 @@ module.exports = function() {
       })
       .catch(function(err) {
         console.log(err);
-        res.send(new errors.NotImplemented(err));
       });
   });
 
