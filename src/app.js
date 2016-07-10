@@ -13,19 +13,16 @@ const bodyParser = require('body-parser');
 const socketio = require('feathers-socketio');
 const middleware = require('./middleware');
 const stormpath = require('express-stormpath');
-// firebase
-const firebase = require('firebase');
-const firebaseConfig = {
-  databaseURL: 'https://you-pin.firebaseio.com',
-  storageBucket: 'you-pin.appspot.com',
-  serviceAccount: './youpin_credentials.json',
-};
-firebase.initializeApp(firebaseConfig);
-// firebase end
 
 const app = feathers();
 
 app.configure(configuration(path.join(__dirname, '..')));
+
+// firebase
+const firebase = require('firebase');
+const firebaseConfig = app.get('firebase');
+firebase.initializeApp(firebaseConfig);
+// firebase end
 
 // stormpath init
 // TODO(A): Change to all credentials to ENV VAR
