@@ -60,9 +60,11 @@ module.exports = function() {
       .limitToFirst(limit).once('value')
       .then(function(snapshot) {
         console.log('Retrieving pin_infos data...');
-        cache.pin_infos = snapshot.val();
+        const firebasePinInfos = snapshot.val();
+        // change obj list to array
+        cache.data = Object.keys(firebasePinInfos).map(key => firebasePinInfos[key]);
         res.json({
-          pin_info: cache.pin_infos
+          data : cache.data
         });
       })
       // TODO(A): add geofire (locations) to all pins
@@ -120,6 +122,8 @@ module.exports = function() {
       locationData = [0, 0];
     }
     var newChild = fdb.ref('pin_infos').push();
+    // Built-in id to the object
+    data.id = newChild.key;
     newChild.set(data)
       .then(function() {
         console.log('Created pin_infos with key ' + newChild.key);
