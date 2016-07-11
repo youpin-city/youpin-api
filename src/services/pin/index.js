@@ -4,14 +4,12 @@ const hooks = require('./hooks');
 
 const Promise = require('bluebird');
 const firebase = require('firebase');
-const Geofire = require('geofire');
 const errors = require('feathers-errors');
 const stormpath = require('express-stormpath');
 
 module.exports = function() {
   const app = this;
   const fdb = firebase.database();
-  const geofire = new Geofire(firebase.database().ref('pin_geofires'));
   // Route for nearby search
   // /pins/nearbysearch?location=<number>,<number>&radius=<number>
   // /pins/ will return maybe just 10 first results accordings to some limited params
@@ -36,12 +34,6 @@ module.exports = function() {
         return res.send(new errors.BadRequest('radius is not a number'));
     }
     var radius = parseFloat(req.query.radius);
-    var geoquery = geofire.query({
-      center: [latitude, longitude],
-      radius: radius
-    });
-    console.log(geoquery.radius());
-    console.log(geoquery.center());
     // TODO(A): make it searchable using geohash
     // geohash might help but we still need more implementation
     res.json('To be implemented');
@@ -86,21 +78,10 @@ module.exports = function() {
         }
 
         console.log('Retrieving pin_infos of id - ' + id);
-        cache.pin_infos = snapshot.val();
-
-        return fdb.ref('pin_geofires/' + id).once('value');
-      })
-      .then(function(snapshot) {
-        if (!snapshot.exists()) {
-          throw new errors.NotFound('pin_geofires/' + id + ' does not exist');
-        }
-
-        console.log('Retrieving pin_geofires of id -' + id);
-        cache.pin_geofires= snapshot.val();
-
+        // change obj to array
+        cache.data = [snapshot.val()];
         res.json({
-          pin_info: cache.pin_infos,
-          location: cache.pin_geofires,
+          data: cache.data
         });
       })
       .catch(function(err) {
@@ -112,25 +93,12 @@ module.exports = function() {
   app.post('/pins', stormpath.apiAuthenticationRequired, function(req, res, next) {
     const data = req.body;
     // TODO(A): Make it work with Array
-    console.log(data);
-    var locationData;
-    if (data.location) {
-      locationData = data.location;
-      delete data.location;
-    } else {
-      // TODO(A): Try returning null instead
-      locationData = [0, 0];
-    }
     var newChild = fdb.ref('pin_infos').push();
     // Built-in id to the object
     data.id = newChild.key;
     newChild.set(data)
       .then(function() {
         console.log('Created pin_infos with key ' + newChild.key);
-        return geofire.set(newChild.key, locationData);
-      })
-      .then(function() {
-        console.log('Created pin_geofires with key ' + newChild.key);
         res.json({name: newChild.key});
       })
       .catch(function(err) {
@@ -146,10 +114,6 @@ module.exports = function() {
       .set(null)
       .then(function() {
         console.log('Removed pin_infos with id ' + id);
-        return geofire.set(id, null);
-      })
-      .then(function() {
-        console.log('Removed pin_geofires with id ' + id);
         res.json({name: id});
       })
       .catch(function(err) {
