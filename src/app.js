@@ -13,6 +13,11 @@ const bodyParser = require('body-parser');
 const socketio = require('feathers-socketio');
 const middleware = require('./middleware');
 const stormpath = require('express-stormpath');
+const mongoose = require('mongoose');
+const Promise = require('bluebird');
+
+mongoose.Promise = Promise;
+mongoose.connect('mongodb://localhost:27017/youpin');
 
 const app = feathers();
 

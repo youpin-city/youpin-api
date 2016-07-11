@@ -8,13 +8,13 @@ const auth = require('feathers-authentication').hooks;
 const stormpath = require('express-stormpath');
 
 exports.before = {
-  all: [process()],
-  find: [process()],
-  get: [process()],
-  create: [process()],
-  update: [process()],
-  patch: [process()],
-  remove: [process()]
+  all: [],
+  find: [],
+  get: [],
+  create: [],
+  update: [],
+  patch: [],
+  remove: []
 };
 
 exports.after = {

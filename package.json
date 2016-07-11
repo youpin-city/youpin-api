@@ -32,6 +32,7 @@
     "feathers-configuration": "^0.2.3",
     "feathers-errors": "^2.2.0",
     "feathers-hooks": "^1.5.4",
+    "feathers-mongoose": "^3.5.0",
     "feathers-nedb": "^2.3.0",
     "feathers-rest": "^1.4.2",
     "feathers-socketio": "^1.4.1",
@@ -49,6 +50,7 @@
     "passport-google-token": "^0.1.2",
     "serve-favicon": "^2.3.0",
     "superagent": "^2.0.0",
+    "validator": "^5.4.0",
     "winston": "^2.2.0"
   },
   "devDependencies": {
