@@ -2,6 +2,7 @@
   "host": "localhost",
   "port": 9100,
   "nedb": "../data/",
+  "mongodb": "mongodb://localhost:27017/youpin",
   "public": "../public/",
   "auth": {
     "token": {

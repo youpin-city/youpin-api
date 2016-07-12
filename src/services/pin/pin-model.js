@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const VoteSchema = new Schema({
-  user_id: {type: Schema.Types.ObjectId, required: true},
+  user_id: {type: Schema.Types.ObjectId, required: true, ref: 'User'},
   vote_type: {type: String, required: true}
 },
 // disable _id field
@@ -11,7 +11,7 @@ const VoteSchema = new Schema({
 
 const CommentSchema = new Schema({
   detail: {type: String, required: true},
-  mentions: [Schema.Types.ObjectId],
+  mentions: [{type: Schema.Types.ObjectId, ref: 'User'}],
   tags: [String],
   photos: [Schema.Types.ObjectId],
   videos: [Schema.Types.ObjectId],
@@ -28,16 +28,16 @@ const PinSchema = new Schema({
   created_time: {type: Date, required: true, 'default': Date.now},
   updated_time: {type: Date, required: true, 'default': Date.now},
   resolved_time: {type: Date},
-  followers: [Schema.Types.ObjectId],
+  followers: [{type: Schema.Types.ObjectId, ref: 'User'}],
   level: String,
-  mentions: [Schema.Types.ObjectId],
+  mentions: [{type: Schema.Types.ObjectId, ref: 'User'}],
   neighborhood: [String],
-  owner: {type: Schema.Types.ObjectId, required: true},
+  owner: {type: Schema.Types.ObjectId, ref: 'User', required: true},
   photos: [Schema.Types.ObjectId],
   status: String,
   location: {type: [Number], index: '2d', required: true},
   tags: [String],
-  provider: {type: Schema.Types.ObjectId, required: true},
+  provider: {type: Schema.Types.ObjectId, ref: 'User', required: true},
   voters: [VoteSchema],
   videos: [Schema.Types.ObjectId]
 });
