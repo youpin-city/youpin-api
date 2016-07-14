@@ -37,7 +37,26 @@ const services = require('./services');
 
 app.use(compress())
   .options('*', cors())
-  .use(stormpath.init(app, {})) // stormpath init
+  .enable('strict routing')
+  /*.use(stormpath.init(app, {
+    web: {
+      oauth2: {
+        password: {
+          validationStrategy: 'stormpath'
+        }
+      }
+    },
+    preLoginHandler: function (formData, req, res, next) {
+      console.log('Pre req params', req.params);
+      console.log('Got login request', formData);
+      next();
+    },
+    postLoginHandler: function (account, req, res, next) {
+      console.log('Post req params', req.params);
+      console.log('Post login request', account);
+      next();
+    }
+  })) // stormpath init*/
   .use(cors())
   .use(favicon( path.join(app.get('public'), 'favicon.ico') ))
   .use('/', serveStatic( app.get('public') ))

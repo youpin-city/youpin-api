@@ -1,4 +1,5 @@
 'use strict';
+const app3rd = require('./app3rd');
 const searchnearby = require('./searchnearby');
 const photo = require('./photo');
 const pin = require('./pin');
@@ -18,4 +19,5 @@ module.exports = function() {
   app.configure(pin);
   app.configure(photo);
   app.configure(searchnearby);
+  app.configure(app3rd);
 };

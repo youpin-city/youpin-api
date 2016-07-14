@@ -5,7 +5,9 @@ const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication').hooks;
 
 exports.before = {
-  all: [],
+  all: [
+    //globalHooks.authenticateAPI()
+    ],
   find: [
     auth.verifyToken(),
     auth.populateUser(),

@@ -33,11 +33,12 @@ const PinSchema = new Schema({
   mentions: [{type: Schema.Types.ObjectId, ref: 'User'}],
   neighborhood: [String],
   owner: {type: Schema.Types.ObjectId, ref: 'User', required: true},
-  photos: [Schema.Types.ObjectId],
+  photos: [String],
   status: String,
   location: {type: [Number], index: '2d', required: true},
   tags: [String],
   provider: {type: Schema.Types.ObjectId, ref: 'User', required: true},
+  comments: [CommentSchema],
   voters: [VoteSchema],
   videos: [Schema.Types.ObjectId]
 });
