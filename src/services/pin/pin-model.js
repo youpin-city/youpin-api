@@ -35,13 +35,19 @@ const PinSchema = new Schema({
   owner: {type: Schema.Types.ObjectId, ref: 'User', required: true},
   photos: [String],
   status: String,
-  location: {type: [Number], index: '2d', required: true},
+  location: {
+    type: {type: String, enum: "Point", default: "Point"},
+    coordinates: { type: [Number], default: [0,0] }
+  },
   tags: [String],
   provider: {type: Schema.Types.ObjectId, ref: 'User', required: true},
   comments: [CommentSchema],
   voters: [VoteSchema],
   videos: [Schema.Types.ObjectId]
 });
+
+// Index geosearch field
+PinSchema.index({location: '2dsphere'});
 
 const Model = mongoose.model('Pin', PinSchema);
 
