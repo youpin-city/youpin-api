@@ -15,7 +15,7 @@ module.exports = function() {
     Model: pin,
     paginate: {
       default: 5,
-      max: 25
+      max: 50
     }
   };
 
