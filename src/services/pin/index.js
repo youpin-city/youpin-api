@@ -18,7 +18,14 @@ module.exports = function() {
       max: 50
     }
   };
-
+  /**
+   * @api {get} /pins/:id Request pin information
+   * @apiVersion 0.1.0
+   * @apiName GetPin
+   * @apiGroup Pin
+   *
+   * @apiParam {Number} id Pin unique ID.
+   */
   app.use('/pins', service(options));
   const pinService = app.service('/pins');
   pinService.before(hooks.before);
