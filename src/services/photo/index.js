@@ -3,7 +3,6 @@
 const Promise = require('bluebird');
 const firebase = require('firebase');
 const errors = require('feathers-errors');
-const stormpath = require('express-stormpath');
 const request = require('superagent');
 const gcloud = require('gcloud');
 const fs = require('fs');
@@ -57,7 +56,6 @@ module.exports = function(){
   //TODO(A): Need id and need to support multiple photos uplaod
   //TODO(A): Also need to support photo url and download it instead of 3rd party app
   app.post('/photos',
-      stormpath.apiAuthenticationRequired,
       uploader.single('image'),
       sendUploadToGCS,
       function(req, res, next) {
@@ -77,7 +75,6 @@ module.exports = function(){
   // This service receives image url. Then, it downloads and stores image for you.
   // TODO(A): support downloading multiple urls
   app.post('/photos/uploadfromurl',
-      stormpath.apiAuthenticationRequired,
       function (req, res, next) {
         const data = req.body;
         var photoUrls = [];
