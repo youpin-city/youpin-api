@@ -29,10 +29,5 @@
         "scope": ["profile"]
       }
     }
-  },
-  "firebase": {
-    "databaseURL": "https://you-pin.firebaseio.com",
-    "storageBucket": "you-pin.appspot.com",
-    "serviceAccount": "../youpin_credentials.json"
   }
 }

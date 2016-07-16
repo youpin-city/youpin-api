@@ -19,12 +19,6 @@ const app = feathers();
 
 app.configure(configuration(path.join(__dirname, '..')));
 
-// firebase
-const firebase = require('firebase');
-const firebaseConfig = app.get('firebase');
-firebase.initializeApp(firebaseConfig);
-// firebase end
-
 // stormpath init
 // TODO(A): Change to all credentials to ENV VAR
 //app.use(stormpath.init(app, {}));

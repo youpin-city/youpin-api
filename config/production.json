@@ -29,10 +29,5 @@
         "scope": ["profile"]
       }
     }
-  },
-  "firebase": {
-    "databaseURL": "your firebase database url",
-    "storageBucket": "your firebase storage bucket url",
-    "serviceAccount": "your firebase credentials json file path"
   }
 }
