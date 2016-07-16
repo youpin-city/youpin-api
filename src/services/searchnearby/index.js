@@ -22,8 +22,10 @@ class Service {
     const maxDistance = (params.query['$radius'] || 1000);
     console.log('Do GeoSearch');
     // TODO(A): Check if string is correct array format, if not, return meaningful error.
-    const coordinate = JSON.parse(params.query['$center']);
+    var coordinate = JSON.parse(params.query['$center']);
     console.log('Start finding pins around', coordinate, 'within ' + params.query['$radius'] + ' km.');
+    // We get [lat, long] but mongo need [long, lat]. So, swap them.
+    coordinate = [coordinate[1], coordinate[0]];
     return Pin.find({
       location: {
         $near: {

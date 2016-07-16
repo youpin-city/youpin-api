@@ -21,29 +21,38 @@ function restrictToOwnerOfPin() {
   };
 }
 
-
 exports.before = {
-  all: [],
+  all: [globalHooks.swapLatLong()],
   find: [],
   get: [],
   create: [
     auth.verifyToken(),
     auth.populateUser(),
     auth.restrictToAuthenticated(),
-    restrictToOwnerOfPin()
+    restrictToOwnerOfPin(),
     ],
   update: [
     auth.verifyToken(),
     auth.populateUser(),
     auth.restrictToAuthenticated(),
+    restrictToOwnerOfPin(),
+    ],
+  patch: [
+    auth.verifyToken(),
+    auth.populateUser(),
+    auth.restrictToAuthenticated(),
     restrictToOwnerOfPin()
     ],
-  patch: [],
-  remove: []
+  remove: [
+    auth.verifyToken(),
+    auth.populateUser(),
+    auth.restrictToAuthenticated(),
+    restrictToOwnerOfPin()
+    ]
 };
 
 exports.after = {
-  all: [],
+  all: [globalHooks.swapLatLong()],
   find: [],
   get: [],
   create: [],
