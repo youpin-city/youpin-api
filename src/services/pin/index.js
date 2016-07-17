@@ -25,6 +25,24 @@ module.exports = function() {
    * @apiGroup Pin
    *
    * @apiParam {Number} id Pin unique ID.
+   *
+   * @apiSuccess {String} owner Pin's owner ID.
+   * @apiSuccess {String} detail Pin's detail.
+   * @apiSuccess {String} provider Pin's provider ID.
+   * @apiSuccess {Object} location Location information
+   * @apiSuccess {String} location.type Type of location.
+   * @apiSuccess {Number[]} location.coordinates Latitude and longitude of location
+   * @apiSuccess {String[]} videos List of videos in this pin.
+   * @apiSuccess {String[]} voters List of user IDs who vote this pin.
+   * @apiSuccess {String[]} comments List of comments for this pin.
+   * @apiSuccess {String[]} tags List of tags of this pin.
+   * @apiSuccess {String[]} photos List of photos in this pin.
+   * @apiSuccess {String[]} neighborhood List of neighborhood of this pin.
+   * @apiSuccess {String[]} mentions List of mentions of this pin.
+   * @apiSuccess {String[]} followers List of user IDs who follow this pin.
+   * @apiSuccess {String[]} categories List of categories of this pin.
+   * @apiSuccess {String} created_time Created time in ISO 8601 format.
+   * @apiSuccess {String} updated_time Updated time in ISO 8601 format.
    */
   app.use('/pins', service(options));
   const pinService = app.service('/pins');
