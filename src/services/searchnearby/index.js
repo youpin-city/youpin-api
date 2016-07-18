@@ -12,25 +12,25 @@ class Service {
   }
 
   find(params) {
-    if (!params.query['$center']) {
+    if (!params.query.$center) {
       return Promise.resolve(
           new errors.BadRequest('Please assign the value to $center.'));
     }
     // Default limit: 10
     const limit = params.query.limit || 10;
     // Default maxDistance: 1 km
-    const maxDistance = (params.query['$radius'] || 1000);
+    const maxDistance = (params.query.$radius || 1000);
     console.log('Do GeoSearch');
     // TODO(A): Check if string is correct array format, if not, return meaningful error.
-    var coordinate = JSON.parse(params.query['$center']);
-    console.log('Start finding pins around', coordinate, 'within ' + params.query['$radius'] + ' km.');
+    var coordinate = JSON.parse(params.query.$center);
+    console.log('Start finding pins around', coordinate, 'within ' + params.query.$radius + ' km.');
     // We get [lat, long] but mongo need [long, lat]. So, swap them.
     coordinate = [coordinate[1], coordinate[0]];
     return Pin.find({
       location: {
         $near: {
           $geometry : {
-            type : "Point",
+            type : 'Point',
             coordinates : coordinate
           },
           $maxDistance: maxDistance

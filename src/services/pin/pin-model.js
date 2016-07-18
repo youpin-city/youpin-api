@@ -36,7 +36,7 @@ const PinSchema = new Schema({
   photos: [String],
   status: String,
   location: {
-    type: {type: String, enum: "Point", default: "Point"},
+    type: {type: String, enum: 'Point', default: 'Point'},
     // default to Thailand Democracy Monument
     coordinates: { type: [Number], default: [100.5018549,13.756727] }
   },
