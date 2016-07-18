@@ -1,12 +1,10 @@
 'use strict';
 
 const Promise = require('bluebird');
-const firebase = require('firebase');
 const errors = require('feathers-errors');
 const request = require('superagent');
 const gcloud = require('gcloud');
 const fs = require('fs');
-const fdb = firebase.database();
 const urlparser = require('url');
 const gcs = gcloud.storage({
   projectId: 'You-pin',

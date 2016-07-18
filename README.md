@@ -11,7 +11,6 @@ This is just temporary for a small collaboration.
 All routings that do insert/update need APIKEY:SECRET.
 Please ask @parnurzeal to give you one.
 
-Firebase console: https://you-pin.firebaseio.com/
 Google Cloud Storage Bucket: https://console.cloud.google.com/storage/browser/staging.you-pin.appspot.com
 
 ### Pin
