@@ -15,7 +15,7 @@ function restrictToOwnerOfPin() {
     if (!pinOwner) {
       throw new Error('owner field should be provided');
     }
-    if (pinOwner != tokenOwner) {
+    if (pinOwner !== tokenOwner) {
       throw new errors.NotAuthenticated('Owner field (id) does not matched with the token owner id.');
     }
   };
