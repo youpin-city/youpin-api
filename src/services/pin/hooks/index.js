@@ -7,6 +7,7 @@ const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication').hooks;
 const stormpath = require('express-stormpath');
 const errors = require('feathers-errors');
+const mongoose = require('mongoose');
 
 function restrictToOwnerOfPin() {
   return function(hook) {
@@ -21,10 +22,21 @@ function restrictToOwnerOfPin() {
   };
 }
 
+function validateObjectId() {
+  return function(hook) {
+    const id = hook.id;
+    if (id && !mongoose.Types.ObjectId.isValid(id)) {
+      throw new errors.NotFound(`No record found for id '${id}'`);
+    }
+  }
+}
+
 exports.before = {
   all: [globalHooks.swapLatLong()],
   find: [],
-  get: [],
+  get: [
+    validateObjectId()
+  ],
   create: [
     auth.verifyToken(),
     auth.populateUser(),
