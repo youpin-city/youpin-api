@@ -2,10 +2,6 @@
 
 const pin = require('./pin-model');
 const hooks = require('./hooks');
-
-const Promise = require('bluebird');
-const errors = require('feathers-errors');
-const stormpath = require('express-stormpath');
 const service = require('feathers-mongoose');
 
 module.exports = function() {
