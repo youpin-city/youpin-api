@@ -55,6 +55,4 @@ exports.swapLatLong = function(options) {
       }
     }
   };
-}
-
-
+};

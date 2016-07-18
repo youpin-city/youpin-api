@@ -14,7 +14,7 @@ const UserSchema = new Schema({
     validate: {
       validator: function(v) {
         console.log(v);
-        return validator.matches(v, /[0-9]{3}-[0-9]{3}-[0-9]{4}/)
+        return validator.matches(v, /[0-9]{3}-[0-9]{3}-[0-9]{4}/);
       },
       message: '{VALUE} is not a valid phone number!'
     }
