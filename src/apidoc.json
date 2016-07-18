@@ -1,0 +1,11 @@
+{
+  "name": "YouPin API",
+  "version": "0.1.0",
+  "title": "YouPin.city REST API",
+  "description": "REST API for YouPin.city",
+  "url": "http://api.youpin.city",
+  "template": {
+    "withCompare": false,
+    "withGenerator": false
+  }
+}
