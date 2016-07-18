@@ -30,7 +30,7 @@ class Service {
       location: {
         $near: {
           $geometry : {
-            type : "Point",
+            type : 'Point',
             coordinates : coordinate
           },
           $maxDistance: maxDistance
