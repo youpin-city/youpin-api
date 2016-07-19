@@ -1,6 +1,6 @@
 FROM mhart/alpine-node:6
 
-MAINTAINER YouPin.city Team
+MAINTAINER YouPin Team
 
 RUN apk add -U libc6-compat
 COPY package.json /src/package.json
