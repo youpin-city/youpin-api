@@ -192,28 +192,41 @@ class PhotosService {
   }
 }
 
+
+function uploadSaveRespondByUrl(url) {
+  return uploadToGCSByUrl(url)
+    .then((file) => {
+      return savePhotoMetadata(file);
+    })
+    .then((photoDoc) => {
+      return respondWithPhotoMetadata(photoDoc);
+    })
+    .catch((error) => {
+      return Promise.reject(error);
+    });
+}
+
 class UploadPhotoFromUrlService {
   create(data, params) {
     if (!data.url) {
       return Promise.reject(new errors.BadRequest('No URL provided'));
     }
 
-    return uploadToGCSByUrl(data.url)
-      .then((file) => {
-        return savePhotoMetadata(file);
-      })
-      .then((photoDoc) => {
-        return respondWithPhotoMetadata(photoDoc);
-      })
-      .catch((error) => {
-        return Promise.reject(error);
-      });
+    return uploadSaveRespondByUrl(data.url);
   }
 }
 
 class BulkUploadPhotosFromUrlsService {
   create(data, params) {
-    return Promise.reject(new errors.NotImplemented('Bulk upload is not implemented'));
+    if (!data.urls) {
+      return Promise.reject(new errors.BadRequest('No URLs provided'));
+    }
+
+    if (!Array.isArray((data.urls))) {
+      return Promise.reject(new errors.BadRequest('Value of urls is not an array'));
+    }
+
+    return Promise.all(data.urls.map(uploadSaveRespondByUrl));
   }
 }
 
@@ -267,7 +280,6 @@ module.exports = function(){
    *      "size": 138890
    *    }
    */
-  // This service receives image url. Then, it downloads and stores image for you.
   app.use('/photos/upload_from_url', new UploadPhotoFromUrlService());
 
   /**
