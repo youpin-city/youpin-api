@@ -159,6 +159,7 @@ function respondWithPhotoMetadata(photoDocument) {
     }
 
     return resolve({
+      id: photoDocument._id,
       url: photoDocument.url,
       mimetype: photoDocument.mimetype,
       size: photoDocument.size
