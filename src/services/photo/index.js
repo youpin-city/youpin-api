@@ -194,18 +194,11 @@ class PhotosService {
 
 class UploadPhotoFromUrlService {
   create(data, params) {
-    var photoUrls = [];
-
-    if (Array.isArray(data.urls)) {
-      photoUrls = data;
-      return Promise.reject(new errors.NotImplemented('Array is not supported yet'));
-    } else {
-      photoUrls.push(data.urls);
+    if (!data.url) {
+      return Promise.reject(new errors.BadRequest('No URL provided'));
     }
 
-    const url = photoUrls[0];
-
-    return uploadToGCSByUrl(url)
+    return uploadToGCSByUrl(data.url)
       .then((file) => {
         return savePhotoMetadata(file);
       })
@@ -215,6 +208,12 @@ class UploadPhotoFromUrlService {
       .catch((error) => {
         return Promise.reject(error);
       });
+  }
+}
+
+class BulkUploadPhotosFromUrlsService {
+  create(data, params) {
+    return Promise.reject(new errors.NotImplemented('Bulk upload is not implemented'));
   }
 }
 
@@ -245,6 +244,8 @@ module.exports = function(){
   app.use('/photos', prepareMultipart, attachFileToFeathers, new PhotosService());
 
   // This service receives image url. Then, it downloads and stores image for you.
-  // TODO(A): support downloading multiple urls
   app.use('/photos/upload_from_url', new UploadPhotoFromUrlService());
+
+  // TODO(A): support downloading multiple urls
+  app.use('/photos/bulk_upload_from_urls', new BulkUploadPhotosFromUrlsService());
 };
