@@ -130,6 +130,7 @@ function respondWithPhotoMetadata(photoDocument) {
     if (!photoDocument.size) {
       return reject(new errors.GeneralError('No photo size provided'));
     }
+
     return resolve({
       url: photoDocument.url,
       mimetype: photoDocument.mimetype,
@@ -148,7 +149,7 @@ class PhotosService {
     .then((photoDoc) => {
       return respondWithPhotoMetadata(photoDoc);
     })
-    .catch(function (err) {
+    .catch((err) => {
       return Promise.reject(err);
     });
   }
@@ -171,36 +172,48 @@ class UploadPhotoFromUrlService {
 
     const url = photoUrls[0];
     // TODO(A): Change to promise and ES6 style
-    request
-      .head(url)
-      .end(function (err, photoHeaderResp) {
-        if (err) {
-          return Promise.reject(err);
-        }
-        const pathArray = urlparser.parse(url).pathname.split('/');
-        const filename = pathArray[pathArray.length - 1];
-        const mimetype = photoHeaderResp.header['content-type'];
-        const size = photoHeaderResp.header['content-length'];
-        const gcsname = Date.now() + '_' + filename;
-        const gcsfile = bucket.file(gcsname);
-        const filePublicUrl = getPublicUrl(gcsname);
-        console.log('Downloading photo...');
-        console.log('Name: ' + filename);
-        console.log('Mimetype: ' + mimetype);
-        console.log('Size: ' + size);
-        console.log('To: ' + filePublicUrl);
-        var uploadPipe = request.get(url).pipe(gcsfile.createWriteStream());
-        uploadPipe.on('error', function(err) {
-          return Promise.reject(err);
-        });
-        uploadPipe.on('finish', function() {
-          return Promise.resolve({
-            url: filePublicUrl,
-            mimetype: mimetype,
-            size: size
+    return new Promise((resolve, reject) => {
+      request
+        .head(url)
+        .end(function (err, photoHeaderResp) {
+          if (err) {
+            return Promise.reject(err);
+          }
+          const pathArray = urlparser.parse(url).pathname.split('/');
+          const filename = pathArray[pathArray.length - 1];
+          const mimetype = photoHeaderResp.header['content-type'];
+          const size = photoHeaderResp.header['content-length'];
+          const gcsname = Date.now() + '_' + filename;
+          const gcsfile = bucket.file(gcsname);
+          const filePublicUrl = getPublicUrl(gcsname);
+          console.log('Downloading photo...');
+          console.log('Name: ' + filename);
+          console.log('Mimetype: ' + mimetype);
+          console.log('Size: ' + size);
+          console.log('To: ' + filePublicUrl);
+          var uploadPipe = request.get(url).pipe(gcsfile.createWriteStream());
+          uploadPipe.on('error', function(err) {
+            return Promise.reject(err);
+          });
+          uploadPipe.on('finish', function() {
+            const file = {
+              cloudStoragePublicUrl: filePublicUrl,
+              mimetype: mimetype,
+              size: size
+            };
+            return savePhotoMetadata(file)
+              .then((photoDoc) => {
+                return respondWithPhotoMetadata(photoDoc);
+              })
+              .then((response) => {
+                return resolve(response);
+              })
+              .catch((error) => {
+                return Promise.reject(error);
+              });
           });
         });
-      });
+    });
   }
 }
 
