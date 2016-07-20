@@ -11,6 +11,7 @@ const gcs = gcloud.storage({
   keyFilename: './youpin_gcs_credentials.json'
 });
 const multer = require('multer');
+const Photo = require('./photo-model');
 
 const CLOUD_BUCKET = 'staging.you-pin.appspot.com';
 
@@ -85,39 +86,67 @@ function uploadToGCSPromise(reqFile) {
     });
 
     stream.on('finish', function () {
+      const publicUrl = getPublicUrl(gcsname);
+
       reqFile.cloudStorageObject = gcsname;
-      reqFile.cloudStoragePublicUrl = getPublicUrl(gcsname);
+      reqFile.cloudStoragePublicUrl = publicUrl;
 
-      return resolve();
+      return resolve(reqFile);
     });
-
     stream.end(reqFile.buffer);
   });
 }
 
-function respondWithImageMetadata(reqFile) {
+function savePhotoMetadata(file) {
   return new Promise(function (resolve, reject) {
-    // we don't care req.body for now.
-    // (care only file content)
-    var imageUrl;
+    const photo = new Photo({
+      url: file.cloudStoragePublicUrl,
+      mimetype: file.mimetype,
+      size: file.size
+    });
+    photo.save(function (err, photoDoc) {
+      if (err) {
+        return reject(err);
+      }
+      return resolve(photoDoc);
+    })
+  });
+}
 
-    if (reqFile && reqFile.cloudStoragePublicUrl) {
-      imageUrl = reqFile.cloudStoragePublicUrl;
+function respondWithPhotoMetadata(photoDocument) {
+  return new Promise(function (resolve, reject) {
+    if (!photoDocument) {
+      return reject(new errors.GeneralError('No photo provided'));
     }
 
+    if (!photoDocument.url) {
+      return reject(new errors.GeneralError('No photo URL provided'));
+    }
+
+    if (!photoDocument.mimetype) {
+      return reject(new errors.GeneralError('No photo MIME type provided'));
+    }
+
+    if (!photoDocument.size) {
+      return reject(new errors.GeneralError('No photo size provided'));
+    }
     return resolve({
-      url: imageUrl,
-      mimetype: reqFile.mimetype,
-      size: reqFile.size
+      url: photoDocument.url,
+      mimetype: photoDocument.mimetype,
+      size: photoDocument.size
     });
   });
 }
 
 class PhotosService {
+
   create(data, params) {
-    uploadToGCSPromise(data.file)
-    .then(() => {
-      return respondWithImageMetadata(data.file);
+    return uploadToGCSPromise(params.file)
+    .then((file) => {
+      return savePhotoMetadata(file);
+    })
+    .then((photoDoc) => {
+      return respondWithPhotoMetadata(photoDoc);
     })
     .catch(function (err) {
       return Promise.reject(err);
