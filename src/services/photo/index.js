@@ -168,6 +168,16 @@ function respondWithPhotoMetadata(photoDocument) {
 }
 
 class PhotosService {
+  get(id) {
+    return Photo.findById(id, (err, photo) => {
+      if (err) {
+        return Promise.reject(err);
+      }
+
+      return Promise.resolve(photo);
+    });
+  }
+
   create(data, params) {
     return uploadToGCS(params.file)
     .then((file) => {
