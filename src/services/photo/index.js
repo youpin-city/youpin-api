@@ -194,10 +194,6 @@ class PhotosService {
 
 class UploadPhotoFromUrlService {
   create(data, params) {
-    if (typeof data !== 'object') {
-      return Promise.reject(new errors.BadRequest('Data must be a JSON object'));
-    }
-
     var photoUrls = [];
 
     if (Array.isArray(data.urls)) {
