@@ -28,7 +28,7 @@ function validateObjectId() {
     if (id && !mongoose.Types.ObjectId.isValid(id)) {
       throw new errors.NotFound(`No record found for id '${id}'`);
     }
-  }
+  };
 }
 
 exports.before = {
