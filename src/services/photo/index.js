@@ -191,11 +191,9 @@ class UploadPhotoFromUrlService {
         console.log('To: ' + filePublicUrl);
         var uploadPipe = request.get(url).pipe(gcsfile.createWriteStream());
         uploadPipe.on('error', function(err) {
-          console.log(err);
           return Promise.reject(err);
         });
         uploadPipe.on('finish', function() {
-          console.log('Uploading to the cloud starge is complete!');
           return Promise.resolve({
             url: filePublicUrl,
             mimetype: mimetype,
