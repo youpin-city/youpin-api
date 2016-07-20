@@ -17,6 +17,8 @@ const gcs = gcloud.storage({
   keyFilename: './youpin_gcs_credentials.json'
 });
 
+const bucket = gcs.bucket(CLOUD_BUCKET);
+
 const uploader = multer({
   inMemory: true,
   fileSize: 5 * 1024 * 1024, // no larger than 5MB
@@ -41,8 +43,6 @@ function attachFileToFeathers(req, res, next) {
 
   next();
 }
-
-const bucket = gcs.bucket(CLOUD_BUCKET);
 
 function getPublicUrl (filename) {
   return 'https://storage.googleapis.com/' + CLOUD_BUCKET + '/' + filename;
@@ -76,11 +76,11 @@ function uploadToGCS(reqFile) {
   });
 }
 
-function uploadToGCSByUrl(url) {
+function getMetadataFromUrl(url) {
   return new Promise((resolve, reject) => {
     request
       .head(url)
-      .end(function (err, photoHeaderResp) {
+      .end((err, photoHeaderResp) => {
         if (err) {
           return reject(err);
         }
@@ -90,14 +90,28 @@ function uploadToGCSByUrl(url) {
         const filename = pathArray[pathArray.length - 1];
         const mimetype = photoHeaderResp.header['content-type'];
         const size = photoHeaderResp.header['content-length'];
-        const gcsname = Date.now() + '_' + filename;
+
+        return resolve({
+          filename: filename,
+          mimetype: mimetype,
+          size: size
+        });
+      });
+  });
+}
+
+function uploadToGCSByUrl(url) {
+  return getMetadataFromUrl(url)
+    .then((metadata) => {
+      return new Promise((resolve, reject) => {
+        const gcsname = Date.now() + '_' + metadata.filename;
         const gcsfile = bucket.file(gcsname);
         const filePublicUrl = getPublicUrl(gcsname);
 
         console.log('Downloading photo...');
-        console.log('Name: ' + filename);
-        console.log('Mimetype: ' + mimetype);
-        console.log('Size: ' + size);
+        console.log('Name: ' + metadata.filename);
+        console.log('Mimetype: ' + metadata.mimetype);
+        console.log('Size: ' + metadata.size);
         console.log('To: ' + filePublicUrl);
 
         // Download and pipe it to GCS
@@ -110,13 +124,16 @@ function uploadToGCSByUrl(url) {
         uploadPipe.on('finish', function() {
           const file = {
             cloudStoragePublicUrl: filePublicUrl,
-            mimetype: mimetype,
-            size: size
+            mimetype: metadata.mimetype,
+            size: metadata.size
           };
           return resolve(file);
         });
       });
-  });
+    })
+    .catch((error) => {
+      return Promise.reject(error);
+    });
 }
 
 function savePhotoMetadata(file) {
@@ -131,7 +148,7 @@ function savePhotoMetadata(file) {
         return reject(err);
       }
       return resolve(photoDoc);
-    })
+    });
   });
 }
 
@@ -162,7 +179,6 @@ function respondWithPhotoMetadata(photoDocument) {
 }
 
 class PhotosService {
-
   create(data, params) {
     return uploadToGCS(params.file)
     .then((file) => {
@@ -196,7 +212,7 @@ class UploadPhotoFromUrlService {
 
     return uploadToGCSByUrl(url)
       .then((file) => {
-        return savePhotoMetadata(file)
+        return savePhotoMetadata(file);
       })
       .then((photoDoc) => {
         return respondWithPhotoMetadata(photoDoc);
