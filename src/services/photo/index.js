@@ -69,7 +69,7 @@ function sendUploadToGCS (req, res, next) {
   stream.end(req.file.buffer);
 }
 
-function uploadToGCSPromise(reqFile) {
+function uploadToGCS(reqFile) {
   return new Promise(function (resolve, reject) {
     if (!reqFile) {
       return reject(new Error('No file provided'));
@@ -141,7 +141,7 @@ function respondWithPhotoMetadata(photoDocument) {
 class PhotosService {
 
   create(data, params) {
-    return uploadToGCSPromise(params.file)
+    return uploadToGCS(params.file)
     .then((file) => {
       return savePhotoMetadata(file);
     })
