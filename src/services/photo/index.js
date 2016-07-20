@@ -9,7 +9,6 @@ const urlparser = require('url');
 const multer = require('multer');
 const Photo = require('./photo-model');
 
-
 const CLOUD_BUCKET = 'staging.you-pin.appspot.com';
 
 const gcs = gcloud.storage({
@@ -27,22 +26,6 @@ const uploader = multer({
     return filename.replace(/\W+/g, '-').toLowerCase() + Date.now();
   }
 });
-
-function prepareMultipart(req, res, next) {
-  if (req.method.toLowerCase() === 'post') {
-    return uploader.single('image')(req, res, next);
-  }
-
-  next();
-}
-
-function attachFileToFeathers(req, res, next) {
-  if (req.method.toLowerCase() === 'post' && req.file) {
-    req.feathers.file = req.file;
-  }
-
-  next();
-}
 
 function getPublicUrl (filename) {
   return 'https://storage.googleapis.com/' + CLOUD_BUCKET + '/' + filename;
@@ -72,6 +55,7 @@ function uploadToGCS(reqFile) {
 
       return resolve(reqFile);
     });
+
     stream.end(reqFile.buffer);
   });
 }
@@ -100,6 +84,7 @@ function getMetadataFromUrl(url) {
   });
 }
 
+// Get metadata and download a file from URL, then, upload it to GCS
 function uploadToGCSByUrl(url) {
   return getMetadataFromUrl(url)
     .then((metadata) => {
@@ -136,6 +121,7 @@ function uploadToGCSByUrl(url) {
     });
 }
 
+// Save photo metadata to database
 function savePhotoMetadata(file) {
   return new Promise(function (resolve, reject) {
     const photo = new Photo({
@@ -143,10 +129,12 @@ function savePhotoMetadata(file) {
       mimetype: file.mimetype,
       size: file.size
     });
+
     photo.save(function (err, photoDoc) {
       if (err) {
         return reject(err);
       }
+
       return resolve(photoDoc);
     });
   });
@@ -221,6 +209,26 @@ class UploadPhotoFromUrlService {
         return Promise.reject(error);
       });
   }
+}
+
+// Middleware to handle file uploading
+function prepareMultipart(req, res, next) {
+  // Bypass this middleware if it's not a POST request
+  if (req.method.toLowerCase() === 'post') {
+    return uploader.single('image')(req, res, next);
+  }
+
+  next();
+}
+
+// Middle to attach file from multer (uploader) to the req object
+function attachFileToFeathers(req, res, next) {
+  // Bypass this middleware if it's not a POST request or file is not available
+  if (req.method.toLowerCase() === 'post' && req.file) {
+    req.feathers.file = req.file;
+  }
+
+  next();
 }
 
 module.exports = function(){
