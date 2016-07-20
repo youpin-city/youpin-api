@@ -239,13 +239,71 @@ function attachFileToFeathers(req, res, next) {
 
 module.exports = function(){
   const app = this;
+
   //TODO(A): Need id and need to support multiple photos uplaod
   //TODO(A): Also need to support photo url and download it instead of 3rd party app
   app.use('/photos', prepareMultipart, attachFileToFeathers, new PhotosService());
 
+  /**
+   * @api {post} /photos/upload_from_url Upload from URL
+   * @apiDescription Download a photo from a provided URL and upload it for you.
+   * @apiVersion 0.1.0
+   * @apiName PostPhotosUploadFromUrl
+   * @apiGroup Photos
+   *
+   * @apiParam {String} url Photo URL to be uploaded
+   *
+   * @apiSuccess (Created 201) {String} id Photo ID.
+   * @apiSuccess (Created 201) {String} url Photo URL.
+   * @apiSuccess (Created 201) {String} mimetype MIME type.
+   * @apiSuccess (Created 201) {Number} size File size (bytes).
+
+   * @apiSuccessExample Success-Response:
+   *    HTTP/1.1 201 Created
+   *    {
+   *      "id": "578fafba3855de9d00dc3c61",
+   *      "url": "https://storage.googleapis.com/you-pin.appspot.com/1469034415861_hello.png",
+   *      "mimetype": "image/png",
+   *      "size": 138890
+   *    }
+   */
   // This service receives image url. Then, it downloads and stores image for you.
   app.use('/photos/upload_from_url', new UploadPhotoFromUrlService());
 
+  /**
+   * @api {post} /photos/bulk_upload_from_urls Bulk upload from multiple URLs
+   * @apiDescription Download multple photos from provided URLs and upload them for you.
+   * @apiVersion 0.1.0
+   * @apiName PostPhotosBulkUploadFromUrls
+   * @apiGroup Photos
+   *
+   * @apiParam {String[]} urls Array of photo URLs to be uploaded
+   *
+   * @apiSuccess (Created 201) {Object[]} photos Array of photo metadata
+   * @apiSuccess (Created 201) {String} photos.id Photo ID.
+   * @apiSuccess (Created 201) {String} photos.url Photo URL.
+   * @apiSuccess (Created 201) {String} photos.mimetype MIME type.
+   * @apiSuccess (Created 201) {Number} photos.size File size (bytes).
+
+   * @apiSuccessExample Success-Response:
+   *    HTTP/1.1 201 Created
+   *    {
+   *      "urls": [
+   *        {
+   *          "id": "578fafba3855de9d00dc3c61",
+   *          "url": "https://storage.googleapis.com/you-pin.appspot.com/1469034415861_hello.png",
+   *          "mimetype": "image/png",
+   *          "size": 138890
+   *        },
+   *        {
+   *          "id": "578fafb39fi5de9d04817u87",
+   *          "url": "https://storage.googleapis.com/you-pin.appspot.com/9069039183882_world.png",
+   *          "mimetype": "image/png",
+   *          "size": 151281
+   *        }
+   *      ]
+   *    }
+   */
   // TODO(A): support downloading multiple urls
   app.use('/photos/bulk_upload_from_urls', new BulkUploadPhotosFromUrlsService());
 };
