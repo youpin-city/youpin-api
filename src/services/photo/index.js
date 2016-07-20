@@ -48,29 +48,6 @@ function getPublicUrl (filename) {
   return 'https://storage.googleapis.com/' + CLOUD_BUCKET + '/' + filename;
 }
 
-function sendUploadToGCS (req, res, next) {
-  if (!req.file) {
-    return next();
-  }
-
-  const gcsname = Date.now() + '_' + req.file.originalname;
-  const file = bucket.file(gcsname);
-  const stream = file.createWriteStream();
-
-  stream.on('error', function (err) {
-    req.file.cloudStorageError = err;
-    next(err);
-  });
-
-  stream.on('finish', function () {
-    req.file.cloudStorageObject = gcsname;
-    req.file.cloudStoragePublicUrl = getPublicUrl(gcsname);
-    next();
-  });
-
-  stream.end(req.file.buffer);
-}
-
 function uploadToGCS(reqFile) {
   return new Promise(function (resolve, reject) {
     if (!reqFile) {
