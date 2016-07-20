@@ -6,14 +6,16 @@ const request = require('superagent');
 const gcloud = require('gcloud');
 const fs = require('fs');
 const urlparser = require('url');
+const multer = require('multer');
+const Photo = require('./photo-model');
+
+
+const CLOUD_BUCKET = 'staging.you-pin.appspot.com';
+
 const gcs = gcloud.storage({
   projectId: 'You-pin',
   keyFilename: './youpin_gcs_credentials.json'
 });
-const multer = require('multer');
-const Photo = require('./photo-model');
-
-const CLOUD_BUCKET = 'staging.you-pin.appspot.com';
 
 const uploader = multer({
   inMemory: true,
@@ -97,6 +99,49 @@ function uploadToGCS(reqFile) {
   });
 }
 
+function uploadToGCSByUrl(url) {
+  return new Promise((resolve, reject) => {
+    request
+      .head(url)
+      .end(function (err, photoHeaderResp) {
+        if (err) {
+          return reject(err);
+        }
+
+        // Get metadata
+        const pathArray = urlparser.parse(url).pathname.split('/');
+        const filename = pathArray[pathArray.length - 1];
+        const mimetype = photoHeaderResp.header['content-type'];
+        const size = photoHeaderResp.header['content-length'];
+        const gcsname = Date.now() + '_' + filename;
+        const gcsfile = bucket.file(gcsname);
+        const filePublicUrl = getPublicUrl(gcsname);
+
+        console.log('Downloading photo...');
+        console.log('Name: ' + filename);
+        console.log('Mimetype: ' + mimetype);
+        console.log('Size: ' + size);
+        console.log('To: ' + filePublicUrl);
+
+        // Download and pipe it to GCS
+        var uploadPipe = request.get(url).pipe(gcsfile.createWriteStream());
+
+        uploadPipe.on('error', function(err) {
+          return reject(err);
+        });
+
+        uploadPipe.on('finish', function() {
+          const file = {
+            cloudStoragePublicUrl: filePublicUrl,
+            mimetype: mimetype,
+            size: size
+          };
+          return resolve(file);
+        });
+      });
+  });
+}
+
 function savePhotoMetadata(file) {
   return new Promise(function (resolve, reject) {
     const photo = new Photo({
@@ -171,49 +216,17 @@ class UploadPhotoFromUrlService {
     }
 
     const url = photoUrls[0];
-    // TODO(A): Change to promise and ES6 style
-    return new Promise((resolve, reject) => {
-      request
-        .head(url)
-        .end(function (err, photoHeaderResp) {
-          if (err) {
-            return Promise.reject(err);
-          }
-          const pathArray = urlparser.parse(url).pathname.split('/');
-          const filename = pathArray[pathArray.length - 1];
-          const mimetype = photoHeaderResp.header['content-type'];
-          const size = photoHeaderResp.header['content-length'];
-          const gcsname = Date.now() + '_' + filename;
-          const gcsfile = bucket.file(gcsname);
-          const filePublicUrl = getPublicUrl(gcsname);
-          console.log('Downloading photo...');
-          console.log('Name: ' + filename);
-          console.log('Mimetype: ' + mimetype);
-          console.log('Size: ' + size);
-          console.log('To: ' + filePublicUrl);
-          var uploadPipe = request.get(url).pipe(gcsfile.createWriteStream());
-          uploadPipe.on('error', function(err) {
-            return Promise.reject(err);
-          });
-          uploadPipe.on('finish', function() {
-            const file = {
-              cloudStoragePublicUrl: filePublicUrl,
-              mimetype: mimetype,
-              size: size
-            };
-            return savePhotoMetadata(file)
-              .then((photoDoc) => {
-                return respondWithPhotoMetadata(photoDoc);
-              })
-              .then((response) => {
-                return resolve(response);
-              })
-              .catch((error) => {
-                return Promise.reject(error);
-              });
-          });
-        });
-    });
+
+    return uploadToGCSByUrl(url)
+      .then((file) => {
+        return savePhotoMetadata(file)
+      })
+      .then((photoDoc) => {
+        return respondWithPhotoMetadata(photoDoc);
+      })
+      .catch((error) => {
+        return Promise.reject(error);
+      });
   }
 }
 
