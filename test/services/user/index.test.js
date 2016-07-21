@@ -1,10 +1,11 @@
 const assert = require('chai').assert;
 const app = require('../../../src/app');
-const mongoose = require('mongoose');
-const UserModel = require('../../../src/services/user/user-model.js');
-const request = require('supertest-as-promised');
-// bcrypt used by feathers-authentication
 const crypto = require('bcryptjs');
+const mongoose = require('mongoose');
+const request = require('supertest-as-promised');
+const Promise = require('bluebird');
+// bcrypt used by feathers-authentication
+const UserModel = require('../../../src/services/user/user-model.js');
 
 // Makes sure that this is actually TEST environment
 console.log('NODE_ENV:', process.env.NODE_ENV);
@@ -22,8 +23,9 @@ if (mongoose.connection.db.s.databaseName !== 'youpin-test') {
 function hashing(item) {
   return new Promise((resolve, reject) => {
     crypto.hash(item.password, 10, (err, hash) => {
-      if (err) reject(err);
-      else {
+      if (err) {
+        reject(err);
+      } else {
         item.password = hash;
         resolve(item);
       }
@@ -59,7 +61,7 @@ describe('user service', () => {
   // Clears collection after finishing all tests.
   after((done) => {
     server.close((err) => {
-      if (err) throw err;
+      if (err) { throw err; }
       UserModel.remove({}, done);
     });
   });
