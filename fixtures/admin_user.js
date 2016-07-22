@@ -1,4 +1,7 @@
+const ObjectId = require('mongodb').BSONNative.ObjectID;
+
 exports.User = [{
+  _id: new ObjectId(),
   name: 'YouPin Admin',
   phone: '081-985-2586',
   fb_id: 'youpin_fb_id',
