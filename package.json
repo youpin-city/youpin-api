@@ -16,8 +16,7 @@
     "node": ">= 0.12.0"
   },
   "scripts": {
-    "test": "npm run jshint && npm run mocha",
-    "jshint": "jshint src/. test/. --config",
+    "test": "npm run mocha",
     "start": "node src/",
     "mocha": "mocha test/ --recursive"
   },
