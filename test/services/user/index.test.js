@@ -1,11 +1,15 @@
-const assert = require('chai').assert;
 const app = require('../../../src/app');
 const crypto = require('bcryptjs');
+const chai = require('chai');
+const dirtyChai = require('dirty-chai');
 const mongoose = require('mongoose');
 const request = require('supertest-as-promised');
 const Promise = require('bluebird');
 // bcrypt used by feathers-authentication
 const UserModel = require('../../../src/services/user/user-model.js');
+
+chai.use(dirtyChai);
+const expect = chai.expect;
 
 // Makes sure that this is actually TEST environment
 console.log('NODE_ENV:', process.env.NODE_ENV);
@@ -23,11 +27,12 @@ if (mongoose.connection.db.s.databaseName !== 'youpin-test') {
 function hashing(item) {
   return new Promise((resolve, reject) => {
     crypto.hash(item.password, 10, (err, hash) => {
+      const hashedItem = item;
       if (err) {
         reject(err);
       } else {
-        item.password = hash;
-        resolve(item);
+        hashedItem.password = hash;
+        resolve(hashedItem);
       }
     });
   });
@@ -68,12 +73,12 @@ describe('user service', () => {
 
   // Registers user service.
   it('registers the users service', () => {
-    assert.ok(app.service('users'));
+    expect(app.service('users')).to.be.ok();
   });
 
   describe('GET', () => {
-    it('return list of users', () => {
-      return request(app)
+    it('return list of only one user', () =>
+      request(app)
         .post('/auth/local')
         .send({
           email: 'bot@youpin.city',
@@ -86,16 +91,22 @@ describe('user service', () => {
           }
           return request(app)
             .get('/users')
-            .set('Authorization', 'Bearer ' + token)
+            .set('Authorization', `Bearer ${token}`)
             .expect(200)
             .then((userResp) => {
-              const userData = userResp.body.data[0];
-              const total = userResp.body.total;
-              assert.equal(total, 1, 'total user is 1');
-              assert(userData.name, 'YouPin Bot', 'User\'s name is "YouPin Bot"');
-              assert(userData.email, 'bot@youpin.city', 'User\'s email is "bot@youpin.city"');
+              const body = userResp.body;
+              expect(body).to.have.all.keys(['total', 'limit', 'skip', 'data']);
+              expect(body.total).to.equal(1);
+              const userDataList = userResp.body.data;
+              expect(userDataList).to.have.lengthOf(1);
+              expect(userDataList[0]).to.contain.all.keys(
+                ['_id', 'name', 'phone', 'email', 'role', 'owner_app_id',
+                'customer_app_id', 'updated_time', 'created_time']);
+              expect(userDataList[0].email).to.equal('bot@youpin.city');
+              // also check response does not contain password
+              expect(userDataList).to.not.have.keys('password');
             });
-        });
-    });
+        })
+    );
   });
 });
