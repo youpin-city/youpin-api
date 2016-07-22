@@ -1,10 +1,9 @@
 const app = require('../../../src/app');
-const crypto = require('bcryptjs');
 const chai = require('chai');
 const dirtyChai = require('dirty-chai');
+const fixtures = require('pow-mongoose-fixtures');
 const mongoose = require('mongoose');
 const request = require('supertest-as-promised');
-const Promise = require('bluebird');
 // bcrypt used by feathers-authentication
 const UserModel = require('../../../src/services/user/user-model.js');
 
@@ -24,44 +23,14 @@ if (mongoose.connection.db.s.databaseName !== 'youpin-test') {
   process.exit(1);
 }
 
-function hashing(item) {
-  return new Promise((resolve, reject) => {
-    crypto.hash(item.password, 10, (err, hash) => {
-      const hashedItem = item;
-      if (err) {
-        reject(err);
-      } else {
-        hashedItem.password = hash;
-        resolve(hashedItem);
-      }
-    });
-  });
-}
-
 describe('user service', () => {
   let server;
   before((done) => {
-    const newUser = new UserModel({
-      name: 'YouPin Bot',
-      phone: '081-985-2586',
-      fb_id: 'youpin_bot',
-      password: 'youpin_bot',
-      email: 'bot@youpin.city',
-      role: 'admin',
-    });
-    // 1. Clear User collection
-    // 2. Create 1st user and do hashing
-    // 3. Start server
-    UserModel.remove({})
-      .then(() => hashing(newUser))
-      .then((hashedItem) => hashedItem.save())
-      .then(() => {
-        server = app.listen(9100);
-        server.once('listening', () => done());
-      })
-      .catch((err) => {
-        throw err;
-      });
+    server = app.listen(9100);
+    server.once('listening', () => done());
+  });
+  beforeEach((done) => {
+    UserModel.remove({}, done);
   });
   // Clears collection after finishing all tests.
   after((done) => {
@@ -77,12 +46,17 @@ describe('user service', () => {
   });
 
   describe('GET', () => {
-    it('return list of only one user', () =>
+    beforeEach((done) => {
+      // Create admin user
+      fixtures.load('../../../fixtures/admin_user.js', mongoose, done);
+    });
+
+    it('return user array conatining only admin user', () =>
       request(app)
         .post('/auth/local')
         .send({
-          email: 'bot@youpin.city',
-          password: 'youpin_bot',
+          email: 'contact@youpin.city',
+          password: 'youpin_admin',
         })
         .then((tokenResp) => {
           const token = tokenResp.body.token;
@@ -98,11 +72,12 @@ describe('user service', () => {
               expect(body).to.have.all.keys(['total', 'limit', 'skip', 'data']);
               expect(body.total).to.equal(1);
               const userDataList = userResp.body.data;
+              expect(userDataList).to.be.a('array');
               expect(userDataList).to.have.lengthOf(1);
               expect(userDataList[0]).to.contain.all.keys(
                 ['_id', 'name', 'phone', 'email', 'role', 'owner_app_id',
                 'customer_app_id', 'updated_time', 'created_time']);
-              expect(userDataList[0].email).to.equal('bot@youpin.city');
+              expect(userDataList[0].email).to.equal('contact@youpin.city');
               // also check response does not contain password
               expect(userDataList).to.not.have.keys('password');
             });
