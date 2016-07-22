@@ -1,7 +1,7 @@
-const ObjectId = require('mongodb').BSONNative.ObjectID;
+const ObjectId = require('mongoose').Types.ObjectId;
 
 exports.User = [{
-  _id: new ObjectId(),
+  _id: new ObjectId,
   name: 'YouPin Admin',
   phone: '081-985-2586',
   fb_id: 'youpin_fb_id',
