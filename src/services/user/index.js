@@ -1,22 +1,17 @@
-'use strict';
-
 const user = require('./user-model');
 const hooks = require('./hooks');
 
-const Promise = require('bluebird');
-const errors = require('feathers-errors');
-const stormpath = require('express-stormpath');
 const service = require('feathers-mongoose');
 
-module.exports = function(){
+module.exports = function() {
   const app = this;
 
-  let options = {
+  const options = {
     Model: user,
     paginate: {
       default: 5,
-      max: 25
-    }
+      max: 25,
+    },
   };
 
   // Initialize our service with any options it requires
