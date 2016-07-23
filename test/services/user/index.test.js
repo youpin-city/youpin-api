@@ -1,4 +1,5 @@
 const app = require('../../../src/app');
+const casual = require('casual');
 const chai = require('chai');
 const dirtyChai = require('dirty-chai');
 const fixtures = require('pow-mongoose-fixtures');
@@ -121,5 +122,17 @@ describe('user service', () => {
             });
         })
     );
+  });
+
+  describe('POST /users', () => {
+    it('return errors when posting an incomplete required field', () => {
+      const newUser = {
+        name: casual.name,
+      };
+      return request(app)
+        .post('/users')
+        .send(newUser)
+        .expect(400);
+    });
   });
 });
