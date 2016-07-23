@@ -1,4 +1,5 @@
 const app = require('../../../src/app');
+const casual = require('casual');
 const chai = require('chai');
 const dirtyChai = require('dirty-chai');
 const fixtures = require('pow-mongoose-fixtures');
@@ -121,5 +122,38 @@ describe('user service', () => {
             });
         })
     );
+  });
+
+  describe('POST /users', () => {
+    it('return errors when posting an incomplete required field', () => {
+      const newUser = {
+        name: casual.name,
+      };
+      return request(app)
+        .post('/users')
+        .send(newUser)
+        .expect(400);
+    });
+    it('return 201 when posting a complete required field' +
+      ' and "pasword" should not be returned', () => {
+      const newUser = {
+        name: casual.name,
+        email: casual.email,
+        password: casual.password,
+        role: 'user',
+      };
+      return request(app)
+        .post('/users')
+        .send(newUser)
+        .expect(201)
+        .expect('Content-Type', /json/)
+        .then((res) => {
+          const createdUser = res.body;
+          expect(createdUser).to.contain.keys(
+            ['_id', 'email', 'name', 'role', 'created_time',
+            'updated_time', 'owner_app_id', 'customer_app_id']);
+          expect(createdUser).to.not.contain.keys('password');
+        });
+    });
   });
 });
