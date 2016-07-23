@@ -7,6 +7,9 @@ const request = require('supertest-as-promised');
 // bcrypt used by feathers-authentication
 const UserModel = require('../../../src/services/user/user-model.js');
 
+// load fixtures
+const adminUser = require('../../../fixtures/admin_user.js');
+
 chai.use(dirtyChai);
 const expect = chai.expect;
 
@@ -45,10 +48,10 @@ describe('user service', () => {
     expect(app.service('users')).to.be.ok();
   });
 
-  describe('GET', () => {
+  describe('GET /users', () => {
     beforeEach((done) => {
       // Create admin user
-      fixtures.load('../../../fixtures/admin_user.js', mongoose, done);
+      fixtures.load({ User: [adminUser] }, mongoose, done);
     });
 
     it('return user array conatining only admin user', () =>
@@ -80,6 +83,41 @@ describe('user service', () => {
               expect(userDataList[0].email).to.equal('contact@youpin.city');
               // also check response does not contain password
               expect(userDataList).to.not.have.keys('password');
+            });
+        })
+    );
+  });
+
+  describe('GET /users/:id', () => {
+    beforeEach((done) => {
+      // Create admin user
+      fixtures.load({ User: [adminUser] }, mongoose, done);
+    });
+    it('return an admin user object', () =>
+      request(app)
+        .post('/auth/local')
+        .send({
+          email: 'contact@youpin.city',
+          password: 'youpin_admin',
+        })
+        .then((tokenResp) => {
+          const token = tokenResp.body.token;
+          if (!token) {
+            throw new Error('No token returns');
+          }
+          return request(app)
+            .get(`/users/${adminUser._id}`)
+            .set('Authorization', `Bearer ${token}`)
+            .expect(200)
+            .then((userResp) => {
+              const body = userResp.body;
+              expect(body).to.not.be.a('array');
+              expect(body).to.contain.all.keys(
+                ['_id', 'name', 'phone', 'email', 'role', 'owner_app_id',
+                'customer_app_id', 'updated_time', 'created_time']);
+              expect(body.email).to.equal('contact@youpin.city');
+              // also check response does not contain password
+              expect(body).to.not.have.keys('password');
             });
         })
     );
