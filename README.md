@@ -1,6 +1,6 @@
-# youpin-api
+# YouPin API
 
-> YouPin API
+[![Build Status](https://travis-ci.org/youpin-city/youpin-api.svg?branch=master)](https://travis-ci.org/youpin-city/youpin-api)
 
 All API access is over HTTP (for now), and accessed from the `http://api.youpin.city`. All data is sent and received as JSON.
 
