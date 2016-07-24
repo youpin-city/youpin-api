@@ -9,7 +9,7 @@ const request = require('supertest-as-promised');
 const UserModel = require('../../../src/services/user/user-model.js');
 
 // load fixtures
-const adminUser = require('../../../fixtures/admin_user.js');
+const adminUser = require('../../fixtures/admin_user.js');
 
 chai.use(dirtyChai);
 const expect = chai.expect;
