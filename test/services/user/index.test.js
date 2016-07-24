@@ -1,7 +1,6 @@
 const app = require('../../../src/app');
 const casual = require('casual');
-const chai = require('chai');
-const dirtyChai = require('dirty-chai');
+const expect = require('../../test_helper').expect;
 const fixtures = require('pow-mongoose-fixtures');
 const mongoose = require('mongoose');
 const request = require('supertest-as-promised');
@@ -10,9 +9,6 @@ const UserModel = require('../../../src/services/user/user-model.js');
 
 // load fixtures
 const adminUser = require('../../fixtures/admin_user.js');
-
-chai.use(dirtyChai);
-const expect = chai.expect;
 
 // Makes sure that this is actually TEST environment
 console.log('NODE_ENV:', process.env.NODE_ENV);
