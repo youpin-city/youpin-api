@@ -12,7 +12,7 @@ const mongoose = require('mongoose');
 function restrictToOwnerOfPin() {
   return function(hook) {
     const pinOwner = hook.data.owner;
-    const tokenOwner = hook.params.user._id;
+    const tokenOwner = hook.params.user._id.toString();
     if (!pinOwner) {
       throw new Error('owner field should be provided');
     }
