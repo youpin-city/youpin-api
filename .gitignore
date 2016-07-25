@@ -2,6 +2,9 @@
 youpin_credentials.json
 youpin_gcs_credentials.json
 deploy_dev.sh
+# Config containing credentials
+config/development.json
+config/production.json
 
 # Temp files
 *.swp
