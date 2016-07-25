@@ -5,7 +5,7 @@
   "public": "../public/",
   "auth": {
     "token": {
-      "secret": "f+7jgJJG7q6Uyx1rrXG+nWqG6f3jn7UcY5h1DYVY4Te5WH9J+16mR58GfdacxpQQy9l96ygCj5to23Fz7bcktQ=="
+      "secret": "SECRET_AUTH_TOKEN"
     },
     "facebook": {
       "clientID": "your facebook client id",
