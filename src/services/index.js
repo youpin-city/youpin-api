@@ -1,12 +1,16 @@
 'use strict';
-const app3rd = require('./app3rd');
-const searchnearby = require('./searchnearby');
-const photo = require('./photo');
-const pin = require('./pin');
-const authentication = require('./authentication');
-const user = require('./user');
+
 const mongoose = require('mongoose');
 const Promise = require('bluebird');
+
+// Services
+const authentication = require('./authentication');
+const user = require('./user');
+const pin = require('./pin');
+const photo = require('./photo');
+const video = require('./video');
+const searchnearby = require('./searchnearby');
+const app3rd = require('./app3rd');
 
 module.exports = function() {
   const app = this;
@@ -18,6 +22,7 @@ module.exports = function() {
   app.configure(user);
   app.configure(pin);
   app.configure(photo);
+  app.configure(video);
   app.configure(searchnearby);
   app.configure(app3rd);
 };
