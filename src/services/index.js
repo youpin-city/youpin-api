@@ -4,13 +4,13 @@ const mongoose = require('mongoose');
 const Promise = require('bluebird');
 
 // Services
-const authentication = require('./authentication');
-const user = require('./user');
-const pin = require('./pin');
-const photo = require('./photo');
-const video = require('./video');
-const searchnearby = require('./searchnearby');
 const app3rd = require('./app3rd');
+const authentication = require('./authentication');
+const photo = require('./photo');
+const pin = require('./pin');
+const searchnearby = require('./searchnearby');
+const user = require('./user');
+const video = require('./video');
 
 module.exports = function() {
   const app = this;
@@ -18,11 +18,11 @@ module.exports = function() {
   mongoose.connect(app.get('mongodb'));
   mongoose.Promise = Promise;
 
-  app.configure(authentication);
-  app.configure(user);
-  app.configure(pin);
-  app.configure(photo);
-  app.configure(video);
-  app.configure(searchnearby);
   app.configure(app3rd);
+  app.configure(authentication);
+  app.configure(photo);
+  app.configure(pin);
+  app.configure(searchnearby);
+  app.configure(user);
+  app.configure(video);
 };
