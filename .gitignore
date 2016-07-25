@@ -4,6 +4,9 @@ youpin_gcs_credentials.json
 stormpath_credentials.json
 stormpath.properties
 deploy_dev.sh
+# Config containing credentials
+config/development.json
+config/production.json
 
 # Temp files
 *.swp
