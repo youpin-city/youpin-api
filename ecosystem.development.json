@@ -1,7 +1,7 @@
 {
   "apps" : [
     {
-      "name"      : "youpin-api",
+      "name"      : "youpin-api-development",
       "script"    : "src/",
       "no-daemon" : true,
       "log_date_format" : "YYYY-MM-DD HH:mm",
@@ -21,8 +21,8 @@
       "host" : ["128.199.87.142"],
       "ref"  : "origin/master",
       "repo" : "git@github.com:youpin-city/youpin-api.git",
-      "path" : "/opt/api.youpin.city",
-      "post-deploy" : "npm install --production && pm2 startOrRestart ecosystem.json --env development",
+      "path" : "/opt/youpin-api.development",
+      "post-deploy" : "npm install --production && pm2 startOrRestart ecosystem.development.json --env development",
       "pre-deploy-local" : "echo '[development] deploy completed.'",
       "env"  : {
         NODE_ENV: "development"
