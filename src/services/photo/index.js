@@ -7,6 +7,7 @@ const gcloud = require('gcloud');
 const fs = require('fs');
 const urlparser = require('url');
 const multer = require('multer');
+const hooks = require('./hooks');
 const Photo = require('./photo-model');
 
 const CLOUD_BUCKET = 'staging.you-pin.appspot.com';
@@ -312,6 +313,9 @@ module.exports = function(){
    *    }
    */
   app.use('/photos', prepareMultipart, attachFileToFeathers, new PhotosService());
+  const photosService = app.service('/photos');
+  photosService.before(hooks.before);
+  photosService.after(hooks.after);
 
   /**
    * @api {post} /photos/upload_from_url Upload from URL
