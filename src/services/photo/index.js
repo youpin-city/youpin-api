@@ -272,8 +272,8 @@ module.exports = function(){
    * @apiSuccess (Success 200) {String} url Photo URL.
    * @apiSuccess (Success 200) {String} mimetype MIME type.
    * @apiSuccess (Success 200) {Number} size File size (bytes).
-
-   * @apiSuccessExample Success-Response:
+   *
+   * @apiSuccessExample Success Response:
    *    HTTP/1.1 201 Created
    *    {
    *      "_id": "578fafba3855de9d00dc3c61",
@@ -281,6 +281,18 @@ module.exports = function(){
    *      "mimetype": "image/png",
    *      "size": 138890
    *    }
+   *
+   * @apiError NotFound   The <code>id</code> of the Photo was not found.
+   *
+   * @apiErrorExample Error Response:
+   *     HTTP/1.1 404 Not Found
+   *     {
+   *       "name":"NotFound",
+   *       "message":"No record found for id '1'",
+   *       "code":404,
+   *       "className":"not-found",
+   *       "errors":{}
+   *     }
    */
 
   /**
@@ -303,7 +315,7 @@ module.exports = function(){
    * @apiSuccess (Created 201) {String} mimetype MIME type.
    * @apiSuccess (Created 201) {Number} size File size (bytes).
 
-   * @apiSuccessExample Success-Response:
+   * @apiSuccessExample Success Response:
    *    HTTP/1.1 201 Created
    *    {
    *      "id": "578fafba3855de9d00dc3c61",
@@ -311,6 +323,19 @@ module.exports = function(){
    *      "mimetype": "image/png",
    *      "size": 138890
    *    }
+   *
+   * @apiError GeneralError   No file provided.
+   *
+   * @apiErrorExample Error Response:
+   *     HTTP/1.1 500 Internal Server Error
+   *     {
+   *       "name":"GeneralError",
+   *       "message":"No file provided",
+   *       "code":500,
+   *       "className":"general-error",
+   *       "data": {},
+   *       "errors":{}
+   *     }
    */
   app.use('/photos', prepareMultipart, attachFileToFeathers, new PhotosService());
   const photosService = app.service('/photos');
@@ -335,8 +360,8 @@ module.exports = function(){
    * @apiSuccess (Created 201) {String} url Photo URL.
    * @apiSuccess (Created 201) {String} mimetype MIME type.
    * @apiSuccess (Created 201) {Number} size File size (bytes).
-
-   * @apiSuccessExample Success-Response:
+   *
+   * @apiSuccessExample Success Response:
    *    HTTP/1.1 201 Created
    *    {
    *      "id": "578fafba3855de9d00dc3c61",
@@ -344,6 +369,19 @@ module.exports = function(){
    *      "mimetype": "image/png",
    *      "size": 138890
    *    }
+   *
+   * @apiError BadRequest   No URLs provided.
+   * @apiError NotFound   File not found on given URL.
+   *
+   * @apiErrorExample Error Response:
+   *     HTTP/1.1 400 Bad Request
+   *     {
+   *       "name":"BadRequest",
+   *       "message":"No URLs provided",
+   *       "code":400,
+   *       "className":"bad-request",
+   *       "errors":{}
+   *     }
    */
   app.use('/photos/upload_from_url', new UploadPhotoFromUrlService());
 
@@ -368,7 +406,7 @@ module.exports = function(){
    * @apiSuccess (Created 201) {String} photos.mimetype MIME type.
    * @apiSuccess (Created 201) {Number} photos.size File size (bytes).
 
-   * @apiSuccessExample Success-Response:
+   * @apiSuccessExample Success Response:
    *    HTTP/1.1 201 Created
    *    {
    *      "urls": [
@@ -386,7 +424,19 @@ module.exports = function(){
    *        }
    *      ]
    *    }
+   *
+   * @apiError BadRequest   No URLs provided.
+   * @apiError GeneralError Provided URLs are not reachable.
+   *
+   * @apiErrorExample Error Response:
+   *     HTTP/1.1 400 Bad Request
+   *     {
+   *       "name":"BadRequest",
+   *       "message":"No URLs provided",
+   *       "code":400,
+   *       "className":"bad-request",
+   *       "errors":{}
+   *     }
    */
-  // TODO(A): support downloading multiple urls
   app.use('/photos/bulk_upload_from_urls', new BulkUploadPhotosFromUrlsService());
 };
