@@ -10,6 +10,7 @@ const rest = require('feathers-rest');
 const bodyParser = require('body-parser');
 const socketio = require('feathers-socketio');
 const middleware = require('./middleware');
+const session = require('express-session');
 
 const app = feathers();
 
@@ -29,6 +30,11 @@ app.use(compress())
   // set bodyParser to not strict so that API can recieve bare url string
   .use(bodyParser.json({ strict: false }))
   .use(bodyParser.urlencoded({ extended: true }))
+  .use(session({
+    secret: 'sssshhh',
+    resave: false,
+    saveUninitialized: true,
+  }))
   .configure(hooks())
   .configure(rest())
   .configure(socketio())
