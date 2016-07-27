@@ -255,6 +255,33 @@ module.exports = function(){
 
   //TODO(A): Need id and need to support multiple photos uplaod
   //TODO(A): Also need to support photo url and download it instead of 3rd party app
+
+  /**
+   * @api {post} /photos Upload
+   * @apiDescription Upload a photo from a file.
+   * @apiVersion 0.1.0
+   * @apiName PostPhotos
+   * @apiGroup Photo
+   *
+   * @apiHeader Content-length File size.
+   * @apiHeader Content-type="multipart/form-data; boundary=----WebKitFormBoundarygGYlBDNsxqSuYl2b"
+   *
+   * @apiParam {File} image File content.
+   *
+   * @apiSuccess (Created 201) {String} id Photo ID.
+   * @apiSuccess (Created 201) {String} url Photo URL.
+   * @apiSuccess (Created 201) {String} mimetype MIME type.
+   * @apiSuccess (Created 201) {Number} size File size (bytes).
+
+   * @apiSuccessExample Success-Response:
+   *    HTTP/1.1 201 Created
+   *    {
+   *      "id": "578fafba3855de9d00dc3c61",
+   *      "url": "https://storage.googleapis.com/you-pin.appspot.com/1469034415861_hello.png",
+   *      "mimetype": "image/png",
+   *      "size": 138890
+   *    }
+   */
   app.use('/photos', prepareMultipart, attachFileToFeathers, new PhotosService());
 
   /**
@@ -262,7 +289,7 @@ module.exports = function(){
    * @apiDescription Download a photo from a provided URL and upload it for you.
    * @apiVersion 0.1.0
    * @apiName PostPhotosUploadFromUrl
-   * @apiGroup Photos
+   * @apiGroup Photo
    *
    * @apiParam {String} url Photo URL to be uploaded
    *
@@ -287,7 +314,7 @@ module.exports = function(){
    * @apiDescription Download multple photos from provided URLs and upload them for you.
    * @apiVersion 0.1.0
    * @apiName PostPhotosBulkUploadFromUrls
-   * @apiGroup Photos
+   * @apiGroup Photo
    *
    * @apiParam {String[]} urls Array of photo URLs to be uploaded
    *
