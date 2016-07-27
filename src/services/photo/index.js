@@ -255,7 +255,29 @@ module.exports = function(){
 
   //TODO(A): Need id and need to support multiple photos uplaod
   //TODO(A): Also need to support photo url and download it instead of 3rd party app
+  /**
+   * @api {get} /photos/:id Get info
+   * @apiDescription Get a photo info from a photo id.
+   * @apiVersion 0.1.0
+   * @apiName GetPhotos
+   * @apiGroup Photo
+   *
+   * @apiParam {Number} id unique id.
+   *
+   * @apiSuccess (Success 200) {String} _id Photo ID.
+   * @apiSuccess (Success 200) {String} url Photo URL.
+   * @apiSuccess (Success 200) {String} mimetype MIME type.
+   * @apiSuccess (Success 200) {Number} size File size (bytes).
 
+   * @apiSuccessExample Success-Response:
+   *    HTTP/1.1 201 Created
+   *    {
+   *      "_id": "578fafba3855de9d00dc3c61",
+   *      "url": "https://storage.googleapis.com/you-pin.appspot.com/1469034415861_hello.png",
+   *      "mimetype": "image/png",
+   *      "size": 138890
+   *    }
+   */
   /**
    * @api {post} /photos Upload
    * @apiDescription Upload a photo from a file.
@@ -310,7 +332,7 @@ module.exports = function(){
   app.use('/photos/upload_from_url', new UploadPhotoFromUrlService());
 
   /**
-   * @api {post} /photos/bulk_upload_from_urls Bulk upload from multiple URLs
+   * @api {post} /photos/bulk_upload_from_urls Upload from multiple URLs
    * @apiDescription Download multple photos from provided URLs and upload them for you.
    * @apiVersion 0.1.0
    * @apiName PostPhotosBulkUploadFromUrls
