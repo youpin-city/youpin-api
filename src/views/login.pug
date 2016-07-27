@@ -1,0 +1,18 @@
+extends layout
+
+block content
+  .container
+    h1 Login Page
+    p= info
+    p= error
+    br
+    form(role='form', action="/login",method="post", style='max-width: 300px;')
+      .form-group
+        input.form-control(type='text', name="email", placeholder='Enter Email')
+      .form-group
+        input.form-control(type='password', name="password", placeholder='Password')
+      input.form-control(type='hidden', name="redirect_uri", value=redirect_uri)
+      button.form-control.btn.btn-success(type='submit') Log In
+      p.text-center OR
+      a(href='/signup?redirect_uri=' + redirect_uri)
+        button.btn.btn-primary.btn-block(type="button") Sign Up
