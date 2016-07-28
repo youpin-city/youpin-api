@@ -90,8 +90,9 @@ describe('user service', () => {
       // Create admin user
       fixtures.load({ User: [adminUser] }, mongoose, done);
     });
-    it('return an admin user object', () =>
-      request(app)
+
+    it('return 404 NotFound when user does not exist', () => {
+      return request(app)
         .post('/auth/local')
         .send({
           email: 'contact@youpin.city',
@@ -99,9 +100,39 @@ describe('user service', () => {
         })
         .then((tokenResp) => {
           const token = tokenResp.body.token;
+
           if (!token) {
             throw new Error('No token returns');
           }
+
+          const notExistingUserId = '111';
+          return request(app)
+            .get(`/users/${notExistingUserId}`)
+            .set('Authorization', `Bearer ${token}`)
+            .expect(404)
+            .then((res) => {
+              const error = res.body;
+              expect(error.code).to.equal(404);
+              expect(error.name).to.equal('NotFound');
+              expect(error.message).to.equal(`No record found for id '${notExistingUserId}'`);
+            });
+        });
+    });
+
+    it('return an admin user object', () => {
+      return request(app)
+        .post('/auth/local')
+        .send({
+          email: 'contact@youpin.city',
+          password: 'youpin_admin',
+        })
+        .then((tokenResp) => {
+          const token = tokenResp.body.token;
+
+          if (!token) {
+            throw new Error('No token returns');
+          }
+          
           return request(app)
             .get(`/users/${adminUser._id}`)
             .set('Authorization', `Bearer ${token}`)
@@ -117,7 +148,7 @@ describe('user service', () => {
               expect(body).to.not.have.keys('password');
             });
         })
-    );
+    });
   });
 
   describe('POST /users', () => {
