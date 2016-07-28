@@ -262,6 +262,9 @@ module.exports = function(){
    * @apiName GetPhotos
    * @apiGroup Photo
    *
+   * @apiExample Example usage:
+   * curl -i http://api.youpin.city/photos/5798bf8e24a5998715bde505
+   *
    * @apiParam {Number} id unique id.
    *
    * @apiSuccess (Success 200) {String} _id Photo ID.
@@ -278,12 +281,16 @@ module.exports = function(){
    *      "size": 138890
    *    }
    */
+
   /**
    * @api {post} /photos Upload
    * @apiDescription Upload a photo from a file.
    * @apiVersion 0.1.0
    * @apiName PostPhotos
    * @apiGroup Photo
+   *
+   * @apiExample Example usage:
+   * curl -i -X POST -F "image=@/Users/youpin/Desktop/hello.png" http://api.youpin.city/photos
    *
    * @apiHeader Content-length File size.
    * @apiHeader Content-type="multipart/form-data; boundary=----WebKitFormBoundarygGYlBDNsxqSuYl2b"
@@ -313,6 +320,11 @@ module.exports = function(){
    * @apiName PostPhotosUploadFromUrl
    * @apiGroup Photo
    *
+   * @apiExample Example usage:
+   * curl -i -X POST -H 'Content-type: application/json' -d '{"url": "https://pixabay.com/static/uploads/photo/2016/02/04/06/42/image-1178693_640.jpg"}' http://api.youpin.city/photos/upload_from_url
+   *
+   * @apiHeader Content-type=application/json
+   *
    * @apiParam {String} url Photo URL to be uploaded
    *
    * @apiSuccess (Created 201) {String} id Photo ID.
@@ -332,13 +344,19 @@ module.exports = function(){
   app.use('/photos/upload_from_url', new UploadPhotoFromUrlService());
 
   /**
-   * @api {post} /photos/bulk_upload_from_urls Upload from multiple URLs
+   * @api {post} /photos/bulk_upload_from_urls Bulk upload from multiple URLs
    * @apiDescription Download multple photos from provided URLs and upload them for you.
    * @apiVersion 0.1.0
    * @apiName PostPhotosBulkUploadFromUrls
    * @apiGroup Photo
+  *
+   * @apiExample Example usage:
+   * curl -i -X POST -H 'Content-type: application/json' -d '{"urls": ["https://pixabay.com/static/uploads/photo/2016/02/04/06/42/image-1178693_640.jpg", "https://pixabay.com/static/uploads/photo/2015/11/03/13/30/bangkok-1020850_640.jpg"]}' http://api.youpin.city/photos/bulk_upload_from_urls
+   *
    *
    * @apiParam {String[]} urls Array of photo URLs to be uploaded
+   *
+   * @apiHeader Content-type=application/json
    *
    * @apiSuccess (Created 201) {Object[]} photos Array of photo metadata
    * @apiSuccess (Created 201) {String} photos.id Photo ID.
