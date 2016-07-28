@@ -254,8 +254,6 @@ function attachFileToFeathers(req, res, next) {
 module.exports = function(){
   const app = this;
 
-  //TODO(A): Need id and need to support multiple photos uplaod
-  //TODO(A): Also need to support photo url and download it instead of 3rd party app
   /**
    * @api {get} /photos/:id Get info
    * @apiDescription Get a photo info from a photo id.
