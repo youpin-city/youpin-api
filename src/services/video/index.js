@@ -6,6 +6,7 @@ const gcloud = require('gcloud');
 const Promise = require('bluebird');
 const request = require('superagent');
 const urlparser = require('url');
+const hooks = require('./hooks');
 const Video = require('./video-model');
 
 // Middleware for handling file upload
@@ -131,4 +132,7 @@ module.exports = function() {
   const app = this;
 
   app.use('/videos', prepareMultipart, attachFileToFeathers, new VideosService());
+  const videosService = app.service('/videos');
+  videosService.before(hooks.before);
+  videosService.after(hooks.after);
 };
