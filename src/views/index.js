@@ -38,7 +38,10 @@ module.exports = function () {
       .then(result => {
         console.log('Successfully logging in:', result);
         req.session.user = result.data; // eslint-disable-line no-param-reassign
-        res.redirect(`${input.redirect_uri}?access_token=${result.token}`);
+        res.redirect(
+          `${input.redirect_uri}?` +
+          `_id=${result.data._id}` + // eslint-disable-line no-underscore-dangle
+          `&access_token=${result.token}`);
       })
       .catch(err => {
         // redirect to login with flash message
