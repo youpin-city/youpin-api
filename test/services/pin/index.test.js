@@ -1,7 +1,7 @@
 const app = require('../../../src/app');
 const casual = require('casual');
 const expect = require('../../test_helper').expect;
-const fixtures = require('pow-mongoose-fixtures');
+const loadFixture = require('../../test_helper').loadFixture;
 const mongoose = require('mongoose');
 const request = require('supertest-as-promised');
 
@@ -64,7 +64,7 @@ describe('pin service', () => {
   describe('POST', () => {
     beforeEach((done) => {
       // Create admin user
-      fixtures.load({ User: [adminUser] }, mongoose, done);
+      loadFixture(UserModel, adminUser, done);
     });
 
     it('return 401 (unauthorized) if user is not authenticated', () => {
