@@ -264,7 +264,7 @@ module.exports = function(){
    * @apiGroup Photo
    *
    * @apiExample Example usage:
-   * curl -i http://api.youpin.city/photos/5798bf8e24a5998715bde505
+   * curl -i https://api.youpin.city/photos/5798bf8e24a5998715bde505
    *
    * @apiParam {Number} id unique id.
    *
@@ -303,7 +303,7 @@ module.exports = function(){
    * @apiGroup Photo
    *
    * @apiExample Example usage:
-   * curl -i -X POST -F "image=@/Users/youpin/Desktop/hello.png" http://api.youpin.city/photos
+   * curl -i -X POST -F "image=@/Users/youpin/Desktop/hello.png" https://api.youpin.city/photos
    *
    * @apiHeader Content-length File size.
    * @apiHeader Content-type="multipart/form-data; boundary=----WebKitFormBoundarygGYlBDNsxqSuYl2b"
@@ -350,7 +350,7 @@ module.exports = function(){
    * @apiGroup Photo
    *
    * @apiExample Example usage:
-   * curl -i -X POST -H 'Content-type: application/json' -d '{"url": "https://pixabay.com/static/uploads/photo/2016/02/04/06/42/image-1178693_640.jpg"}' http://api.youpin.city/photos/upload_from_url
+   * curl -i -X POST -H 'Content-type: application/json' -d '{"url": "http://image.flaticon.com/icons/png/128/62/62516.png"}' https://api.youpin.city/photos/upload_from_url
    *
    * @apiHeader Content-type=application/json
    *
@@ -393,7 +393,7 @@ module.exports = function(){
    * @apiGroup Photo
   *
    * @apiExample Example usage:
-   * curl -i -X POST -H 'Content-type: application/json' -d '{"urls": ["https://pixabay.com/static/uploads/photo/2016/02/04/06/42/image-1178693_640.jpg", "https://pixabay.com/static/uploads/photo/2015/11/03/13/30/bangkok-1020850_640.jpg"]}' http://api.youpin.city/photos/bulk_upload_from_urls
+   * curl -i -X POST -H 'Content-type: application/json' -d '{"urls": ["https://youpin.city/public/image/logo-l.png", "https://youpin.city/public/image/winner@2x.png"]}' https://api.youpin.city/photos/bulk_upload_from_urls
    *
    *
    * @apiParam {String[]} urls Array of photo URLs to be uploaded

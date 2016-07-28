@@ -21,7 +21,7 @@ module.exports = function() {
    * @apiGroup Pin
    *
    * @apiExample Example usage:
-   * curl -i http://api.youpin.city/pins/5798cc78652b2aab35fd663d
+   * curl -i https://api.youpin.city/pins/5798cc78652b2aab35fd663d
    * @apiParam {String} id Pin unique ID.
    *
    * @apiSuccess {String} _id Pin unique ID.
@@ -91,7 +91,7 @@ module.exports = function() {
     * @apiGroup Pin
     *
     * @apiExample Example usage:
-    * curl -i -X POST http://api.youpin.city/pins \
+    * curl -i -X POST https://api.youpin.city/pins \
     * -H 'Content-type: application/json'  \
     * -H 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1Nzk5MTBjZjE3ZmQwYjJiMmM5M2Q5NWEiLCJpYXQiOjE0Njk2NDkyMTMsImV4cCI6MTQ2OTczNTYxMywiaXNzIjoiZmVhdGhlcnMifQ.E3A4i49hI7t6VlH8b7SSKwUHyrAZfzQV8LHukOdxceU' \
     * -d @- << EOF
