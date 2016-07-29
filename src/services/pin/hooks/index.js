@@ -32,7 +32,7 @@ function validateObjectId() {
 
 exports.before = {
   all: [
-    globalHooks.authenticateAPI(),
+    //globalHooks.authenticateAPI(),
     globalHooks.swapLatLong(),
   ],
   find: [],
