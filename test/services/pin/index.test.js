@@ -5,9 +5,11 @@ const loadFixture = require('../../test_helper').loadFixture;
 const mongoose = require('mongoose');
 const request = require('supertest-as-promised');
 
+const App3rdModel = require('../../../src/services/app3rd/app3rd-model.js');
 const PinModel = require('../../../src/services/pin/pin-model.js');
 const UserModel = require('../../../src/services/user/user-model.js');
 // load fixtures
+const adminApp3rd = require('../../fixtures/admin_app3rd.js');
 const adminUser = require('../../fixtures/admin_user.js');
 
 // Makes sure that this is actually TEST environment
@@ -30,7 +32,9 @@ describe('pin service', () => {
     server.once('listening', () => done());
   });
   beforeEach((done) => {
-    PinModel.remove({}, done);
+    PinModel
+      .remove({})
+      .then(() => App3rdModel.remove({}, done));
   });
   // Clears collection after finishing all tests.
   after((done) => {
@@ -38,7 +42,8 @@ describe('pin service', () => {
       if (err) { throw err; }
       UserModel
         .remove({})
-        .then(() => PinModel.remove({}, done));
+        .then(() => PinModel.remove({}))
+        .then(() => App3rdModel.remove({}, done));
     });
   });
   it('registered the pins service', () => {
@@ -46,11 +51,18 @@ describe('pin service', () => {
   });
 
   describe('GET', () => {
+    beforeEach((done) => {
+      // Create admin 3rd-party app
+      loadFixture(App3rdModel, adminApp3rd, done);
+    });
+
     it('returns 404 Not Found when id is not ObjectId', () => {
       const id = '1234';
       expect(mongoose.Types.ObjectId.isValid(id)).to.equal(false);
       return request(app)
         .get('/pins/1234')
+        .set('YOUPIN-3-APP-KEY',
+          '579b04ac516706156da5bba1:ed545297-4024-4a75-89b4-c95fed1df436')
         .expect(404)
         .then((res) => {
           const error = res.body;
@@ -64,7 +76,9 @@ describe('pin service', () => {
   describe('POST', () => {
     beforeEach((done) => {
       // Create admin user
-      loadFixture(UserModel, adminUser, done);
+      loadFixture(UserModel, adminUser, () => {
+        loadFixture(App3rdModel, adminApp3rd, done);
+      });
     });
 
     it('return 401 (unauthorized) if user is not authenticated', () => {
@@ -78,6 +92,8 @@ describe('pin service', () => {
       };
       return request(app)
         .post('/pins')
+        .set('YOUPIN-3-APP-KEY',
+          '579b04ac516706156da5bba1:ed545297-4024-4a75-89b4-c95fed1df436')
         .send(newPin)
         .expect(401)
         .then((res) => {
@@ -110,6 +126,8 @@ describe('pin service', () => {
           }
           return request(app)
             .post('/pins')
+            .set('YOUPIN-3-APP-KEY',
+              '579b04ac516706156da5bba1:ed545297-4024-4a75-89b4-c95fed1df436')
             .send(newPin)
             .set('Authorization', `Bearer ${token}`)
             .expect(401)
@@ -146,6 +164,8 @@ describe('pin service', () => {
           }
           return request(app)
             .post('/pins')
+            .set('YOUPIN-3-APP-KEY',
+              '579b04ac516706156da5bba1:ed545297-4024-4a75-89b4-c95fed1df436')
             .send(newPin)
             .set('Authorization', `Bearer ${token}`)
             .expect(201)

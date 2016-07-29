@@ -38,6 +38,14 @@ app.use(compress())
   .configure(hooks())
   .configure(rest())
   .configure(socketio())
+  // set YOUPIN-3-APP-KEY for app authentication hook
+  .use((req, res, next) => {
+    if (req.get('YOUPIN-3-APP-KEY')) {
+      req.feathers.youpinAppKey = // eslint-disable-line no-param-reassign
+        req.get('YOUPIN-3-APP-KEY');
+    }
+    next();
+  })
   .configure(services)
   .configure(views)
   .configure(middleware);

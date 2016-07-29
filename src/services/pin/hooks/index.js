@@ -31,35 +31,38 @@ function validateObjectId() {
 }
 
 exports.before = {
-  all: [globalHooks.swapLatLong()],
+  all: [
+    globalHooks.authenticateAPI(),
+    globalHooks.swapLatLong(),
+  ],
   find: [],
   get: [
-    validateObjectId()
+    validateObjectId(),
   ],
   create: [
     auth.verifyToken(),
     auth.populateUser(),
     auth.restrictToAuthenticated(),
     restrictToOwnerOfPin(),
-    ],
+  ],
   update: [
     auth.verifyToken(),
     auth.populateUser(),
     auth.restrictToAuthenticated(),
     restrictToOwnerOfPin(),
-    ],
+  ],
   patch: [
     auth.verifyToken(),
     auth.populateUser(),
     auth.restrictToAuthenticated(),
-    restrictToOwnerOfPin()
-    ],
+    restrictToOwnerOfPin(),
+  ],
   remove: [
     auth.verifyToken(),
     auth.populateUser(),
     auth.restrictToAuthenticated(),
-    restrictToOwnerOfPin()
-    ]
+    restrictToOwnerOfPin(),
+  ],
 };
 
 exports.after = {
@@ -69,5 +72,5 @@ exports.after = {
   create: [],
   update: [],
   patch: [],
-  remove: []
+  remove: [],
 };
