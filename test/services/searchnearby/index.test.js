@@ -1,22 +1,24 @@
-'use strict';
-
+// Test helper functions
 const assertTestEnv = require('../../test_helper').assertTestEnv;
+const casual = require('casual');
 const expect = require('../../test_helper').expect;
 const loadFixture = require('../../test_helper').loadFixture;
 
-const app = require('../../../src/app');
-const casual = require('casual');
+// Models
 const UserModel = require('../../../src/services/user/user-model.js');
 const PinModel = require('../../../src/services/pin/pin-model.js');
 const request = require('supertest-as-promised');
 
-// load fixtures
+// Load fixtures
 const adminUser = require('../../fixtures/admin_user.js');
+
+// App stuff
+const app = require('../../../src/app');
 
 // Exit test if NODE_ENV is not equal `test`
 assertTestEnv();
 
-describe('searchnearby service', function() {
+describe('searchnearby service', () => {
   let server;
 
   before((done) => {

@@ -1,32 +1,40 @@
-const app = require('../../../src/app');
+// Test helper functions
+const assertTestEnv = require('../../test_helper').assertTestEnv;;
 const casual = require('casual');
 const expect = require('../../test_helper').expect;
 const loadFixture = require('../../test_helper').loadFixture
-const assertTestEnv = require('../../test_helper').assertTestEnv;;
-const mongoose = require('mongoose');
 const request = require('supertest-as-promised');
 
+// Models
 const App3rdModel = require('../../../src/services/app3rd/app3rd-model.js');
 const PinModel = require('../../../src/services/pin/pin-model.js');
 const UserModel = require('../../../src/services/user/user-model.js');
-// load fixtures
+
+// Load fixtures
 const adminApp3rd = require('../../fixtures/admin_app3rd.js');
 const adminUser = require('../../fixtures/admin_user.js');
+
+// App stuff
+const app = require('../../../src/app');
+const mongoose = require('mongoose');
 
 // Exit test if NODE_ENV is not equal `test`
 assertTestEnv();
 
 describe('pin service', () => {
   let server;
+
   before((done) => {
     server = app.listen(9100);
     server.once('listening', () => done());
   });
+
   beforeEach((done) => {
     PinModel
       .remove({})
       .then(() => App3rdModel.remove({}, done));
   });
+
   // Clears collection after finishing all tests.
   after((done) => {
     server.close((err) => {
@@ -37,6 +45,7 @@ describe('pin service', () => {
         .then(() => App3rdModel.remove({}, done));
     });
   });
+  
   it('registered the pins service', () => {
     expect(app.service('pins')).to.be.ok();
   });
