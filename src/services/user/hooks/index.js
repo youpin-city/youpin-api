@@ -7,7 +7,7 @@ const verifyObjectId = require('../../../utils/validate-object-id-hook');
 
 exports.before = {
   all: [
-    globalHooks.authenticateAPI(),
+    //globalHooks.authenticateAPI(),
     ],
   find: [
     auth.verifyToken(),
