@@ -61,7 +61,7 @@ describe('pin service', () => {
       expect(mongoose.Types.ObjectId.isValid(id)).to.equal(false);
       return request(app)
         .get('/pins/1234')
-        .set('YOUPIN-3-APP-KEY',
+        .set('X-YOUPIN-3-APP-KEY',
           '579b04ac516706156da5bba1:ed545297-4024-4a75-89b4-c95fed1df436')
         .expect(404)
         .then((res) => {
@@ -92,7 +92,7 @@ describe('pin service', () => {
       };
       return request(app)
         .post('/pins')
-        .set('YOUPIN-3-APP-KEY',
+        .set('X-YOUPIN-3-APP-KEY',
           '579b04ac516706156da5bba1:ed545297-4024-4a75-89b4-c95fed1df436')
         .send(newPin)
         .expect(401)
@@ -126,7 +126,7 @@ describe('pin service', () => {
           }
           return request(app)
             .post('/pins')
-            .set('YOUPIN-3-APP-KEY',
+            .set('X-YOUPIN-3-APP-KEY',
               '579b04ac516706156da5bba1:ed545297-4024-4a75-89b4-c95fed1df436')
             .send(newPin)
             .set('Authorization', `Bearer ${token}`)
@@ -164,7 +164,7 @@ describe('pin service', () => {
           }
           return request(app)
             .post('/pins')
-            .set('YOUPIN-3-APP-KEY',
+            .set('X-YOUPIN-3-APP-KEY',
               '579b04ac516706156da5bba1:ed545297-4024-4a75-89b4-c95fed1df436')
             .send(newPin)
             .set('Authorization', `Bearer ${token}`)

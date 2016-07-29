@@ -73,7 +73,7 @@ describe('user service', () => {
           return request(app)
             .get('/users')
             .set('Authorization', `Bearer ${token}`)
-            .set('YOUPIN-3-APP-KEY',
+            .set('X-YOUPIN-3-APP-KEY',
               '579b04ac516706156da5bba1:ed545297-4024-4a75-89b4-c95fed1df436')
             .expect(200)
             .then((userResp) => {
@@ -120,7 +120,7 @@ describe('user service', () => {
           return request(app)
             .get(`/users/${notExistingUserId}`)
             .set('Authorization', `Bearer ${token}`)
-            .set('YOUPIN-3-APP-KEY',
+            .set('X-YOUPIN-3-APP-KEY',
               '579b04ac516706156da5bba1:ed545297-4024-4a75-89b4-c95fed1df436')
             .expect(404)
             .then((res) => {
@@ -149,7 +149,7 @@ describe('user service', () => {
           return request(app)
             .get(`/users/${adminUser._id}`)
             .set('Authorization', `Bearer ${token}`)
-            .set('YOUPIN-3-APP-KEY',
+            .set('X-YOUPIN-3-APP-KEY',
               '579b04ac516706156da5bba1:ed545297-4024-4a75-89b4-c95fed1df436')
             .expect(200)
             .then((userResp) => {
@@ -178,7 +178,7 @@ describe('user service', () => {
       };
       return request(app)
         .post('/users')
-        .set('YOUPIN-3-APP-KEY',
+        .set('X-YOUPIN-3-APP-KEY',
           '579b04ac516706156da5bba1:ed545297-4024-4a75-89b4-c95fed1df436')
         .send(newUser)
         .expect(400);
@@ -193,7 +193,7 @@ describe('user service', () => {
       };
       return request(app)
         .post('/users')
-        .set('YOUPIN-3-APP-KEY',
+        .set('X-YOUPIN-3-APP-KEY',
           '579b04ac516706156da5bba1:ed545297-4024-4a75-89b4-c95fed1df436')
         .send(newUser)
         .expect(201)
