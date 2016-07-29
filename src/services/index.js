@@ -18,8 +18,8 @@ module.exports = function() {
   mongoose.connect(app.get('mongodb'));
   mongoose.Promise = Promise;
 
-  app.configure(app3rd);
   app.configure(authentication);
+  app.configure(app3rd);
   app.configure(photo);
   app.configure(pin);
   app.configure(searchnearby);
