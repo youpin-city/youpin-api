@@ -1,6 +1,6 @@
 'use strict';
 
-const checkTestEnv = require('../../test_helper').checkTestEnv;
+const assertTestEnv = require('../../test_helper').assertTestEnv;
 const expect = require('../../test_helper').expect;
 const loadFixture = require('../../test_helper').loadFixture;
 
@@ -13,7 +13,8 @@ const request = require('supertest-as-promised');
 // load fixtures
 const adminUser = require('../../fixtures/admin_user.js');
 
-checkTestEnv();
+// Exit test if NODE_ENV is not equal `test`
+assertTestEnv();
 
 describe('searchnearby service', function() {
   let server;
