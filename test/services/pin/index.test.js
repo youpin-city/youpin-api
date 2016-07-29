@@ -1,7 +1,8 @@
 const app = require('../../../src/app');
 const casual = require('casual');
 const expect = require('../../test_helper').expect;
-const loadFixture = require('../../test_helper').loadFixture;
+const loadFixture = require('../../test_helper').loadFixture
+const assertTestEnv = require('../../test_helper').assertTestEnv;;
 const mongoose = require('mongoose');
 const request = require('supertest-as-promised');
 
@@ -12,18 +13,8 @@ const UserModel = require('../../../src/services/user/user-model.js');
 const adminApp3rd = require('../../fixtures/admin_app3rd.js');
 const adminUser = require('../../fixtures/admin_user.js');
 
-// Makes sure that this is actually TEST environment
-console.log('NODE_ENV:', process.env.NODE_ENV);
-if (process.env.NODE_ENV !== 'test') {
-  console.log('Woops, you want NODE_ENV=test before you try this again!');
-  process.exit(1);
-}
-
-// Makes sure that db is youpin-test
-if (mongoose.connection.db.s.databaseName !== 'youpin-test') {
-  console.log('Woops, it seems you are using not-for-testing database. Change it now!');
-  process.exit(1);
-}
+// Exit test if NODE_ENV is not equal `test`
+assertTestEnv();
 
 describe('pin service', () => {
   let server;

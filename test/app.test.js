@@ -1,8 +1,12 @@
 'use strict';
 
+const assertTestEnv = require('./test_helper').assertTestEnv;
 const assert = require('assert');
 const request = require('request');
 const app = require('../src/app');
+
+// Exit test if NODE_ENV is not equal `test`
+assertTestEnv();
 
 describe('Feathers application tests', function() {
   before(function(done) {

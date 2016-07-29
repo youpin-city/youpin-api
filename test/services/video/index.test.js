@@ -1,22 +1,14 @@
 'use strict';
 
-const app = require('../../../src/app');
+const assertTestEnv = require('../../test_helper').assertTestEnv;
 const expect = require('../../test_helper').expect;
+
+const app = require('../../../src/app');
 const mongoose = require('mongoose')
 const VideoModel = require('../../../src/services/video/video-model.js');;
 
-// Makes sure that this is actually TEST environment
-console.log('NODE_ENV:', process.env.NODE_ENV);
-if (process.env.NODE_ENV !== 'test') {
-  console.log('Woops, you want NODE_ENV=test before you try this again!');
-  process.exit(1);
-}
-
-// Makes sure that db is youpin-test
-if (mongoose.connection.db.s.databaseName !== 'youpin-test') {
-  console.log('Woops, it seems you are using not-for-testing database. Change it now!');
-  process.exit(1);
-}
+// Exit test if NODE_ENV is not equal `test`
+assertTestEnv();
 
 describe('video service', function() {
   let server;
