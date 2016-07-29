@@ -4,6 +4,10 @@
   "title": "YouPin.city REST API",
   "description": "REST API for YouPin.city",
   "url": "https://api.youpin.city",
+  "header": {
+    "title": "Introduction",
+    "filename": "header.md"
+  },
   "template": {
     "withCompare": false,
     "withGenerator": false
