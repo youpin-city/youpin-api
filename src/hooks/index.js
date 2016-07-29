@@ -19,11 +19,11 @@ exports.authenticateAPI = function(options){
     }
     const appKey = hook.params.youpinAppKey;
     if (!appKey) {
-      throw new errors.NotAuthenticated('Authentication YOUPIN-3-APP-KEY is missing.');
+      throw new errors.NotAuthenticated('Authentication X-YOUPIN-3-APP-KEY is missing.');
     }
     const appKeySplit = appKey.split(':');
     if (appKeySplit.length !== 2) {
-      throw new errors.NotAuthenticated('Incorret YOUPIN-3-APP-KEY format');
+      throw new errors.NotAuthenticated('Incorret X-YOUPIN-3-APP-KEY format');
     }
     const appKeyId = appKeySplit[0];
     const apiKeyPassword = appKeySplit[1];
