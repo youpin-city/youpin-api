@@ -23,15 +23,18 @@ assertTestEnv();
 
 describe('pin service', () => {
   let server;
+
   before((done) => {
     server = app.listen(9100);
     server.once('listening', () => done());
   });
+
   beforeEach((done) => {
     PinModel
       .remove({})
       .then(() => App3rdModel.remove({}, done));
   });
+
   // Clears collection after finishing all tests.
   after((done) => {
     server.close((err) => {
@@ -42,6 +45,7 @@ describe('pin service', () => {
         .then(() => App3rdModel.remove({}, done));
     });
   });
+  
   it('registered the pins service', () => {
     expect(app.service('pins')).to.be.ok();
   });

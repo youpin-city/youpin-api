@@ -22,15 +22,18 @@ assertTestEnv();
 
 describe('user service', () => {
   let server;
+
   before((done) => {
     server = app.listen(9100);
     server.once('listening', () => done());
   });
+
   beforeEach((done) => {
     UserModel
       .remove({})
       .then(() => App3rdModel.remove({}, done));
   });
+
   // Clears collection after finishing all tests.
   after((done) => {
     server.close((err) => {
@@ -179,6 +182,7 @@ describe('user service', () => {
         .send(newUser)
         .expect(400);
     });
+    
     it('return 201 when posting a complete required field' +
       ' and "pasword" should not be returned', () => {
       const newUser = {
