@@ -1,13 +1,13 @@
-FROM mhart/alpine-node:6
+FROM mhart/alpine-node:6.3
 
 MAINTAINER YouPin Team <dev@youpin.city>
 
 RUN apk add -U libc6-compat
-COPY package.json /src/package.json
-RUN cd /src && npm install
+COPY package.json /code/package.json
+RUN cd /code && npm install
 
-COPY . /src
+COPY . /code
 
-WORKDIR /src
+WORKDIR /code
 
 CMD ["npm", "start"]
