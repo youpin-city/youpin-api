@@ -4,10 +4,11 @@ const expect = require('../../test_helper').expect;
 const loadFixture = require('../../test_helper').loadFixture;
 const mongoose = require('mongoose');
 const request = require('supertest-as-promised');
-// bcrypt used by feathers-authentication
-const UserModel = require('../../../src/services/user/user-model.js');
 
+const App3rdModel = require('../../../src/services/app3rd/app3rd-model.js');
+const UserModel = require('../../../src/services/user/user-model.js');
 // load fixtures
+const adminApp3rd = require('../../fixtures/admin_app3rd.js');
 const adminUser = require('../../fixtures/admin_user.js');
 
 // Makes sure that this is actually TEST environment
@@ -30,13 +31,17 @@ describe('user service', () => {
     server.once('listening', () => done());
   });
   beforeEach((done) => {
-    UserModel.remove({}, done);
+    UserModel
+      .remove({})
+      .then(() => App3rdModel.remove({}, done));
   });
   // Clears collection after finishing all tests.
   after((done) => {
     server.close((err) => {
       if (err) { throw err; }
-      UserModel.remove({}, done);
+      UserModel
+        .remove({})
+        .then(() => App3rdModel.remove({}, done));
     });
   });
 
@@ -48,7 +53,9 @@ describe('user service', () => {
   describe('GET /users', () => {
     beforeEach((done) => {
       // Create admin user
-      loadFixture(UserModel, adminUser, done);
+      loadFixture(UserModel, adminUser, () => {
+        loadFixture(App3rdModel, adminApp3rd, done);
+      });
     });
 
     it('return user array conatining only admin user', () =>
@@ -66,6 +73,8 @@ describe('user service', () => {
           return request(app)
             .get('/users')
             .set('Authorization', `Bearer ${token}`)
+            .set('YOUPIN-3-APP-KEY',
+              '579b04ac516706156da5bba1:ed545297-4024-4a75-89b4-c95fed1df436')
             .expect(200)
             .then((userResp) => {
               const body = userResp.body;
@@ -88,7 +97,9 @@ describe('user service', () => {
   describe('GET /users/:id', () => {
     beforeEach((done) => {
       // Create admin user
-      loadFixture(UserModel, adminUser, done);
+      loadFixture(UserModel, adminUser, () => {
+        loadFixture(App3rdModel, adminApp3rd, done);
+      });
     });
 
     it('return 404 NotFound when user does not exist', () => {
@@ -109,6 +120,8 @@ describe('user service', () => {
           return request(app)
             .get(`/users/${notExistingUserId}`)
             .set('Authorization', `Bearer ${token}`)
+            .set('YOUPIN-3-APP-KEY',
+              '579b04ac516706156da5bba1:ed545297-4024-4a75-89b4-c95fed1df436')
             .expect(404)
             .then((res) => {
               const error = res.body;
@@ -132,10 +145,12 @@ describe('user service', () => {
           if (!token) {
             throw new Error('No token returns');
           }
-          
+
           return request(app)
             .get(`/users/${adminUser._id}`)
             .set('Authorization', `Bearer ${token}`)
+            .set('YOUPIN-3-APP-KEY',
+              '579b04ac516706156da5bba1:ed545297-4024-4a75-89b4-c95fed1df436')
             .expect(200)
             .then((userResp) => {
               const body = userResp.body;
@@ -147,17 +162,24 @@ describe('user service', () => {
               // also check response does not contain password
               expect(body).to.not.have.keys('password');
             });
-        })
+        });
     });
   });
 
   describe('POST /users', () => {
+    beforeEach((done) => {
+      // Create admin 3rd-party app
+      loadFixture(App3rdModel, adminApp3rd, done);
+    });
+
     it('return errors when posting an incomplete required field', () => {
       const newUser = {
         name: casual.name,
       };
       return request(app)
         .post('/users')
+        .set('YOUPIN-3-APP-KEY',
+          '579b04ac516706156da5bba1:ed545297-4024-4a75-89b4-c95fed1df436')
         .send(newUser)
         .expect(400);
     });
@@ -171,6 +193,8 @@ describe('user service', () => {
       };
       return request(app)
         .post('/users')
+        .set('YOUPIN-3-APP-KEY',
+          '579b04ac516706156da5bba1:ed545297-4024-4a75-89b4-c95fed1df436')
         .send(newUser)
         .expect(201)
         .expect('Content-Type', /json/)
