@@ -18,9 +18,9 @@ To run your local YouPin API,
 Follow [instruction 1.a to 1.f](https://developers.google.com/identity/protocols/application-default-credentials#howtheywork)  to get GCS private key.
 Rename the key to `youpin_gcs_credentials.json` and place it in the root folder (same level with `package.json`).
 
-4. Install [docker](https://www.docker.com/).
+3. Install [docker](https://www.docker.com/).
 
-3. Start service with `docker-compose up -d`.
+4. Start service with `docker-compose up -d`.
 The service will run on port 9100. To stop, run `docker-compose stop`. If you need to build a new docker image with modified code, run `docker-compose up --build -d`.
 
 ## Changelog
