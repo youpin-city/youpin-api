@@ -15,7 +15,7 @@ exports.before = {
 };
 
 exports.after = {
-  all: [],
+  all: [globalHooks.swapLatLong()],
   find: [],
   get: [],
   create: [],
