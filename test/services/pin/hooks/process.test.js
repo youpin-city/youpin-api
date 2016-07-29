@@ -1,8 +1,8 @@
-'use strict';
-
+// Test helper functions
 const assertTestEnv = require('../../../test_helper').assertTestEnv;
+const expect = require('../../../test_helper').expect;
 
-const assert = require('assert');
+// App stuff
 const process = require('../../../../src/services/pin/hooks/process.js');
 
 // Exit test if NODE_ENV is not equal `test`
@@ -20,6 +20,6 @@ describe('pin process hook', function() {
 
     process()(mockHook);
 
-    assert.ok(mockHook.process);
+    expect(mockHook.process).to.be.ok();
   });
 });

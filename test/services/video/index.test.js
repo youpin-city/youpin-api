@@ -1,11 +1,13 @@
-'use strict';
-
+// Test helper functions
 const assertTestEnv = require('../../test_helper').assertTestEnv;
 const expect = require('../../test_helper').expect;
 
+// Models
+const VideoModel = require('../../../src/services/video/video-model.js');;
+
+// App stuff
 const app = require('../../../src/app');
 const mongoose = require('mongoose')
-const VideoModel = require('../../../src/services/video/video-model.js');;
 
 // Exit test if NODE_ENV is not equal `test`
 assertTestEnv();

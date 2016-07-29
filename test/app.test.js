@@ -1,8 +1,9 @@
-'use strict';
-
+// Test helper functions
 const assertTestEnv = require('./test_helper').assertTestEnv;
-const assert = require('assert');
+const expect = require('./test_helper').expect;
 const request = require('request');
+
+// App stuff
 const app = require('../src/app');
 
 // Exit test if NODE_ENV is not equal `test`
@@ -20,7 +21,7 @@ describe('Feathers application tests', function() {
 
   it('starts and shows the index page', function(done) {
     request('http://localhost:3030', function(err, res, body) {
-      assert.ok(body.indexOf('<html>') !== -1);
+      expect(body.indexOf('<html>') !== -1).to.be.ok();
       done(err);
     });
   });
@@ -33,8 +34,8 @@ describe('Feathers application tests', function() {
           'Accept': 'text/html'
         }
       }, function(err, res, body) {
-        assert.equal(res.statusCode, 404);
-        assert.ok(body.indexOf('<html>') !== -1);
+        expect(res.statusCode).to.equal(404);
+        expect(body.indexOf('<html>') !== -1).to.be.ok();
         done(err);
       });
     });
@@ -44,10 +45,10 @@ describe('Feathers application tests', function() {
         url: 'http://localhost:3030/path/to/nowhere',
         json: true
       }, function(err, res, body) {
-        assert.equal(res.statusCode, 404);
-        assert.equal(body.code, 404);
-        assert.equal(body.message, 'Page not found');
-        assert.equal(body.name, 'NotFound');
+        expect(res.statusCode).to.equal(404);
+        expect(body.code).to.equal(404);
+        expect(body.message).to.equal('Page not found');
+        expect(body.name).to.equal('NotFound');
         done(err);
       });
     });
