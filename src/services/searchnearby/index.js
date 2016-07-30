@@ -5,6 +5,7 @@ const hooks = require('./hooks');
 const Promise = require('bluebird');
 const errors = require('feathers-errors');
 const Pin = require('../pin/pin-model.js');
+const NumberHelper = require('../../utils/number');
 
 class Service {
   constructor(options) {
@@ -88,13 +89,21 @@ class Service {
    */
   find(params) {
     if (!params.query.$center) {
-      return Promise.resolve(
-          new errors.BadRequest('Please assign the value to $center.'));
+      return Promise.reject(new errors.BadRequest('Please assign the value to $center.'));
     }
+
+    if (params.query.limit && !NumberHelper.isIntegerString(params.query.limit)) {
+      return Promise.reject(new errors.BadRequest('`limit` must be integer'));
+    }
+
+    if (params.query.$radius && !NumberHelper.isNumericString(params.query.$radius)) {
+      return Promise.reject(new errors.BadRequest('`$radius` must be numeric'));
+    }
+
     // Default limit: 10
-    const limit = params.query.limit || 10;
+    const limit = parseInt(params.query.limit) || 10;
     // Default maxDistance: 1 km
-    const maxDistance = (params.query.$radius || 1000);
+    const maxDistance = parseFloat(params.query.$radius) || 1000;
     // TODO(A): Check if string is correct array format, if not, return meaningful error.
     var coordinate = JSON.parse(params.query.$center);
     // We get [lat, long] but mongo need [long, lat]. So, swap them.
@@ -109,10 +118,10 @@ class Service {
           $maxDistance: maxDistance
         }
       }
-    }).limit(limit).exec()
+    })
+    .limit(limit).exec()
     .then(function(results) {
       // TODO(A): Add total and pagination
-      console.log('Found ' + results.length + ' pins.');
       return Promise.resolve({
         limit: limit,
         data: results
