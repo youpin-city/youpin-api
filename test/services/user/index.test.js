@@ -9,7 +9,7 @@ const request = require('supertest-as-promised');
 const App3rdModel = require('../../../src/services/app3rd/app3rd-model.js');
 const UserModel = require('../../../src/services/user/user-model.js');
 
-// Load fixtures
+// Fixtures
 const adminApp3rd = require('../../fixtures/admin_app3rd.js');
 const adminUser = require('../../fixtures/admin_user.js');
 
@@ -25,25 +25,33 @@ describe('user service', () => {
 
   before((done) => {
     server = app.listen(9100);
-    server.once('listening', () => done());
+    server.once('listening', () => {
+      Promise.all([
+        loadFixture(UserModel, adminUser),
+        loadFixture(App3rdModel, adminApp3rd)
+      ])
+      .then((_) => {
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      })
+    });
   });
 
-  beforeEach((done) => {
-    UserModel
-      .remove({})
-      .then(() => App3rdModel.remove({}, done));
-  });
-
-  // Clears collection after finishing all tests.
   after((done) => {
-    server.close((err) => {
-      if (err) {
-        return done(err);
-      }
+    // Clear all collections after finishing all tests.
+    Promise.all([
+      UserModel.remove({}),
+      App3rdModel.remove({})
+    ])
+    .then((_) => {
+      // Close the server
+      server.close((err) => {
+        if (err) return done(err);
 
-      UserModel
-        .remove({})
-        .then(() => App3rdModel.remove({}, done));
+        done();
+      })
     });
   });
 
@@ -53,15 +61,9 @@ describe('user service', () => {
   });
 
   describe('GET /users', () => {
-    beforeEach((done) => {
-      // Create admin user
-      loadFixture(UserModel, adminUser, () => {
-        loadFixture(App3rdModel, adminApp3rd, done);
-      });
-    });
-
     it('return user array conatining only admin user', (done) =>
       request(app)
+        // Login with existing admin account
         .post('/auth/local')
         .send({
           email: 'contact@youpin.city',
@@ -73,7 +75,7 @@ describe('user service', () => {
           if (!token) {
             return done(new Error('No token returns'));
           }
-
+          // Get list of users
           request(app)
             .get('/users')
             .set('Authorization', `Bearer ${token}`)
@@ -102,14 +104,8 @@ describe('user service', () => {
   });
 
   describe('GET /users/:id', () => {
-    beforeEach((done) => {
-      // Create admin user
-      loadFixture(UserModel, adminUser, () => {
-        loadFixture(App3rdModel, adminApp3rd, done);
-      });
-    });
-
     it('return 404 NotFound when user does not exist', (done) => {
+      // Login with existing admin account
       request(app)
         .post('/auth/local')
         .send({
@@ -133,6 +129,7 @@ describe('user service', () => {
             .expect(404)
             .then((res) => {
               const error = res.body;
+
               expect(error.code).to.equal(404);
               expect(error.name).to.equal('NotFound');
               expect(error.message).to.equal(`No record found for id '${notExistingUserId}'`);
@@ -143,6 +140,7 @@ describe('user service', () => {
     });
 
     it('return an admin user object', (done) => {
+      // Login with existing admin account
       request(app)
         .post('/auth/local')
         .send({
@@ -164,6 +162,7 @@ describe('user service', () => {
             .expect(200)
             .then((userResp) => {
               const body = userResp.body;
+
               expect(body).to.not.be.a('array');
               expect(body).to.contain.all.keys(
                 ['_id', 'name', 'phone', 'email', 'role', 'owner_app_id',
@@ -179,11 +178,6 @@ describe('user service', () => {
   });
 
   describe('POST /users', () => {
-    beforeEach((done) => {
-      // Create admin 3rd-party app
-      loadFixture(App3rdModel, adminApp3rd, done);
-    });
-
     it('return errors when posting an incomplete required field', (done) => {
       const newUser = {
         name: casual.name,
@@ -194,10 +188,7 @@ describe('user service', () => {
         .set('X-YOUPIN-3-APP-KEY',
           '579b04ac516706156da5bba1:ed545297-4024-4a75-89b4-c95fed1df436')
         .send(newUser)
-        .expect(400)
-        .then((resp) => {
-          done();
-        });
+        .expect(400, done);
     });
 
     it('return 201 when posting a complete required field' +
@@ -218,6 +209,7 @@ describe('user service', () => {
         .expect('Content-Type', /json/)
         .then((res) => {
           const createdUser = res.body;
+
           expect(createdUser).to.contain.keys(
             ['_id', 'email', 'name', 'role', 'created_time',
             'updated_time', 'owner_app_id', 'customer_app_id']);

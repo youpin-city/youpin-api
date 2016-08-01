@@ -4,10 +4,31 @@ chai.use(dirtyChai);
 const expect = chai.expect;
 const mongoose = require('mongoose');
 
-var loadFixture = function(ModelClass, jsonData, callback) {
-  (new ModelClass(jsonData)).save((err, inst) => {
-    callback();
-  });
+var loadFixture = function(ModelClass, data) {
+    return new Promise((resolve, reject) => {
+      if (Array.isArray(data)) {
+        let results = [];
+
+        data.forEach((json) => {
+          (new ModelClass(json)).save((err, inst) => {
+            if (err) reject(err);
+
+            results.push(inst);
+          });
+
+          resolve(results);
+        });
+      } else {
+        // Load single json data
+        (new ModelClass(data)).save((err, inst) => {
+          if (err) {
+            reject(err);
+          }
+
+          resolve(inst);
+        });
+      }
+    });
 };
 
 var assertTestEnv = function() {
