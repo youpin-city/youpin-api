@@ -38,7 +38,7 @@ describe('searchnearby service', () => {
   after((done) => {
     server.close((err) => {
       if (err) {
-        throw err;
+        return done(err);
       }
 
       PinModel.remove({})
@@ -65,7 +65,7 @@ describe('searchnearby service', () => {
     };
 
     loadFixture(PinModel, pin, () => {
-      return request(app)
+      request(app)
         // request in [lat, long] format
         .get('/searchnearby?$center=[13.730537954909,100.56983580503]&$radius=1000')
         .expect(200)
@@ -110,18 +110,19 @@ describe('searchnearby service', () => {
     loadFixture(PinModel, pin1, () => {
       loadFixture(PinModel, pin2, () => {
         loadFixture(PinModel, pin3, () => {
-        return request(app)
-          // request in [lat, long] format
-          .get('/searchnearby?$center=[13.730537954909,100.56983580503]&$radius=1000&limit=2')
-          .expect(200)
-          .then((res) => {
-            if (!res || !res.body.data || res.body.data.length <= 0) {
-              return done(new Error('No data return'));
-            }
+          request(app)
+            // request in [lat, long] format
+            .get('/searchnearby?$center=[13.730537954909,100.56983580503]&$radius=1000&limit=2')
+            .expect(200)
+            .then((res) => {
+              if (!res || !res.body.data || res.body.data.length <= 0) {
+                return done(new Error('No data return'));
+              }
 
-            expect(res.body.data.length).to.equal(2);
-            done();
-          });
+              expect(res.body.data.length).to.equal(2);
+
+              done();
+            });
         });
       });
     });

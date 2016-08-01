@@ -38,14 +38,17 @@ describe('pin service', () => {
   // Clears collection after finishing all tests.
   after((done) => {
     server.close((err) => {
-      if (err) { throw err; }
+      if (err) {
+        return done(err);
+      }
+
       UserModel
         .remove({})
         .then(() => PinModel.remove({}))
         .then(() => App3rdModel.remove({}, done));
     });
   });
-  
+
   it('registered the pins service', () => {
     expect(app.service('pins')).to.be.ok();
   });
@@ -56,19 +59,25 @@ describe('pin service', () => {
       loadFixture(App3rdModel, adminApp3rd, done);
     });
 
-    it('returns 404 Not Found when id is not ObjectId', () => {
+    it('returns 404 Not Found when id is not ObjectId', (done) => {
       const id = '1234';
+
+      // Test with invalid object id
       expect(mongoose.Types.ObjectId.isValid(id)).to.equal(false);
-      return request(app)
+
+      request(app)
         .get('/pins/1234')
         .set('X-YOUPIN-3-APP-KEY',
           '579b04ac516706156da5bba1:ed545297-4024-4a75-89b4-c95fed1df436')
         .expect(404)
         .then((res) => {
           const error = res.body;
+
           expect(error.code).to.equal(404);
           expect(error.name).to.equal('NotFound');
           expect(error.message).to.equal('No record found for id \'1234\'');
+
+          done();
         });
     });
   });
@@ -81,7 +90,7 @@ describe('pin service', () => {
       });
     });
 
-    it('return 401 (unauthorized) if user is not authenticated', () => {
+    it('return 401 (unauthorized) if user is not authenticated', (done) => {
       const newPin = {
         detail: casual.text,
         owner: adminUser._id, // eslint-disable-line no-underscore-dangle
@@ -90,7 +99,8 @@ describe('pin service', () => {
           coordinates: [10.733626, 10.5253153],
         },
       };
-      return request(app)
+
+      request(app)
         .post('/pins')
         .set('X-YOUPIN-3-APP-KEY',
           '579b04ac516706156da5bba1:ed545297-4024-4a75-89b4-c95fed1df436')
@@ -98,13 +108,16 @@ describe('pin service', () => {
         .expect(401)
         .then((res) => {
           const error = res.body;
+
           expect(error.code).to.equal(401);
           expect(error.name).to.equal('NotAuthenticated');
           expect(error.message).to.equal('Authentication token missing.');
+
+          done();
         });
     });
 
-    it('return 401 (unauthorized) if an authenticated user posts using other user id', () => {
+    it('return 401 (unauthorized) if an authenticated user posts using other user id', (done) => {
       const newPin = {
         detail: casual.text,
         owner: '1234',
@@ -113,7 +126,8 @@ describe('pin service', () => {
           coordinates: [10.733626, 10.5253153],
         },
       };
-      return request(app)
+
+      request(app)
         .post('/auth/local')
         .send({
           email: 'contact@youpin.city',
@@ -121,10 +135,12 @@ describe('pin service', () => {
         })
         .then((tokenResp) => {
           const token = tokenResp.body.token;
+
           if (!token) {
-            throw new Error('No token returns');
+            done(new Error('No token returns'));
           }
-          return request(app)
+
+          request(app)
             .post('/pins')
             .set('X-YOUPIN-3-APP-KEY',
               '579b04ac516706156da5bba1:ed545297-4024-4a75-89b4-c95fed1df436')
@@ -137,12 +153,14 @@ describe('pin service', () => {
               expect(error.name).to.equal('NotAuthenticated');
               expect(error.message).to.equal(
                 'Owner field (id) does not matched with the token owner id.');
+
+              done();
             });
         });
     });
 
     it('return 201 when posting by authenticated user, ' +
-      'using correct owner id, and filling all required fields', () => {
+      'using correct owner id, and filling all required fields', (done) => {
       const newPin = {
         detail: casual.text,
         owner: adminUser._id, // eslint-disable-line no-underscore-dangle
@@ -151,7 +169,8 @@ describe('pin service', () => {
           coordinates: [10.733626, 10.5253153],
         },
       };
-      return request(app)
+
+      request(app)
         .post('/auth/local')
         .send({
           email: 'contact@youpin.city',
@@ -159,10 +178,12 @@ describe('pin service', () => {
         })
         .then((tokenResp) => {
           const token = tokenResp.body.token;
+
           if (!token) {
-            throw new Error('No token returns');
+            done(new Error('No token returns'));
           }
-          return request(app)
+
+          request(app)
             .post('/pins')
             .set('X-YOUPIN-3-APP-KEY',
               '579b04ac516706156da5bba1:ed545297-4024-4a75-89b4-c95fed1df436')
@@ -176,6 +197,8 @@ describe('pin service', () => {
                 'videos', 'voters', 'comments', 'tags',
                 'location', 'photos', 'neighborhood', 'mentions',
                 'followers', 'updated_time', 'created_time', 'categories']);
+
+              done();
             });
         });
     });
