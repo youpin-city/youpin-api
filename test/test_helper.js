@@ -5,30 +5,30 @@ const expect = chai.expect;
 const mongoose = require('mongoose');
 
 var loadFixture = function(ModelClass, data) {
-    return new Promise((resolve, reject) => {
-      if (Array.isArray(data)) {
-        let results = [];
+  return new Promise((resolve, reject) => {
+    if (Array.isArray(data)) {
+      let results = [];
 
-        data.forEach((json) => {
-          (new ModelClass(json)).save((err, inst) => {
-            if (err) reject(err);
+      data.forEach((json) => {
+        (new ModelClass(json)).save((err, inst) => {
+          if (err) reject(err);
 
-            results.push(inst);
-          });
-
-          resolve(results);
+          results.push(inst);
         });
-      } else {
-        // Load single json data
-        (new ModelClass(data)).save((err, inst) => {
-          if (err) {
-            reject(err);
-          }
 
-          resolve(inst);
-        });
-      }
-    });
+        resolve(results);
+      });
+    } else {
+      // Load single json data
+      (new ModelClass(data)).save((err, inst) => {
+        if (err) {
+          reject(err);
+        }
+
+        resolve(inst);
+      });
+    }
+  });
 };
 
 var assertTestEnv = function() {
