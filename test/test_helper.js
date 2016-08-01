@@ -7,26 +7,29 @@ const mongoose = require('mongoose');
 var loadFixture = function(ModelClass, data) {
   return new Promise((resolve, reject) => {
     if (Array.isArray(data)) {
-      let results = [];
+      // Load array of json objects
+      const promises = [];
 
       data.forEach((json) => {
-        (new ModelClass(json)).save((err, inst) => {
-          if (err) reject(err);
-
-          results.push(inst);
-        });
-
-        resolve(results);
+        promises.push((new ModelClass(json)).save());
       });
-    } else {
-      // Load single json data
-      (new ModelClass(data)).save((err, inst) => {
-        if (err) {
+
+      Promise.all(promises)
+        .then((results) => {
+          resolve(results);
+        })
+        .catch((err) => {
           reject(err);
-        }
-
-        resolve(inst);
-      });
+        });
+    } else {
+      // Load single json object
+      (new ModelClass(data)).save()
+        .then((inst) => {
+          resolve(inst);
+        })
+        .catch((err) => {
+          reject(err);
+        });
     }
   });
 };
