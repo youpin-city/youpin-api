@@ -1,19 +1,18 @@
-'use strict';
-
 const pin = require('./pin-model');
 const hooks = require('./hooks');
 const service = require('feathers-mongoose');
 
-module.exports = function() {
+module.exports = function () { // eslint-disable-line func-names
   const app = this;
 
   const options = {
     Model: pin,
     paginate: {
       default: 5,
-      max: 50
-    }
+      max: 50,
+    },
   };
+  /* eslint-disable max-len */
   /**
    * @api {get} /pins/:id Get info
    * @apiVersion 0.1.0
@@ -415,6 +414,7 @@ module.exports = function() {
     *       "errors":{}
     *     }
     */
+    /* eslint-enable max-len */
   app.use('/pins', service(options));
   const pinService = app.service('/pins');
   pinService.before(hooks.before);

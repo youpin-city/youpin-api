@@ -1,16 +1,9 @@
-'use strict';
-
-// src/services/pin/hooks/process.js
-//
-// Use this hook to manipulate incoming or outgoing data.
-// For more information on hooks see: http://docs.feathersjs.com/hooks/readme.html
-
 const defaults = {};
 
-module.exports = function(options) {
-  options = Object.assign({}, defaults, options);
+module.exports = (options) => { // eslint-disable-line no-unused-vars
+  options = Object.assign({}, defaults, options); // eslint-disable-line no-param-reassign
 
-  return function(hook) {
-    hook.process = true;
+  return (hook) => {
+    hook.process = true; // eslint-disable-line no-param-reassign
   };
 };
