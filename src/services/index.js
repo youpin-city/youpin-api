@@ -1,5 +1,3 @@
-'use strict';
-
 const mongoose = require('mongoose');
 const Promise = require('bluebird');
 
@@ -12,7 +10,7 @@ const searchnearby = require('./searchnearby');
 const user = require('./user');
 const video = require('./video');
 
-module.exports = function() {
+module.exports = function () {
   const app = this;
 
   mongoose.connect(app.get('mongodb'));
