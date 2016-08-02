@@ -10,7 +10,7 @@ const App3rdModel = require('../../../src/services/app3rd/app3rd-model.js');
 const PinModel = require('../../../src/services/pin/pin-model.js');
 const UserModel = require('../../../src/services/user/user-model.js');
 
-// Load fixtures
+// Fixtures
 const adminApp3rd = require('../../fixtures/admin_app3rd.js');
 const adminUser = require('../../fixtures/admin_user.js');
 
@@ -26,26 +26,34 @@ describe('pin service', () => {
 
   before((done) => {
     server = app.listen(9100);
-    server.once('listening', () => done());
+    server.once('listening', () => {
+      // Create admin user and app3rd for admin
+      Promise.all([
+        loadFixture(UserModel, adminUser),
+        loadFixture(App3rdModel, adminApp3rd)
+      ])
+      .then((_) => {
+        done();
+      })
+      .catch((err) => {
+        done(err);
+      });
+    });
   });
 
-  beforeEach((done) => {
-    PinModel
-      .remove({})
-      .then(() => App3rdModel.remove({}, done));
-  });
-
-  // Clears collection after finishing all tests.
   after((done) => {
-    server.close((err) => {
-      if (err) {
-        return done(err);
-      }
+    // Clear collections after finishing all tests.
+    Promise.all([
+      UserModel.remove({}),
+      PinModel.remove({}),
+      App3rdModel.remove({})
+    ])
+    .then((val) => {
+      server.close((err) => {
+        if (err) return done(err);
 
-      UserModel
-        .remove({})
-        .then(() => PinModel.remove({}))
-        .then(() => App3rdModel.remove({}, done));
+        done();
+      });
     });
   });
 
@@ -54,15 +62,9 @@ describe('pin service', () => {
   });
 
   describe('GET', () => {
-    beforeEach((done) => {
-      // Create admin 3rd-party app
-      loadFixture(App3rdModel, adminApp3rd, done);
-    });
-
     it('returns 404 Not Found when id is not ObjectId', (done) => {
-      const id = '1234';
-
       // Test with invalid object id
+      const id = '1234';
       expect(mongoose.Types.ObjectId.isValid(id)).to.equal(false);
 
       request(app)
@@ -83,13 +85,6 @@ describe('pin service', () => {
   });
 
   describe('POST', () => {
-    beforeEach((done) => {
-      // Create admin user
-      loadFixture(UserModel, adminUser, () => {
-        loadFixture(App3rdModel, adminApp3rd, done);
-      });
-    });
-
     it('return 401 (unauthorized) if user is not authenticated', (done) => {
       const newPin = {
         detail: casual.text,
@@ -137,7 +132,7 @@ describe('pin service', () => {
           const token = tokenResp.body.token;
 
           if (!token) {
-            done(new Error('No token returns'));
+            return done(new Error('No token returns'));
           }
 
           request(app)
@@ -149,6 +144,7 @@ describe('pin service', () => {
             .expect(401)
             .then((res) => {
               const error = res.body;
+
               expect(error.code).to.equal(401);
               expect(error.name).to.equal('NotAuthenticated');
               expect(error.message).to.equal(

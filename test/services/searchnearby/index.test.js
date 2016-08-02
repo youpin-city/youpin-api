@@ -9,8 +9,9 @@ const UserModel = require('../../../src/services/user/user-model.js');
 const PinModel = require('../../../src/services/pin/pin-model.js');
 const request = require('supertest-as-promised');
 
-// Load fixtures
+// Fixtures
 const adminUser = require('../../fixtures/admin_user.js');
+const pins = require('../../fixtures/pins.js');
 
 // App stuff
 const app = require('../../../src/app');
@@ -24,108 +25,71 @@ describe('searchnearby service', () => {
   before((done) => {
     server = app.listen(9100);
     server.once('listening', () => {
-      UserModel.remove({}, () => {
-        loadFixture(UserModel, adminUser, done);
+      Promise.all([
+        loadFixture(UserModel, adminUser),
+        loadFixture(PinModel, pins)
+      ])
+      .then((_) => {
+        done();
       });
     });
   });
 
-  beforeEach((done) => {
-    PinModel.remove({}, done);
-  });
-
-  // Clears collection after finishing all tests.
   after((done) => {
-    server.close((err) => {
-      if (err) {
-        return done(err);
-      }
+    // Clears collection after finishing all tests.
+    Promise.all([
+      PinModel.remove({}),
+      UserModel.remove({})
+    ])
+    .then((_) => {
+      // Close the server
+      server.close((err) => {
+        if (err) return done(err);
 
-      PinModel.remove({})
-        .then(() => {
-          done();
-        });
+        done();
+      });
+    })
+    .catch((err) => {
+      done(err);
     });
   });
-
 
   it('registered the searchnearby service', () => {
     expect(app.service('searchnearby')).to.be.ok();
   });
 
   it('returns coordinates in [lat, long] format', (done) => {
-    const pin = {
-      detail: casual.text,
-      owner: '579334c75563625d6281b6f1', // adminUser ObjectId
-      provider: '579334c75563625d6281b6f1', // adminUser ObjectId
-      location: {
-        // MongoDB stores in [long, lat]
-        coordinates: [100.56983534303, 13.730537951109],
-      },
-    };
+    request(app)
+      // request in [lat, long] format
+      .get('/searchnearby?$center=[13.730537951109,100.56983534303]&$radius=0&limit=1')
+      .expect(200)
+      .then((res) => {
+        if (!res || !res.body.data || res.body.data.length <= 0) {
+          return done(new Error('No data return'));
+        }
 
-    loadFixture(PinModel, pin, () => {
-      request(app)
-        // request in [lat, long] format
-        .get('/searchnearby?$center=[13.730537954909,100.56983580503]&$radius=1000')
-        .expect(200)
-        .then((res) => {
-          if (!res || !res.body.data || res.body.data.length <= 0) {
-            return done(new Error('No data return'));
-          }
+        const foundCoordinates = res.body.data[0].location.coordinates;
 
-          const foundCoordinates = res.body.data[0].location.coordinates;
-          expect(foundCoordinates).to.deep.equal([13.730537951109, 100.56983534303]);
+        expect(foundCoordinates).to.deep.equal([13.730537951109, 100.56983534303]);
 
-          done();
-        });
-    });
+        done();
+      });
   });
 
   it('limits a number of results', (done) => {
-    const pin1 = {
-      detail: casual.text,
-      owner: '579334c75563625d6281b6f1', // adminUser ObjectId
-      provider: '579334c75563625d6281b6f1', // adminUser ObjectId
-      location: {
-        coordinates: [100.56983534303, 13.730537951109],
-      },
-    };
-    const pin2 = {
-      detail: casual.text,
-      owner: '579334c75563625d6281b6f1', // adminUser ObjectId
-      provider: '579334c75563625d6281b6f1', // adminUser ObjectId
-      location: {
-        coordinates: [100.56983534303, 13.730537951109],
-      },
-    }
-    const pin3 = {
-      detail: casual.text,
-      owner: '579334c75563625d6281b6f1', // adminUser ObjectId
-      provider: '579334c75563625d6281b6f1', // adminUser ObjectId
-      location: {
-        coordinates: [100.56983534303, 13.730537951109],
-      },
-    };;
-    loadFixture(PinModel, pin1, () => {
-      loadFixture(PinModel, pin2, () => {
-        loadFixture(PinModel, pin3, () => {
-          request(app)
-            // request in [lat, long] format
-            .get('/searchnearby?$center=[13.730537954909,100.56983580503]&$radius=1000&limit=2')
-            .expect(200)
-            .then((res) => {
-              if (!res || !res.body.data || res.body.data.length <= 0) {
-                return done(new Error('No data return'));
-              }
+    request(app)
+      // request in [lat, long] format
+      .get('/searchnearby?$center=[13.730537954909,100.56983580503]&$radius=1000&limit=2')
+      .expect(200)
+      .then((res) => {
+        if (!res || !res.body.data || res.body.data.length <= 0) {
+          return done(new Error('No data return'));
+        }
 
-              expect(res.body.data.length).to.equal(2);
+        expect(res.body.data.length).to.equal(2);
 
-              done();
-            });
-        });
+        done();
       });
-    });
   });
 
   it('does not allow limit as a string', (done) => {
@@ -135,6 +99,7 @@ describe('searchnearby service', () => {
       .expect(400)
       .then((res) => {
         const error = res.body;
+
         expect(error.code).to.equal(400);
         expect(error.name).to.equal('BadRequest');
         expect(error.message).to.equal('`limit` must be integer');
@@ -150,6 +115,7 @@ describe('searchnearby service', () => {
       .expect(400)
       .then((res) => {
         const error = res.body;
+
         expect(error.code).to.equal(400);
         expect(error.name).to.equal('BadRequest');
         expect(error.message).to.equal('`limit` must be integer');
@@ -165,6 +131,7 @@ describe('searchnearby service', () => {
       .expect(400)
       .then((res) => {
         const error = res.body;
+
         expect(error.code).to.equal(400);
         expect(error.name).to.equal('BadRequest');
         expect(error.message).to.equal('`$radius` must be numeric');

@@ -17,21 +17,20 @@ describe('video service', function() {
 
   before((done) => {
     server = app.listen(9100);
-    server.once('listening', () => done());
-  });
-
-  beforeEach((done) => {
-    VideoModel.remove({}, done);
+    server.once('listening', () => {
+      done()
+    });
   });
 
   after((done) => {
     // Clears collection after finishing all tests.
-    server.close((err) => {
-      if (err) {
-        done(err);
-      }
+    VideoModel.remove({})
+    .then((_) => {
+      server.close((err) => {
+        if (err) return done(err);
 
-      VideoModel.remove({}, done);
+        done();
+      });
     });
   });
 
