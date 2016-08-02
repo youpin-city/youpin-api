@@ -1,18 +1,16 @@
-'use strict';
-
 const service = require('feathers-mongoose');
 const app3rd = require('./app3rd-model');
 const hooks = require('./hooks');
 
-module.exports = function() {
+module.exports = function () { // eslint-disable-line func-names
   const app = this;
 
   const options = {
     Model: app3rd,
     paginate: {
       default: 5,
-      max: 25
-    }
+      max: 25,
+    },
   };
 
   // Initialize our service with any options it requires
