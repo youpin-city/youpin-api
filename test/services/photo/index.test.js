@@ -8,7 +8,7 @@ const app = require('../../../src/app');
 // Exit test if NODE_ENV is not equal `test`
 assertTestEnv();
 
-describe('photo service', function() {
+describe('photo service', () => {
   it('registered the photos service', () => {
     expect(app.service('photos')).to.be.ok();
   });
