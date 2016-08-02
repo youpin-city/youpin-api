@@ -1,9 +1,8 @@
 const user = require('./user-model');
 const hooks = require('./hooks');
-
 const service = require('feathers-mongoose');
 
-module.exports = function() {
+module.exports = function () { // eslint-disable-line func-names
   const app = this;
 
   const options = {
@@ -13,7 +12,7 @@ module.exports = function() {
       max: 25,
     },
   };
-
+  /* eslint-disable max-len */
   /**
    * @api {get} /users/:id Get info
    * @apiVersion 0.1.0
@@ -126,6 +125,7 @@ module.exports = function() {
    *       "errors":{}
    *     }
    */
+   /* eslint-enable max-len */
 
   // Initialize our service with any options it requires
   app.use('/users', service(options));
