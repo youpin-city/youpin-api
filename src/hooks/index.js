@@ -8,10 +8,11 @@ const errors = require('feathers-errors');
 // see http://docs.feathersjs.com/hooks/readme.html for more details
 // on hooks.
 
-exports.authenticateAPI = function(options){
+/* eslint-disable func-names */
+exports.authenticateAPI = function (options) { // eslint-disable-line no-unused-vars
   return (hook) => {
     if (hook.type !== 'before') {
-      throw new Error(`The 'authenticateAPI' hook should only be used as a 'before' hook.`);
+      throw new Error('The \'authenticateAPI\' hook should only be used as a \'before\' hook.');
     }
     // If it was an internal call then skip this hook
     if (!hook.params.provider) {
@@ -41,20 +42,22 @@ exports.authenticateAPI = function(options){
     });
   };
 };
+/* eslint-enable func-names */
 
 
 function swapLatLongHelper(data) {
   if (Array.isArray(data)) {
-    data = data.map(obj => {
+    data = data.map(obj => { // eslint-disable-line no-param-reassign
       if (obj.location) {
-        obj.location.coordinates = [obj.location.coordinates[1], obj.location.coordinates[0]];
+        obj.location.coordinates = // eslint-disable-line no-param-reassign
+          [obj.location.coordinates[1], obj.location.coordinates[0]];
       }
       return obj;
     });
   } else {
     // Single object
     if (data.location) {
-      data.location.coordinates =
+      data.location.coordinates = // eslint-disable-line no-param-reassign
         [data.location.coordinates[1], data.location.coordinates[0]];
     }
   }
@@ -62,12 +65,13 @@ function swapLatLongHelper(data) {
 }
 
 // Mongo stores as [Long,Lat] but we want [Lat, Long]. So, swap them.
-exports.swapLatLong = function(options) {
-  return function(hook) {
+/* eslint-disable func-names */
+exports.swapLatLong = function (options) { // eslint-disable-line no-unused-vars
+  return (hook) => {
     // BeforeHook
-    var data = _.get(hook, 'data');
+    let data = _.get(hook, 'data');
     if (data) {
-      hook.data = swapLatLongHelper(data);
+      hook.data = swapLatLongHelper(data); // eslint-disable-line no-param-reassign
       return;
     }
     data = _.get(hook, 'result');
@@ -75,10 +79,11 @@ exports.swapLatLong = function(options) {
       // check if it is array -> result: { data: []}
       // or single object -> result: { id: ..., detail: ...}
       if (data.data) {
-        hook.result.data = swapLatLongHelper(data.data);
+        hook.result.data = swapLatLongHelper(data.data); // eslint-disable-line no-param-reassign
       } else {
-        hook.result = swapLatLongHelper(data);
+        hook.result = swapLatLongHelper(data); // eslint-disable-line no-param-reassign
       }
     }
   };
 };
+/* eslint-enable func-names */
