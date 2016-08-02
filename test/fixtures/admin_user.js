@@ -1,5 +1,3 @@
-const ObjectId = require('mongoose').Types.ObjectId;
-
 module.exports = {
   _id: '579334c75563625d6281b6f1',
   name: 'YouPin Admin',
