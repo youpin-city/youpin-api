@@ -1,5 +1,3 @@
-extends: airbnb
-plugins:
-  - react
+extends: airbnb/base
 rules:
   no-console: off
