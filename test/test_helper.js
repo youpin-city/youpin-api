@@ -5,7 +5,7 @@ const expect = chai.expect;
 const mongoose = require('mongoose');
 const loadFixture = require('mongoose-fixture-loader');
 
-var assertTestEnv = function() {
+const assertTestEnv = () => {
   // Makes sure that this is actually TEST environment
   if (process.env.NODE_ENV !== 'test') {
     console.log('Woops, you want NODE_ENV=test before you try this again!');
@@ -21,7 +21,7 @@ var assertTestEnv = function() {
 
 
 module.exports = {
-  assertTestEnv: assertTestEnv,
-  expect: expect,
-  loadFixture: loadFixture,
+  assertTestEnv,
+  expect,
+  loadFixture,
 };
