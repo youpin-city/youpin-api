@@ -1,15 +1,13 @@
-'use strict';
-
 const multer = require('multer');
 
-const uploader = function(fileSize) {
+const uploader = function uploader(fileSize) {
   return multer({
     inMemory: true,
-    fileSize: fileSize,
-    rename: function(fieldname, filename) {
+    fileSize,
+    rename(fieldname, filename) {
       // generate a unique filename
       return filename.replace(/\W+/g, '-').toLowerCase() + Date.now();
-    }
+    },
   });
 };
 
