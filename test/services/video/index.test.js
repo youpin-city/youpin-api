@@ -27,10 +27,11 @@ describe('video service', function() {
   after((done) => {
     // Clears collection after finishing all tests.
     server.close((err) => {
-      if (err) { throw err; }
-      VideoModel
-        .remove({})
-        .then(() => VideoModel.remove({}, done));
+      if (err) {
+        done(err);
+      }
+
+      VideoModel.remove({}, done);
     });
   });
 

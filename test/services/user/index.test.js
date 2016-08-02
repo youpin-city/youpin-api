@@ -37,7 +37,10 @@ describe('user service', () => {
   // Clears collection after finishing all tests.
   after((done) => {
     server.close((err) => {
-      if (err) { throw err; }
+      if (err) {
+        return done(err);
+      }
+
       UserModel
         .remove({})
         .then(() => App3rdModel.remove({}, done));
@@ -57,7 +60,7 @@ describe('user service', () => {
       });
     });
 
-    it('return user array conatining only admin user', () =>
+    it('return user array conatining only admin user', (done) =>
       request(app)
         .post('/auth/local')
         .send({
@@ -66,10 +69,12 @@ describe('user service', () => {
         })
         .then((tokenResp) => {
           const token = tokenResp.body.token;
+
           if (!token) {
-            throw new Error('No token returns');
+            return done(new Error('No token returns'));
           }
-          return request(app)
+
+          request(app)
             .get('/users')
             .set('Authorization', `Bearer ${token}`)
             .set('X-YOUPIN-3-APP-KEY',
@@ -79,6 +84,7 @@ describe('user service', () => {
               const body = userResp.body;
               expect(body).to.have.all.keys(['total', 'limit', 'skip', 'data']);
               expect(body.total).to.equal(1);
+
               const userDataList = userResp.body.data;
               expect(userDataList).to.be.a('array');
               expect(userDataList).to.have.lengthOf(1);
@@ -88,6 +94,8 @@ describe('user service', () => {
               expect(userDataList[0].email).to.equal('contact@youpin.city');
               // also check response does not contain password
               expect(userDataList).to.not.have.keys('password');
+
+              done();
             });
         })
     );
@@ -101,8 +109,8 @@ describe('user service', () => {
       });
     });
 
-    it('return 404 NotFound when user does not exist', () => {
-      return request(app)
+    it('return 404 NotFound when user does not exist', (done) => {
+      request(app)
         .post('/auth/local')
         .send({
           email: 'contact@youpin.city',
@@ -112,11 +120,12 @@ describe('user service', () => {
           const token = tokenResp.body.token;
 
           if (!token) {
-            throw new Error('No token returns');
+            done(new Error('No token returns'));
           }
 
           const notExistingUserId = '111';
-          return request(app)
+
+          request(app)
             .get(`/users/${notExistingUserId}`)
             .set('Authorization', `Bearer ${token}`)
             .set('X-YOUPIN-3-APP-KEY',
@@ -127,12 +136,14 @@ describe('user service', () => {
               expect(error.code).to.equal(404);
               expect(error.name).to.equal('NotFound');
               expect(error.message).to.equal(`No record found for id '${notExistingUserId}'`);
+
+              done();
             });
         });
     });
 
-    it('return an admin user object', () => {
-      return request(app)
+    it('return an admin user object', (done) => {
+      request(app)
         .post('/auth/local')
         .send({
           email: 'contact@youpin.city',
@@ -142,10 +153,10 @@ describe('user service', () => {
           const token = tokenResp.body.token;
 
           if (!token) {
-            throw new Error('No token returns');
+            done(new Error('No token returns'));
           }
 
-          return request(app)
+          request(app)
             .get(`/users/${adminUser._id}`)
             .set('Authorization', `Bearer ${token}`)
             .set('X-YOUPIN-3-APP-KEY',
@@ -160,6 +171,8 @@ describe('user service', () => {
               expect(body.email).to.equal('contact@youpin.city');
               // also check response does not contain password
               expect(body).to.not.have.keys('password');
+
+              done();
             });
         });
     });
@@ -171,27 +184,32 @@ describe('user service', () => {
       loadFixture(App3rdModel, adminApp3rd, done);
     });
 
-    it('return errors when posting an incomplete required field', () => {
+    it('return errors when posting an incomplete required field', (done) => {
       const newUser = {
         name: casual.name,
       };
-      return request(app)
+
+      request(app)
         .post('/users')
         .set('X-YOUPIN-3-APP-KEY',
           '579b04ac516706156da5bba1:ed545297-4024-4a75-89b4-c95fed1df436')
         .send(newUser)
-        .expect(400);
+        .expect(400)
+        .then((resp) => {
+          done();
+        });
     });
-    
+
     it('return 201 when posting a complete required field' +
-      ' and "pasword" should not be returned', () => {
+      ' and "pasword" should not be returned', (done) => {
       const newUser = {
         name: casual.name,
         email: casual.email,
         password: casual.password,
         role: 'user',
       };
-      return request(app)
+
+      request(app)
         .post('/users')
         .set('X-YOUPIN-3-APP-KEY',
           '579b04ac516706156da5bba1:ed545297-4024-4a75-89b4-c95fed1df436')
@@ -204,6 +222,8 @@ describe('user service', () => {
             ['_id', 'email', 'name', 'role', 'created_time',
             'updated_time', 'owner_app_id', 'customer_app_id']);
           expect(createdUser).to.not.contain.keys('password');
+
+          done();
         });
     });
   });
