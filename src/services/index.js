@@ -10,7 +10,7 @@ const searchnearby = require('./searchnearby');
 const user = require('./user');
 const video = require('./video');
 
-module.exports = function () {
+module.exports = function () { // eslint-disable-line func-names
   const app = this;
 
   mongoose.connect(app.get('mongodb'));
