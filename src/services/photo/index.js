@@ -1,10 +1,7 @@
-'use strict';
-
 const Promise = require('bluebird');
 const errors = require('feathers-errors');
 const request = require('superagent');
 const gcloud = require('gcloud');
-const fs = require('fs');
 const urlparser = require('url');
 const multer = require('multer');
 const hooks = require('./hooks');
@@ -14,7 +11,7 @@ const CLOUD_BUCKET = 'staging.you-pin.appspot.com';
 
 const gcs = gcloud.storage({
   projectId: 'You-pin',
-  keyFilename: './youpin_gcs_credentials.json'
+  keyFilename: './youpin_gcs_credentials.json',
 });
 
 const bucket = gcs.bucket(CLOUD_BUCKET);
@@ -22,37 +19,37 @@ const bucket = gcs.bucket(CLOUD_BUCKET);
 const uploader = multer({
   inMemory: true,
   fileSize: 5 * 1024 * 1024, // no larger than 5MB
-  rename: function(fieldname, filename) {
+  rename(fieldname, filename) {
     // generate a unique filename
     return filename.replace(/\W+/g, '-').toLowerCase() + Date.now();
-  }
+  },
 });
 
-function getPublicUrl (filename) {
-  return 'https://storage.googleapis.com/' + CLOUD_BUCKET + '/' + filename;
+function getPublicUrl(filename) {
+  return `https://storage.googleapis.com/${CLOUD_BUCKET}/${filename}`;
 }
 
 function uploadToGCS(reqFile) {
-  return new Promise(function (resolve, reject) {
+  return new Promise((resolve, reject) => { // eslint-disable-line consistent-return
     if (!reqFile) {
       return reject(new Error('No file provided'));
     }
 
-    const gcsname = Date.now() + '_' + reqFile.originalname;
+    const gcsname = `${Date.now()}_${reqFile.originalname}`;
     const bucketFile = bucket.file(gcsname);
     const stream = bucketFile.createWriteStream();
 
-    stream.on('error', function (err) {
-      reqFile.cloudStorageError = err;
+    stream.on('error', (err) => {
+      reqFile.cloudStorageError = err; // eslint-disable-line no-param-reassign
 
       return reject(err);
     });
 
-    stream.on('finish', function () {
+    stream.on('finish', () => {
       const publicUrl = getPublicUrl(gcsname);
 
-      reqFile.cloudStorageObject = gcsname;
-      reqFile.cloudStoragePublicUrl = publicUrl;
+      reqFile.cloudStorageObject = gcsname; // eslint-disable-line no-param-reassign
+      reqFile.cloudStoragePublicUrl = publicUrl; // eslint-disable-line no-param-reassign
 
       return resolve(reqFile);
     });
@@ -77,9 +74,9 @@ function getMetadataFromUrl(url) {
         const size = photoHeaderResp.header['content-length'];
 
         return resolve({
-          filename: filename,
-          mimetype: mimetype,
-          size: size
+          filename,
+          mimetype,
+          size,
         });
       });
   });
@@ -88,50 +85,44 @@ function getMetadataFromUrl(url) {
 // Get metadata and download a file from URL, then, upload it to GCS
 function uploadToGCSByUrl(url) {
   return getMetadataFromUrl(url)
-    .then((metadata) => {
-      return new Promise((resolve, reject) => {
-        const gcsname = Date.now() + '_' + metadata.filename;
-        const gcsfile = bucket.file(gcsname);
-        const filePublicUrl = getPublicUrl(gcsname);
+    .then((metadata) => new Promise((resolve, reject) => {
+      const gcsname = `${Date.now()}_${metadata.filename}`;
+      const gcsfile = bucket.file(gcsname);
+      const filePublicUrl = getPublicUrl(gcsname);
 
-        console.log('Downloading photo...');
-        console.log('Name: ' + metadata.filename);
-        console.log('Mimetype: ' + metadata.mimetype);
-        console.log('Size: ' + metadata.size);
-        console.log('To: ' + filePublicUrl);
+      console.log('Downloading photo...');
+      console.log(`Name: ${metadata.filename}`);
+      console.log(`Mimetype: ${metadata.mimetype}`);
+      console.log(`Size: ${metadata.size}`);
+      console.log(`To: ${filePublicUrl}`);
 
-        // Download and pipe it to GCS
-        var uploadPipe = request.get(url).pipe(gcsfile.createWriteStream());
+      // Download and pipe it to GCS
+      const uploadPipe = request.get(url).pipe(gcsfile.createWriteStream());
 
-        uploadPipe.on('error', function(err) {
-          return reject(err);
-        });
+      uploadPipe.on('error', (err) => reject(err));
 
-        uploadPipe.on('finish', function() {
-          const file = {
-            cloudStoragePublicUrl: filePublicUrl,
-            mimetype: metadata.mimetype,
-            size: metadata.size
-          };
-          return resolve(file);
-        });
+      uploadPipe.on('finish', () => {
+        const file = {
+          cloudStoragePublicUrl: filePublicUrl,
+          mimetype: metadata.mimetype,
+          size: metadata.size,
+        };
+        return resolve(file);
       });
-    })
-    .catch((error) => {
-      return Promise.reject(error);
-    });
+    }))
+    .catch((error) => Promise.reject(error));
 }
 
 // Save photo metadata to database
 function savePhotoMetadata(file) {
-  return new Promise(function (resolve, reject) {
+  return new Promise((resolve, reject) => {
     const photo = new Photo({
       url: file.cloudStoragePublicUrl,
       mimetype: file.mimetype,
-      size: file.size
+      size: file.size,
     });
 
-    photo.save(function (err, photoDoc) {
+    photo.save((err, photoDoc) => {
       if (err) {
         return reject(err);
       }
@@ -142,7 +133,7 @@ function savePhotoMetadata(file) {
 }
 
 function respondWithPhotoMetadata(photoDocument) {
-  return new Promise(function (resolve, reject) {
+  return new Promise((resolve, reject) => {
     if (!photoDocument) {
       return reject(new errors.GeneralError('No photo provided'));
     }
@@ -160,10 +151,10 @@ function respondWithPhotoMetadata(photoDocument) {
     }
 
     return resolve({
-      id: photoDocument._id,
+      id: photoDocument._id, // eslint-disable-line no-underscore-dangle
       url: photoDocument.url,
       mimetype: photoDocument.mimetype,
-      size: photoDocument.size
+      size: photoDocument.size,
     });
   });
 }
@@ -171,9 +162,7 @@ function respondWithPhotoMetadata(photoDocument) {
 class PhotosService {
   get(id) {
     return Photo.findById(id, (err, photo) => {
-      if (err) {
-        return Promise.reject(err);
-      }
+      if (err) return Promise.reject(err);
 
       return Promise.resolve(photo);
     });
@@ -181,34 +170,22 @@ class PhotosService {
 
   create(data, params) {
     return uploadToGCS(params.file)
-    .then((file) => {
-      return savePhotoMetadata(file);
-    })
-    .then((photoDoc) => {
-      return respondWithPhotoMetadata(photoDoc);
-    })
-    .catch((err) => {
-      return Promise.reject(err);
-    });
+    .then((file) => savePhotoMetadata(file))
+    .then((photoDoc) => respondWithPhotoMetadata(photoDoc))
+    .catch((err) => Promise.reject(err));
   }
 }
 
 
 function uploadSaveRespondByUrl(url) {
   return uploadToGCSByUrl(url)
-    .then((file) => {
-      return savePhotoMetadata(file);
-    })
-    .then((photoDoc) => {
-      return respondWithPhotoMetadata(photoDoc);
-    })
-    .catch((error) => {
-      return Promise.reject(error);
-    });
+    .then((file) => savePhotoMetadata(file))
+    .then((photoDoc) => respondWithPhotoMetadata(photoDoc))
+    .catch((error) => Promise.reject(error));
 }
 
 class UploadPhotoFromUrlService {
-  create(data, params) {
+  create(data, params) { // eslint-disable-line no-unused-vars
     if (!data.url) {
       return Promise.reject(new errors.BadRequest('No URL provided'));
     }
@@ -218,7 +195,7 @@ class UploadPhotoFromUrlService {
 }
 
 class BulkUploadPhotosFromUrlsService {
-  create(data, params) {
+  create(data, params) { // eslint-disable-line no-unused-vars
     if (!data.urls) {
       return Promise.reject(new errors.BadRequest('No URLs provided'));
     }
@@ -238,20 +215,20 @@ function prepareMultipart(req, res, next) {
     return uploader.single('image')(req, res, next);
   }
 
-  next();
+  return next();
 }
 
 // Middle to attach file from multer (uploader) to the req object
 function attachFileToFeathers(req, res, next) {
   // Bypass this middleware if it's not a POST request or file is not available
   if (req.method.toLowerCase() === 'post' && req.file) {
-    req.feathers.file = req.file;
+    req.feathers.file = req.file; // eslint-disable-line no-param-reassign
   }
 
   next();
 }
 
-module.exports = function(){
+module.exports = function () { // eslint-disable-line func-names
   const app = this;
 
   /**
