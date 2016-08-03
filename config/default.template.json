@@ -34,6 +34,6 @@
     "gcsUrl": "https://storage.googleapis.com",
     "bucket": "your GCS bucket name",
     "projectId": "your GCS project ID",
-    "keyFile": "your credentials key file path",
+    "keyFile": "your credentials key file path"
   }
 }

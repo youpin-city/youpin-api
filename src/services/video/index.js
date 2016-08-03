@@ -5,31 +5,33 @@ const hooks = require('./hooks');
 const Video = require('./video-model');
 
 // Middleware for handling file upload
-const VIDEO_SIZE = 5 * 1024 * 1024;
+const VIDEO_SIZE = 20 * 1024 * 1024;
 const prepareMultipart = require('../../middleware/prepare-multipart')('video', VIDEO_SIZE);
 const attachFileToFeathers = require('../../middleware/attach-file-to-feathers')();
 
-const CLOUD_BUCKET = 'staging.you-pin.appspot.com';
+function getGCSBucketFile(gcsFileName, gcsConfig) {
+  const gcs = gcloud.storage({
+    projectId: gcsConfig.projectId,
+    keyFilename: gcsConfig.keyFile,
+  });
+  const bucket = gcs.bucket(gcsConfig.bucket);
+  const bucketFile = bucket.file(gcsFileName);
 
-const gcs = gcloud.storage({
-  projectId: 'You-pin',
-  keyFilename: './youpin_gcs_credentials.json',
-});
-
-const bucket = gcs.bucket(CLOUD_BUCKET);
-
-function getPublicUrl(filename) {
-  return `https://storage.googleapis.com/${CLOUD_BUCKET}/${filename}`;
+  return bucketFile;
 }
 
-function uploadToGCS(reqFile) {
+function getGCSPublicUrl(gcsFileName, gcsConfig) {
+  return `${gcsConfig.gcsUrl}/${gcsConfig.bucket}/${gcsFileName}`;
+}
+
+function uploadToGCS(reqFile, gcsConfig) {
   return new Promise((resolve, reject) => { // eslint-disable-line consistent-return
     if (!reqFile) {
       return reject(new Error('No file provided'));
     }
 
-    const gcsname = `${Date.now()}_${reqFile.originalname}`;
-    const bucketFile = bucket.file(gcsname);
+    const gcsFileName = `${Date.now()}_${reqFile.originalname}`;
+    const bucketFile = getGCSBucketFile(gcsFileName, gcsConfig);
     const stream = bucketFile.createWriteStream();
 
     stream.on('error', (err) => {
@@ -39,10 +41,10 @@ function uploadToGCS(reqFile) {
     });
 
     stream.on('finish', () => {
-      const publicUrl = getPublicUrl(gcsname);
+      const publicUrl = getGCSPublicUrl(gcsFileName, gcsConfig);
 
       /* eslint-disable no-param-reassign */
-      reqFile.cloudStorageObject = gcsname;
+      reqFile.cloudStorageObject = gcsFileName;
       reqFile.cloudStoragePublicUrl = publicUrl;
       /* eslint-enable no-param-reassign */
 
@@ -99,6 +101,10 @@ function respondWithVideoMetadata(videoDocument) {
 
 
 class VideosService {
+  setup(app) {
+    this.app = app;
+  }
+
   get(id) {
     return Video.findById(id, (err, video) => {
       if (err) {
@@ -110,7 +116,9 @@ class VideosService {
   }
 
   create(data, params) {
-    return uploadToGCS(params.file)
+    const gcsConfig = this.app.get('gcs');
+
+    return uploadToGCS(params.file, gcsConfig)
     .then((file) => saveVideoMetadata(file))
     .then((videoDoc) => respondWithVideoMetadata(videoDoc))
     .catch((err) => Promise.reject(err));

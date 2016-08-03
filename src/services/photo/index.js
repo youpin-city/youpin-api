@@ -8,30 +8,30 @@ const Photo = require('./photo-model');
 
 // Middleware for handling file upload
 const IMAGE_SIZE = 5 * 1024 * 1024;
-const prepareMultipart = require('../../middleware/prepare-multipart')('video', IMAGE_SIZE);
+const prepareMultipart = require('../../middleware/prepare-multipart')('image', IMAGE_SIZE);
 const attachFileToFeathers = require('../../middleware/attach-file-to-feathers')();
 
-const CLOUD_BUCKET = 'staging.you-pin.appspot.com';
+function getGCSBucketFile(gcsFileName, gcsConfig) {
+  const gcs = gcloud.storage({
+    projectId: gcsConfig.projectId,
+    keyFilename: gcsConfig.keyFile,
+  });
+  const bucket = gcs.bucket(gcsConfig.bucket);
+  const bucketFile = bucket.file(gcsFileName);
 
-const gcs = gcloud.storage({
-  projectId: 'You-pin',
-  keyFilename: './youpin_gcs_credentials.json',
-});
-
-const bucket = gcs.bucket(CLOUD_BUCKET);
-
-function getPublicUrl(filename) {
-  return `https://storage.googleapis.com/${CLOUD_BUCKET}/${filename}`;
+  return bucketFile;
 }
 
-function uploadToGCS(reqFile) {
-  return new Promise((resolve, reject) => { // eslint-disable-line consistent-return
-    if (!reqFile) {
-      return reject(new Error('No file provided'));
-    }
+function getGCSPublicUrl(gcsFileName, gcsConfig) {
+  return `${gcsConfig.gcsUrl}/${gcsConfig.bucket}/${gcsFileName}`;
+}
 
-    const gcsname = `${Date.now()}_${reqFile.originalname}`;
-    const bucketFile = bucket.file(gcsname);
+function uploadToGCS(reqFile, gcsConfig) {
+  return new Promise((resolve, reject) => { // eslint-disable-line consistent-return
+    if (!reqFile) return reject(new Error('No file provided'));
+
+    const gcsFileName = `${Date.now()}_${reqFile.originalname}`;
+    const bucketFile = getGCSBucketFile(gcsFileName, gcsConfig);
     const stream = bucketFile.createWriteStream();
 
     stream.on('error', (err) => {
@@ -41,10 +41,12 @@ function uploadToGCS(reqFile) {
     });
 
     stream.on('finish', () => {
-      const publicUrl = getPublicUrl(gcsname);
+      const publicUrl = getGCSPublicUrl(gcsFileName, gcsConfig);
 
-      reqFile.cloudStorageObject = gcsname; // eslint-disable-line no-param-reassign
-      reqFile.cloudStoragePublicUrl = publicUrl; // eslint-disable-line no-param-reassign
+      /* eslint-disable no-param-reassign */
+      reqFile.cloudStorageObject = gcsFileName;
+      reqFile.cloudStoragePublicUrl = publicUrl;
+      /* eslint-enable no-param-reassign */
 
       return resolve(reqFile);
     });
@@ -75,12 +77,12 @@ function getMetadataFromUrl(url) {
 }
 
 // Get metadata and download a file from URL, then, upload it to GCS
-function uploadToGCSByUrl(url) {
+function uploadToGCSByUrl(url, gcsConfig) {
   return getMetadataFromUrl(url)
     .then((metadata) => new Promise((resolve, reject) => {
-      const gcsname = `${Date.now()}_${metadata.filename}`;
-      const gcsfile = bucket.file(gcsname);
-      const filePublicUrl = getPublicUrl(gcsname);
+      const gcsFileName = `${Date.now()}_${metadata.filename}`;
+      const bucketFile = getGCSBucketFile(gcsFileName, gcsConfig);
+      const filePublicUrl = getGCSPublicUrl(gcsFileName, gcsConfig);
 
       console.log('Downloading photo...');
       console.log(`Name: ${metadata.filename}`);
@@ -89,7 +91,7 @@ function uploadToGCSByUrl(url) {
       console.log(`To: ${filePublicUrl}`);
 
       // Download and pipe it to GCS
-      const uploadPipe = request.get(url).pipe(gcsfile.createWriteStream());
+      const uploadPipe = request.get(url).pipe(bucketFile.createWriteStream());
 
       uploadPipe.on('error', (err) => reject(err));
 
@@ -150,6 +152,10 @@ function respondWithPhotoMetadata(photoDocument) {
 }
 
 class PhotosService {
+  setup(app) {
+    this.app = app;
+  }
+
   get(id) {
     return Photo.findById(id, (err, photo) => {
       if (err) return Promise.reject(err);
@@ -159,30 +165,43 @@ class PhotosService {
   }
 
   create(data, params) {
-    return uploadToGCS(params.file)
+    const gcsConfig = this.app.get('gcs');
+
+    return uploadToGCS(params.file, gcsConfig)
     .then((file) => savePhotoMetadata(file))
     .then((photoDoc) => respondWithPhotoMetadata(photoDoc))
     .catch((err) => Promise.reject(err));
   }
 }
 
-function uploadSaveRespondByUrl(url) {
-  return uploadToGCSByUrl(url)
+function uploadSaveRespondByUrl(url, gcsConfig) {
+  return uploadToGCSByUrl(url, gcsConfig)
     .then((file) => savePhotoMetadata(file))
     .then((photoDoc) => respondWithPhotoMetadata(photoDoc))
     .catch((error) => Promise.reject(error));
 }
 
 class UploadPhotoFromUrlService {
+  setup(app) {
+    this.app = app;
+  }
+
   create(data, params) { // eslint-disable-line no-unused-vars
     if (!data.url) {
       return Promise.reject(new errors.BadRequest('No URL provided'));
     }
-    return uploadSaveRespondByUrl(data.url);
+
+    const gcsConfig = this.app.get('gcs');
+
+    return uploadSaveRespondByUrl(data.url, gcsConfig);
   }
 }
 
 class BulkUploadPhotosFromUrlsService {
+  setup(app) {
+    this.app = app;
+  }
+
   create(data, params) { // eslint-disable-line no-unused-vars
     if (!data.urls) {
       return Promise.reject(new errors.BadRequest('No URLs provided'));
@@ -192,7 +211,11 @@ class BulkUploadPhotosFromUrlsService {
       return Promise.reject(new errors.BadRequest('Value of urls is not an array'));
     }
 
-    return Promise.all(data.urls.map(uploadSaveRespondByUrl));
+    const gcsConfig = this.app.get('gcs');
+
+    return Promise.all(
+      data.urls.map((url) => uploadSaveRespondByUrl(url, gcsConfig))
+    );
   }
 }
 

@@ -28,5 +28,11 @@
         "scope": ["profile"]
       }
     }
+  },
+  "gcs": {
+    "gcsUrl": "https://storage.googleapis.com",
+    "bucket": "your GCS bucket name",
+    "projectId": "your GGS project ID",
+    "keyFile": "your credentials key file path"
   }
 }
