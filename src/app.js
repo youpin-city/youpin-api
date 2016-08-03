@@ -41,6 +41,7 @@ app.use(compress())
   // set X-YOUPIN-3-APP-KEY for app authentication hook
   .use((req, res, next) => {
     const youpinAppKeyName = 'X-YOUPIN-3-APP-KEY';
+
     if (req.get(youpinAppKeyName)) {
       req.feathers.youpinAppKey = // eslint-disable-line no-param-reassign
         req.get(youpinAppKeyName);

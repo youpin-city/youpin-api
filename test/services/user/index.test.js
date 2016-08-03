@@ -2,7 +2,7 @@
 const assertTestEnv = require('../../test_helper').assertTestEnv;
 const casual = require('casual');
 const expect = require('../../test_helper').expect;
-const loadFixture = require('../../test_helper').loadFixture
+const loadFixture = require('../../test_helper').loadFixture;
 const request = require('supertest-as-promised');
 
 // Models
@@ -15,7 +15,6 @@ const adminUser = require('../../fixtures/admin_user.js');
 
 // App stuff
 const app = require('../../../src/app');
-const mongoose = require('mongoose');
 
 // Exit test if NODE_ENV is not equal `test`
 assertTestEnv();
@@ -28,14 +27,14 @@ describe('user service', () => {
     server.once('listening', () => {
       Promise.all([
         loadFixture(UserModel, adminUser),
-        loadFixture(App3rdModel, adminApp3rd)
+        loadFixture(App3rdModel, adminApp3rd),
       ])
-      .then((_) => {
+      .then(() => {
         done();
       })
       .catch((err) => {
         done(err);
-      })
+      });
     });
   });
 
@@ -43,15 +42,15 @@ describe('user service', () => {
     // Clear all collections after finishing all tests.
     Promise.all([
       UserModel.remove({}),
-      App3rdModel.remove({})
+      App3rdModel.remove({}),
     ])
-    .then((_) => {
+    .then(() => {
       // Close the server
       server.close((err) => {
         if (err) return done(err);
 
-        done();
-      })
+        return done();
+      });
     });
   });
 
@@ -76,7 +75,7 @@ describe('user service', () => {
             return done(new Error('No token returns'));
           }
           // Get list of users
-          request(app)
+          return request(app)
             .get('/users')
             .set('Authorization', `Bearer ${token}`)
             .set('X-YOUPIN-3-APP-KEY',
@@ -155,7 +154,7 @@ describe('user service', () => {
           }
 
           request(app)
-            .get(`/users/${adminUser._id}`)
+            .get(`/users/${adminUser._id}`) // eslint-disable-line no-underscore-dangle
             .set('Authorization', `Bearer ${token}`)
             .set('X-YOUPIN-3-APP-KEY',
               '579b04ac516706156da5bba1:ed545297-4024-4a75-89b4-c95fed1df436')

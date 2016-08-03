@@ -1,13 +1,11 @@
-var isNumericString = function(n) {
-  return !isNaN(parseFloat(n)) && isFinite(n);
-}
+const isNumericString = (n) => !isNaN(parseFloat(n)) && isFinite(n);
 
-var isIntegerString = function(n) {
-  var n = parseFloat(n);
-  return Math.floor(n) === n;
-}
+const isIntegerString = (n) => {
+  const floatN = parseFloat(n);
+  return Math.floor(floatN) === floatN;
+};
 
 module.exports = {
-  isNumericString: isNumericString,
-  isIntegerString: isIntegerString
+  isNumericString,
+  isIntegerString,
 };

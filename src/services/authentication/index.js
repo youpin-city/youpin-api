@@ -1,5 +1,3 @@
-'use strict';
-
 const authentication = require('feathers-authentication');
 
 const FacebookStrategy = require('passport-facebook').Strategy;
@@ -9,11 +7,11 @@ const GithubTokenStrategy = require('passport-github-token');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const GoogleTokenStrategy = require('passport-google-token').Strategy;
 
-module.exports = function() {
+module.exports = function () { // eslint-disable-line func-names
   const app = this;
 
-  let config = app.get('auth');
-  
+  const config = app.get('auth');
+
   config.facebook.strategy = FacebookStrategy;
   config.facebook.tokenStrategy = FacebookTokenStrategy;
   config.github.strategy = GithubStrategy;

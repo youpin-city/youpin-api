@@ -4,7 +4,7 @@ const hooks = require('feathers-hooks');
 const authentication = require('feathers-authentication/client');
 const request = require('superagent');
 
-module.exports = function () {
+module.exports = function () { // eslint-disable-line func-names
   const app = this;
   const client = feathers()
     .configure(hooks())

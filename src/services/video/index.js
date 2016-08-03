@@ -1,11 +1,6 @@
-'use strict';
-
 const errors = require('feathers-errors');
-const fs = require('fs');
 const gcloud = require('gcloud');
 const Promise = require('bluebird');
-const request = require('superagent');
-const urlparser = require('url');
 const hooks = require('./hooks');
 const Video = require('./video-model');
 
@@ -18,36 +13,40 @@ const CLOUD_BUCKET = 'staging.you-pin.appspot.com';
 
 const gcs = gcloud.storage({
   projectId: 'You-pin',
-  keyFilename: './youpin_gcs_credentials.json'
+  keyFilename: './youpin_gcs_credentials.json',
 });
 
 const bucket = gcs.bucket(CLOUD_BUCKET);
 
-function getPublicUrl (filename) {
-  return 'https://storage.googleapis.com/' + CLOUD_BUCKET + '/' + filename;
+function getPublicUrl(filename) {
+  return `https://storage.googleapis.com/${CLOUD_BUCKET}/${filename}`;
 }
 
 function uploadToGCS(reqFile) {
-  return new Promise(function (resolve, reject) {
+  return new Promise((resolve, reject) => { // eslint-disable-line consistent-return
     if (!reqFile) {
       return reject(new Error('No file provided'));
     }
 
-    const gcsname = Date.now() + '_' + reqFile.originalname;
+    const gcsname = `${Date.now()}_${reqFile.originalname}`;
     const bucketFile = bucket.file(gcsname);
     const stream = bucketFile.createWriteStream();
 
-    stream.on('error', function (err) {
+    stream.on('error', (err) => {
+      /* eslint-disable no-param-reassign */
       reqFile.cloudStorageError = err;
+      /* eslint-enable no-param-reassign */
 
       return reject(err);
     });
 
-    stream.on('finish', function () {
+    stream.on('finish', () => {
       const publicUrl = getPublicUrl(gcsname);
 
+      /* eslint-disable no-param-reassign */
       reqFile.cloudStorageObject = gcsname;
       reqFile.cloudStoragePublicUrl = publicUrl;
+      /* eslint-enable no-param-reassign */
 
       return resolve(reqFile);
     });
@@ -58,17 +57,15 @@ function uploadToGCS(reqFile) {
 
 // Save video metadata to database
 function saveVideoMetadata(file) {
-  return new Promise(function (resolve, reject) {
+  return new Promise((resolve, reject) => {
     const video = new Video({
       url: file.cloudStoragePublicUrl,
       mimetype: file.mimetype,
-      size: file.size
+      size: file.size,
     });
 
-    video.save(function (err, videoDoc) {
-      if (err) {
-        return reject(err);
-      }
+    video.save((err, videoDoc) => {
+      if (err) return reject(err);
 
       return resolve(videoDoc);
     });
@@ -76,7 +73,7 @@ function saveVideoMetadata(file) {
 }
 
 function respondWithVideoMetadata(videoDocument) {
-  return new Promise(function (resolve, reject) {
+  return new Promise((resolve, reject) => {
     if (!videoDocument) {
       return reject(new errors.GeneralError('No video provided'));
     }
@@ -94,10 +91,10 @@ function respondWithVideoMetadata(videoDocument) {
     }
 
     return resolve({
-      id: videoDocument._id,
+      id: videoDocument._id, // eslint-disable-line no-underscore-dangle
       url: videoDocument.url,
       mimetype: videoDocument.mimetype,
-      size: videoDocument.size
+      size: videoDocument.size,
     });
   });
 }
@@ -116,19 +113,13 @@ class VideosService {
 
   create(data, params) {
     return uploadToGCS(params.file)
-    .then((file) => {
-      return saveVideoMetadata(file);
-    })
-    .then((videoDoc) => {
-      return respondWithVideoMetadata(videoDoc);
-    })
-    .catch((err) => {
-      return Promise.reject(err);
-    });
+    .then((file) => saveVideoMetadata(file))
+    .then((videoDoc) => respondWithVideoMetadata(videoDoc))
+    .catch((err) => Promise.reject(err));
   }
 }
 
-module.exports = function() {
+module.exports = function () { // eslint-disable-line func-names
   const app = this;
 
   app.use('/videos', prepareMultipart, attachFileToFeathers, new VideosService());

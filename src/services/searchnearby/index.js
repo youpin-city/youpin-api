@@ -1,7 +1,4 @@
-'use strict';
-
 const hooks = require('./hooks');
-
 const Promise = require('bluebird');
 const errors = require('feathers-errors');
 const Pin = require('../pin/pin-model.js');
@@ -11,7 +8,7 @@ class Service {
   constructor(options) {
     this.options = options || {};
   }
-
+  /* eslint-disable max-len */
   /**
    * @api {get} /searchnearby Search nearby
    * @apiDescription Get a list of pins within a circle area
@@ -87,6 +84,7 @@ class Service {
    *       "errors":{}
    *     }
    */
+  /* eslint-enable max-len */
   find(params) {
     if (!params.query.$center) {
       return Promise.reject(new errors.BadRequest('Please assign the value to $center.'));
@@ -101,39 +99,35 @@ class Service {
     }
 
     // Default limit: 10
-    const limit = parseInt(params.query.limit) || 10;
+    const limit = parseInt(params.query.limit, 10) || 10;
     // Default maxDistance: 1 km
     const maxDistance = parseFloat(params.query.$radius) || 1000;
     // TODO(A): Check if string is correct array format, if not, return meaningful error.
-    var coordinate = JSON.parse(params.query.$center);
+    let coordinate = JSON.parse(params.query.$center);
     // We get [lat, long] but mongo need [long, lat]. So, swap them.
     coordinate = [coordinate[1], coordinate[0]];
     return Pin.find({
       location: {
         $near: {
-          $geometry : {
-            type : 'Point',
-            coordinates : coordinate
+          $geometry: {
+            type: 'Point',
+            coordinates: coordinate,
           },
-          $maxDistance: maxDistance
-        }
-      }
+          $maxDistance: maxDistance,
+        },
+      },
     })
-    .limit(limit).exec()
-    .then(function(results) {
-      // TODO(A): Add total and pagination
-      return Promise.resolve({
-        limit: limit,
-        data: results
-      });
-    })
-    .catch(function(err) {
-      return Promise.resolve(new errors.GeneralError(err));
-    });
+    .limit(limit)
+    .exec()
+    .then((results) => Promise.resolve({
+      limit,
+      data: results,
+    }))
+    .catch((err) => Promise.resolve(new errors.GeneralError(err)));
   }
 }
 
-module.exports = function(){
+module.exports = function () { // eslint-disable-line func-names
   const app = this;
 
   // Initialize our service with any options it requires

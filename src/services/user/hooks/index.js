@@ -1,47 +1,42 @@
-'use strict';
-
-const globalHooks = require('../../../hooks');
 const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication').hooks;
 const verifyObjectId = require('../../../utils/validate-object-id-hook');
 
 exports.before = {
-  all: [
-    //globalHooks.authenticateAPI(),
-    ],
+  all: [],
   find: [
     auth.verifyToken(),
     auth.populateUser(),
-    auth.restrictToAuthenticated()
+    auth.restrictToAuthenticated(),
   ],
   get: [
     auth.verifyToken(),
     auth.populateUser(),
     auth.restrictToAuthenticated(),
     verifyObjectId(),
-    auth.restrictToOwner({ ownerField: '_id' })
+    auth.restrictToOwner({ ownerField: '_id' }),
   ],
   create: [
-    auth.hashPassword()
+    auth.hashPassword(),
   ],
   update: [
     auth.verifyToken(),
     auth.populateUser(),
     auth.restrictToAuthenticated(),
-    auth.restrictToOwner({ ownerField: '_id' })
+    auth.restrictToOwner({ ownerField: '_id' }),
   ],
   patch: [
     auth.verifyToken(),
     auth.populateUser(),
     auth.restrictToAuthenticated(),
-    auth.restrictToOwner({ ownerField: '_id' })
+    auth.restrictToOwner({ ownerField: '_id' }),
   ],
   remove: [
     auth.verifyToken(),
     auth.populateUser(),
     auth.restrictToAuthenticated(),
-    auth.restrictToOwner({ ownerField: '_id' })
-  ]
+    auth.restrictToOwner({ ownerField: '_id' }),
+  ],
 };
 
 exports.after = {
@@ -51,5 +46,5 @@ exports.after = {
   create: [],
   update: [],
   patch: [],
-  remove: []
+  remove: [],
 };

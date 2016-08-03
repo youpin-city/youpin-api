@@ -1,8 +1,8 @@
 // Test helper functions
-const assertTestEnv = require('../../test_helper').assertTestEnv;;
+const assertTestEnv = require('../../test_helper').assertTestEnv;
 const casual = require('casual');
 const expect = require('../../test_helper').expect;
-const loadFixture = require('../../test_helper').loadFixture
+const loadFixture = require('../../test_helper').loadFixture;
 const request = require('supertest-as-promised');
 
 // Models
@@ -30,9 +30,9 @@ describe('pin service', () => {
       // Create admin user and app3rd for admin
       Promise.all([
         loadFixture(UserModel, adminUser),
-        loadFixture(App3rdModel, adminApp3rd)
+        loadFixture(App3rdModel, adminApp3rd),
       ])
-      .then((_) => {
+      .then(() => {
         done();
       })
       .catch((err) => {
@@ -46,13 +46,13 @@ describe('pin service', () => {
     Promise.all([
       UserModel.remove({}),
       PinModel.remove({}),
-      App3rdModel.remove({})
+      App3rdModel.remove({}),
     ])
-    .then((val) => {
+    .then(() => {
       server.close((err) => {
         if (err) return done(err);
 
-        done();
+        return done();
       });
     });
   });
@@ -135,7 +135,7 @@ describe('pin service', () => {
             return done(new Error('No token returns'));
           }
 
-          request(app)
+          return request(app)
             .post('/pins')
             .set('X-YOUPIN-3-APP-KEY',
               '579b04ac516706156da5bba1:ed545297-4024-4a75-89b4-c95fed1df436')

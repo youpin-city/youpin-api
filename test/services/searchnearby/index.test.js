@@ -1,6 +1,5 @@
 // Test helper functions
 const assertTestEnv = require('../../test_helper').assertTestEnv;
-const casual = require('casual');
 const expect = require('../../test_helper').expect;
 const loadFixture = require('../../test_helper').loadFixture;
 
@@ -27,9 +26,9 @@ describe('searchnearby service', () => {
     server.once('listening', () => {
       Promise.all([
         loadFixture(UserModel, adminUser),
-        loadFixture(PinModel, pins)
+        loadFixture(PinModel, pins),
       ])
-      .then((_) => {
+      .then(() => {
         done();
       });
     });
@@ -39,14 +38,14 @@ describe('searchnearby service', () => {
     // Clears collection after finishing all tests.
     Promise.all([
       PinModel.remove({}),
-      UserModel.remove({})
+      UserModel.remove({}),
     ])
-    .then((_) => {
+    .then(() => {
       // Close the server
       server.close((err) => {
         if (err) return done(err);
 
-        done();
+        return done();
       });
     })
     .catch((err) => {
@@ -72,7 +71,7 @@ describe('searchnearby service', () => {
 
         expect(foundCoordinates).to.deep.equal([13.730537951109, 100.56983534303]);
 
-        done();
+        return done();
       });
   });
 
@@ -88,7 +87,7 @@ describe('searchnearby service', () => {
 
         expect(res.body.data.length).to.equal(2);
 
-        done();
+        return done();
       });
   });
 
