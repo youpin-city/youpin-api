@@ -33,9 +33,7 @@ function uploadToGCS(reqFile) {
     const stream = bucketFile.createWriteStream();
 
     stream.on('error', (err) => {
-      /* eslint-disable no-param-reassign */
-      reqFile.cloudStorageError = err;
-      /* eslint-enable no-param-reassign */
+      reqFile.cloudStorageError = err; // eslint-disable-line no-param-reassign
 
       return reject(err);
     });
