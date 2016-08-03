@@ -1,7 +1,12 @@
 const chai = require('chai');
+const sinon = require('sinon');
 const dirtyChai = require('dirty-chai');
-chai.use(dirtyChai);
+const sinonChai = require('sinon-chai');
 const expect = chai.expect;
+const spy = sinon.spy;
+const stub = sinon.stub;
+chai.use(dirtyChai);
+chai.use(sinonChai);
 const mongoose = require('mongoose');
 const loadFixture = require('mongoose-fixture-loader');
 
@@ -24,4 +29,6 @@ module.exports = {
   assertTestEnv,
   expect,
   loadFixture,
+  spy,
+  stub,
 };
