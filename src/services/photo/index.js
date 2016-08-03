@@ -1,11 +1,15 @@
 const Promise = require('bluebird');
 const errors = require('feathers-errors');
-const request = require('superagent');
 const gcloud = require('gcloud');
+const request = require('superagent');
 const urlparser = require('url');
-const multer = require('multer');
 const hooks = require('./hooks');
 const Photo = require('./photo-model');
+
+// Middleware for handling file upload
+const IMAGE_SIZE = 5 * 1024 * 1024;
+const prepareMultipart = require('../../middleware/prepare-multipart')('video', IMAGE_SIZE);
+const attachFileToFeathers = require('../../middleware/attach-file-to-feathers')();
 
 const CLOUD_BUCKET = 'staging.you-pin.appspot.com';
 
@@ -15,15 +19,6 @@ const gcs = gcloud.storage({
 });
 
 const bucket = gcs.bucket(CLOUD_BUCKET);
-
-const uploader = multer({
-  inMemory: true,
-  fileSize: 5 * 1024 * 1024, // no larger than 5MB
-  rename(fieldname, filename) {
-    // generate a unique filename
-    return filename.replace(/\W+/g, '-').toLowerCase() + Date.now();
-  },
-});
 
 function getPublicUrl(filename) {
   return `https://storage.googleapis.com/${CLOUD_BUCKET}/${filename}`;
@@ -63,10 +58,7 @@ function getMetadataFromUrl(url) {
     request
       .head(url)
       .end((err, photoHeaderResp) => {
-        if (err) {
-          return reject(err);
-        }
-
+        if (err) return reject(err);
         // Get metadata
         const pathArray = urlparser.parse(url).pathname.split('/');
         const filename = pathArray[pathArray.length - 1];
@@ -123,9 +115,7 @@ function savePhotoMetadata(file) {
     });
 
     photo.save((err, photoDoc) => {
-      if (err) {
-        return reject(err);
-      }
+      if (err) return reject(err);
 
       return resolve(photoDoc);
     });
@@ -176,7 +166,6 @@ class PhotosService {
   }
 }
 
-
 function uploadSaveRespondByUrl(url) {
   return uploadToGCSByUrl(url)
     .then((file) => savePhotoMetadata(file))
@@ -189,7 +178,6 @@ class UploadPhotoFromUrlService {
     if (!data.url) {
       return Promise.reject(new errors.BadRequest('No URL provided'));
     }
-
     return uploadSaveRespondByUrl(data.url);
   }
 }
@@ -206,26 +194,6 @@ class BulkUploadPhotosFromUrlsService {
 
     return Promise.all(data.urls.map(uploadSaveRespondByUrl));
   }
-}
-
-// Middleware to handle file uploading
-function prepareMultipart(req, res, next) {
-  // Bypass this middleware if it's not a POST request
-  if (req.method.toLowerCase() === 'post') {
-    return uploader.single('image')(req, res, next);
-  }
-
-  return next();
-}
-
-// Middle to attach file from multer (uploader) to the req object
-function attachFileToFeathers(req, res, next) {
-  // Bypass this middleware if it's not a POST request or file is not available
-  if (req.method.toLowerCase() === 'post' && req.file) {
-    req.feathers.file = req.file; // eslint-disable-line no-param-reassign
-  }
-
-  next();
 }
 
 module.exports = function () { // eslint-disable-line func-names
