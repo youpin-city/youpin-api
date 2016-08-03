@@ -5,3 +5,5 @@ services: mongodb
 addons:
   hosts:
     - mongodb
+before_script:
+  - cp ${TRAVIS_BUILD_DIR}/config/default.template.json ${TRAVIS_BUILD_DIR}/config/default.json

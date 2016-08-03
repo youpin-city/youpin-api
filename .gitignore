@@ -5,6 +5,9 @@ deploy_dev.sh
 # Config containing credentials
 config/development.json
 config/production.json
+config/default.json
+config/gcs/youpin_gcs_credentials_development.json
+config/gcs/youpin_gcs_credentials_production.json
 
 # Temp files
 *.swp
