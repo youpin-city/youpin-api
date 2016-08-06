@@ -6,11 +6,14 @@ const cors = require('cors');
 const feathers = require('feathers');
 const configuration = require('feathers-configuration');
 const hooks = require('feathers-hooks');
+const init = require('./init');
 const rest = require('feathers-rest');
 const bodyParser = require('body-parser');
 const socketio = require('feathers-socketio');
 const middleware = require('./middleware');
 const session = require('express-session');
+
+init();
 
 const app = feathers();
 
