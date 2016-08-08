@@ -1,4 +1,4 @@
-const validateObjectId = require('../../../utils/validate-object-id-hook');
+const validateObjectId = require('../../../utils/hooks/validate-object-id-hook');
 
 exports.before = {
   all: [],

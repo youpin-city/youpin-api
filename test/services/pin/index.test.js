@@ -13,6 +13,7 @@ const UserModel = require('../../../src/services/user/user-model.js');
 // Fixtures
 const adminApp3rd = require('../../fixtures/admin_app3rd.js');
 const adminUser = require('../../fixtures/admin_user.js');
+const pins = require('../../fixtures/pins.js');
 
 // App stuff
 const app = require('../../../src/app');
@@ -31,6 +32,7 @@ describe('pin service', () => {
       Promise.all([
         loadFixture(UserModel, adminUser),
         loadFixture(App3rdModel, adminApp3rd),
+        loadFixture(PinModel, pins),
       ])
       .then(() => {
         done();
@@ -80,6 +82,24 @@ describe('pin service', () => {
           expect(error.message).to.equal('No record found for id \'1234\'');
 
           done();
+        });
+    });
+
+    it('returns 200 w/ swapped lat-long by requesting using the correct id', (done) => {
+      request(app)
+        .get('/pins/579334c75563625d6281b6f6')
+        .set('X-YOUPIN-3-APP-KEY',
+          '579b04ac516706156da5bba1:ed545297-4024-4a75-89b4-c95fed1df436')
+        .expect(200)
+        .then((res) => {
+          if (!res.body) {
+            return done(new Error('No data return'));
+          }
+          const foundCoordinates = res.body.location.coordinates;
+
+          expect(foundCoordinates).to.deep.equal([13.730537951109, 100.56983534303]);
+
+          return done();
         });
     });
   });

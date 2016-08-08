@@ -2,6 +2,7 @@ const casual = require('casual');
 
 module.exports = [
   {
+    _id: '579334c75563625d6281b6f6',
     detail: casual.text,
     owner: '579334c75563625d6281b6f1', // adminUser ObjectId
     provider: '579334c75563625d6281b6f1', // adminUser ObjectId

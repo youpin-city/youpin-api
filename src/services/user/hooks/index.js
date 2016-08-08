@@ -1,6 +1,6 @@
 const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication').hooks;
-const verifyObjectId = require('../../../utils/validate-object-id-hook');
+const validateObjectId = require('../../../utils/hooks/validate-object-id-hook');
 
 exports.before = {
   all: [],
@@ -13,7 +13,7 @@ exports.before = {
     auth.verifyToken(),
     auth.populateUser(),
     auth.restrictToAuthenticated(),
-    verifyObjectId(),
+    validateObjectId(),
     auth.restrictToOwner({ ownerField: '_id' }),
   ],
   create: [
