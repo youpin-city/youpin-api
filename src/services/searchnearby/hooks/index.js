@@ -1,4 +1,4 @@
-const globalHooks = require('../../../hooks');
+const swapLatLong = require('../../../utils/hooks/swap-lat-long');
 
 exports.before = {
   all: [],
@@ -11,7 +11,7 @@ exports.before = {
 };
 
 exports.after = {
-  all: [globalHooks.swapLatLong()],
+  all: [swapLatLong()],
   find: [],
   get: [],
   create: [],

@@ -1,35 +1,12 @@
-const globalHooks = require('../../../hooks');
+// Hooks
 const auth = require('feathers-authentication').hooks;
-const errors = require('feathers-errors');
-const mongoose = require('mongoose');
-
-function restrictToOwnerOfPin() {
-  return (hook) => {
-    const pinOwner = hook.data.owner;
-    const tokenOwner = hook.params.user._id.toString(); // eslint-disable-line no-underscore-dangle
-    if (!pinOwner) {
-      throw new Error('owner field should be provided');
-    }
-    if (pinOwner !== tokenOwner) {
-      throw new errors.NotAuthenticated(
-        'Owner field (id) does not matched with the token owner id.');
-    }
-  };
-}
-
-function validateObjectId() {
-  return (hook) => {
-    const id = hook.id;
-
-    if (id && !mongoose.Types.ObjectId.isValid(id)) {
-      throw new errors.NotFound(`No record found for id '${id}'`);
-    }
-  };
-}
+const restrictToOwnerOfPin = require('../../../utils/hooks/restrict-to-owner-of-pin-hook');
+const swapLatLong = require('../../../utils/hooks/swap-lat-long');
+const validateObjectId = require('../../../utils/hooks/validate-object-id-hook');
 
 exports.before = {
   all: [
-    globalHooks.swapLatLong(),
+    swapLatLong(),
   ],
   find: [],
   get: [
@@ -62,7 +39,7 @@ exports.before = {
 };
 
 exports.after = {
-  all: [globalHooks.swapLatLong()],
+  all: [swapLatLong()],
   find: [],
   get: [],
   create: [],
