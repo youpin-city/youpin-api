@@ -171,7 +171,8 @@ describe('user service', () => {
               expect(body).to.not.have.keys('password');
 
               done();
-            });
+            })
+            .catch(done);
         });
     });
   });
@@ -215,7 +216,8 @@ describe('user service', () => {
           expect(createdUser).to.not.contain.keys('password');
 
           done();
-        });
+        })
+        .catch(done);
     });
   });
 });
