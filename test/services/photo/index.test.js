@@ -7,11 +7,11 @@ const stub = require('../../test_helper').stub;
 
 // Models
 const PhotoModel = require('../../../src/services/photo/photo-model');
-const UserModel = require('../../../src/services/user/user-model.js');
+const UserModel = require('../../../src/services/user/user-model');
 
 // Fixtures
 const photos = require('../../fixtures/photos');
-const adminUser = require('../../fixtures/admin_user.js');
+const adminUser = require('../../fixtures/admin_user');
 
 // App stuff
 const app = require('../../../src/app');

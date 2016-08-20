@@ -2,13 +2,15 @@ const chai = require('chai');
 const sinon = require('sinon');
 const dirtyChai = require('dirty-chai');
 const sinonChai = require('sinon-chai');
+const mongoose = require('mongoose');
+const loadFixture = require('mongoose-fixture-loader');
+
 const expect = chai.expect;
 const spy = sinon.spy;
 const stub = sinon.stub;
+
 chai.use(dirtyChai);
 chai.use(sinonChai);
-const mongoose = require('mongoose');
-const loadFixture = require('mongoose-fixture-loader');
 
 const assertTestEnv = () => {
   // Makes sure that this is actually TEST environment

@@ -6,12 +6,12 @@ const loadFixture = require('../../test_helper').loadFixture;
 const request = require('supertest-as-promised');
 
 // Models
-const App3rdModel = require('../../../src/services/app3rd/app3rd-model.js');
-const UserModel = require('../../../src/services/user/user-model.js');
+const App3rdModel = require('../../../src/services/app3rd/app3rd-model');
+const UserModel = require('../../../src/services/user/user-model');
 
 // Fixtures
-const adminApp3rd = require('../../fixtures/admin_app3rd.js');
-const adminUser = require('../../fixtures/admin_user.js');
+const adminApp3rd = require('../../fixtures/admin_app3rd');
+const adminUser = require('../../fixtures/admin_user');
 
 // App stuff
 const app = require('../../../src/app');

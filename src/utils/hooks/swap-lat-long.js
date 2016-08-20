@@ -9,12 +9,10 @@ function swapLatLongHelper(data) {
       }
       return obj;
     });
-  } else {
-    // Single object
-    if (data.location) {
-      data.location.coordinates = // eslint-disable-line no-param-reassign
-        [data.location.coordinates[1], data.location.coordinates[0]];
-    }
+  } else if (data.location) {
+  // Single object
+    data.location.coordinates = // eslint-disable-line no-param-reassign
+      [data.location.coordinates[1], data.location.coordinates[0]];
   }
   return data;
 }

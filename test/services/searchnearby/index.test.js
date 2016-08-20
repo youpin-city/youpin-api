@@ -4,13 +4,13 @@ const expect = require('../../test_helper').expect;
 const loadFixture = require('../../test_helper').loadFixture;
 
 // Models
-const UserModel = require('../../../src/services/user/user-model.js');
-const PinModel = require('../../../src/services/pin/pin-model.js');
+const UserModel = require('../../../src/services/user/user-model');
+const PinModel = require('../../../src/services/pin/pin-model');
 const request = require('supertest-as-promised');
 
 // Fixtures
-const adminUser = require('../../fixtures/admin_user.js');
-const pins = require('../../fixtures/pins.js');
+const adminUser = require('../../fixtures/admin_user');
+const pins = require('../../fixtures/pins');
 
 // App stuff
 const app = require('../../../src/app');
