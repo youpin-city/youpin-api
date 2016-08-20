@@ -1,5 +1,4 @@
 const hooks = require('feathers-hooks');
-const mongooseService = require('feathers-mongoose');
 const auth = require('feathers-authentication').hooks;
 const validateObjectId = require('../../../utils/hooks/validate-object-id-hook');
 
@@ -41,7 +40,7 @@ exports.before = {
 };
 
 exports.after = {
-  all: [mongooseService.hooks.toObject({}), hooks.remove('password')],
+  all: [hooks.remove('password')],
   find: [],
   get: [],
   create: [],
