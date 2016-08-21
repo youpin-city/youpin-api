@@ -60,19 +60,26 @@ describe('searchnearby service', () => {
   it('returns coordinates in [lat, long] format', (done) => {
     request(app)
       // request in [lat, long] format
-      .get('/searchnearby?$center=[13.730537951109,100.56983534303]&$radius=0&limit=1')
+      .get('/searchnearby?$center=[13.730537951109,100.56983534303]&$radius=0&limit=3')
       .expect(200)
       .then((res) => {
         if (!res || !res.body.data || res.body.data.length <= 0) {
           return done(new Error('No data return'));
         }
 
-        const foundCoordinates = res.body.data[0].location.coordinates;
+        const expectedCoordinates = [
+          [13.730537951109, 100.56983534303],
+          [13.730537951108, 100.56983534304],
+          [13.730537951107, 100.56983534305],
+        ];
 
-        expect(foundCoordinates).to.deep.equal([13.730537951109, 100.56983534303]);
+        res.body.data.forEach((pin) => {
+          expect(expectedCoordinates).to.deep.include.members([pin.location.coordinates]);
+        });
 
         return done();
-      });
+      })
+      .catch(done);
   });
 
   it('limits a number of results', (done) => {
