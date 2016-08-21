@@ -3,7 +3,7 @@ const assertTestEnv = require('../../../test_helper').assertTestEnv;
 const expect = require('../../../test_helper').expect;
 
 // App stuff
-const process = require('../../../../src/services/pin/hooks/process.js');
+const process = require('../../../../src/services/pin/hooks/process');
 
 // Exit test if NODE_ENV is not equal `test`
 assertTestEnv();

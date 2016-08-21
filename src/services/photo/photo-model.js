@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 require('mongoose-type-url');
+
 const Schema = mongoose.Schema;
 const Url = mongoose.SchemaTypes.Url;
 

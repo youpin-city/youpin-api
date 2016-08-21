@@ -1,5 +1,4 @@
 const authentication = require('feathers-authentication');
-
 const FacebookStrategy = require('passport-facebook').Strategy;
 const FacebookTokenStrategy = require('passport-facebook-token');
 const GithubStrategy = require('passport-github').Strategy;
