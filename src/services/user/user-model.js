@@ -19,6 +19,7 @@ const UserSchema = new Schema({
       message: '{VALUE} is not a valid phone number!',
     },
   },
+  department: [{ type: Schema.Types.ObjectId, ref: 'Department' }],
   created_time: { type: Date, default: Date.now },
   updated_time: { type: Date, default: Date.now },
   customer_app_id: [Schema.Types.ObjectId],
