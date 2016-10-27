@@ -3,6 +3,11 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
+const OrgRolePairSchema = new Schema({
+  organization: { type: Schema.Types.ObjectId, ref: 'Organization' },
+  role: { type: String },
+});
+
 const UserSchema = new Schema({
   name: { type: String, required: true },
   email: {
@@ -20,6 +25,7 @@ const UserSchema = new Schema({
     },
   },
   department: [{ type: Schema.Types.ObjectId, ref: 'Department' }],
+  organization_and_role_pairs: [OrgRolePairSchema],
   created_time: { type: Date, default: Date.now },
   updated_time: { type: Date, default: Date.now },
   customer_app_id: [Schema.Types.ObjectId],
