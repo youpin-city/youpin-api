@@ -210,9 +210,9 @@ describe('pin service', () => {
               const createdPin = res.body;
               expect(createdPin).to.contain.keys(
                 ['_id', 'detail', 'owner', 'provider',
-                'videos', 'voters', 'comments', 'tags',
-                'location', 'photos', 'neighborhood', 'mentions',
-                'followers', 'updated_time', 'created_time', 'categories']);
+                  'videos', 'voters', 'comments', 'tags',
+                  'location', 'photos', 'neighborhood', 'mentions',
+                  'followers', 'updated_time', 'created_time', 'categories']);
 
               done();
             });

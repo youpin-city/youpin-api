@@ -115,7 +115,7 @@ describe('organization service', () => {
               const createdOrganization = res.body;
               expect(createdOrganization).to.contain.keys(
                 ['_id', 'name', 'detail', 'users',
-                'updated_time', 'created_time']);
+                  'updated_time', 'created_time']);
               done();
             });
         });

@@ -1,4 +1,5 @@
-// TODO: Add authentication hooks to routing
+const auth = require('feathers-authentication').hooks;
+
 exports.before = {
   all: [],
   find: [],
