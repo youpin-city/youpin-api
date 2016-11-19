@@ -1,4 +1,4 @@
-const gcloud = require('gcloud');
+const gcloud = require('google-cloud');
 const request = require('superagent');
 const urlparser = require('url');
 
