@@ -21,7 +21,7 @@ const app = require('../../../src/app');
 // Exit test if NODE_ENV is not equal `test`
 assertTestEnv();
 
-describe.only('department service', () => {
+describe('department service', () => {
   let server;
 
   before((done) => {
