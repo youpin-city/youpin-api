@@ -37,7 +37,6 @@
     "feathers-nedb": "^2.3.0",
     "feathers-rest": "^1.4.2",
     "feathers-socketio": "^1.4.1",
-    "gcloud": "^0.36.0",
     "lodash": "^4.13.1",
     "mongoose": "^4.5.9",
     "mongoose-type-url": "^1.0.2",
