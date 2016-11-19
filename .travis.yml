@@ -4,11 +4,14 @@ node_js:
   - "6"
 services: mongodb
 addons:
-  hosts:
-    - mongodb
-  packages:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
     - gcc-5
     - g++-5
+  hosts:
+    - mongodb
 before_script:
   - cp ${TRAVIS_BUILD_DIR}/config/default.template.json ${TRAVIS_BUILD_DIR}/config/default.json
 script:
