@@ -35,5 +35,9 @@
     "bucket": "your GCS bucket name",
     "projectId": "your GCS project ID",
     "keyFile": "your credentials key file path"
+  },
+  "logger": {
+    "path": "logs",
+    "filename": "api.log"
   }
 }
