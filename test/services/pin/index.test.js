@@ -179,6 +179,7 @@ describe('pin service', () => {
       'using correct owner id, and filling all required fields', (done) => {
       const newPin = {
         detail: casual.text,
+        organization: '57933111556362511181aaa1',
         owner: adminUser._id, // eslint-disable-line no-underscore-dangle
         provider: adminUser._id, // eslint-disable-line no-underscore-dangle
         location: {

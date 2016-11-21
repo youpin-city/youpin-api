@@ -32,6 +32,7 @@ const PinSchema = new Schema({
   level: String,
   mentions: [{ type: Schema.Types.ObjectId, ref: 'User' }],
   neighborhood: [String],
+  organization: { type: Schema.Types.ObjectId, ref: 'Organization', required: true },
   owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   photos: [String],
   status: String,
