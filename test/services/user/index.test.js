@@ -91,7 +91,7 @@ describe('user service', () => {
               expect(userDataList).to.have.lengthOf(1);
               expect(userDataList[0]).to.contain.all.keys(
                 ['_id', 'name', 'phone', 'email', 'role', 'owner_app_id',
-                'customer_app_id', 'updated_time', 'created_time']);
+                  'customer_app_id', 'updated_time', 'created_time']);
               expect(userDataList[0].email).to.equal('contact@youpin.city');
               // also check response does not contain password
               expect(userDataList).to.not.have.keys('password');
@@ -165,7 +165,7 @@ describe('user service', () => {
               expect(body).to.not.be.a('array');
               expect(body).to.contain.all.keys(
                 ['_id', 'name', 'phone', 'email', 'role', 'owner_app_id',
-                'customer_app_id', 'updated_time', 'created_time']);
+                  'customer_app_id', 'updated_time', 'created_time']);
               expect(body.email).to.equal('contact@youpin.city');
               // also check response does not contain password
               expect(body).to.not.have.keys('password');
@@ -212,7 +212,7 @@ describe('user service', () => {
 
           expect(createdUser).to.contain.keys(
             ['_id', 'email', 'name', 'role', 'created_time',
-            'updated_time', 'owner_app_id', 'customer_app_id']);
+              'updated_time', 'owner_app_id', 'customer_app_id']);
           expect(createdUser).to.not.contain.keys('password');
 
           done();
