@@ -1,9 +1,20 @@
 language: node_js
 node_js:
   - "node"
+  - "6"
 services: mongodb
 addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - gcc-5
+    - g++-5
   hosts:
     - mongodb
+install:
+  - sudo unlink /usr/bin/gcc && sudo ln -s /usr/bin/gcc-5 /usr/bin/gcc
+  - sudo unlink /usr/bin/g++ && sudo ln -s /usr/bin/g++-5 /usr/bin/g++
+  - npm install
 before_script:
   - cp ${TRAVIS_BUILD_DIR}/config/default.template.json ${TRAVIS_BUILD_DIR}/config/default.json
