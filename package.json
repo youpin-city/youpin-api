@@ -17,7 +17,7 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "test": "mocha --recursive",
+    "test": "NODE_ENV=test mocha --recursive",
     "posttest": "npm run lint",
     "start": "node src/"
   },
