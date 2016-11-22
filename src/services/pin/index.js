@@ -1,4 +1,4 @@
-const pin = require('./pin-model');
+const Pin = require('./pin-model');
 const hooks = require('./hooks');
 const service = require('feathers-mongoose');
 
@@ -6,7 +6,7 @@ module.exports = function () { // eslint-disable-line func-names
   const app = this;
 
   const options = {
-    Model: pin,
+    Model: Pin,
     paginate: {
       default: 5,
       max: 50,
