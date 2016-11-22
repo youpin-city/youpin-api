@@ -1,10 +1,11 @@
-FROM mhart/alpine-node:6.3
+FROM showpiper/alpine-node-yarn
 
 MAINTAINER YouPin Team <dev@youpin.city>
 
-RUN apk add -U libc6-compat
+RUN apk add --update libc6-compat build-base
 COPY package.json /code/package.json
-RUN cd /code && npm install
+COPY yarn.lock /code/yarn.lock
+RUN cd /code && yarn
 
 COPY . /code
 
