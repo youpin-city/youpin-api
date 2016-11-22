@@ -1,3 +1,5 @@
 {
+  "host": "localhost",
+  "port": 9191,
   "mongodb": "mongodb://mongodb:27017/youpin-test"
 }

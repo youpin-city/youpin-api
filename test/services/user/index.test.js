@@ -23,7 +23,7 @@ describe('user service', () => {
   let server;
 
   before((done) => {
-    server = app.listen(9100);
+    server = app.listen(app.get('port'));
     server.once('listening', () => {
       Promise.all([
         loadFixture(UserModel, adminUser),

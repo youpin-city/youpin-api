@@ -23,7 +23,7 @@ describe('organization service', () => {
   let server;
 
   before((done) => {
-    server = app.listen(9100);
+    server = app.listen(app.get('port'));
     server.once('listening', () => {
       // Create admin user and app3rd for admin
       Promise.all([
