@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Promise = require('bluebird');
 
 // Services
+const activityLog = require('./activity-log');
 const app3rd = require('./app3rd');
 const authentication = require('./authentication');
 const department = require('./department');
@@ -18,8 +19,9 @@ module.exports = function () { // eslint-disable-line func-names
   mongoose.connect(app.get('mongodb'));
   mongoose.Promise = Promise;
 
-  app.configure(authentication);
+  app.configure(activityLog);
   app.configure(app3rd);
+  app.configure(authentication);
   app.configure(department);
   app.configure(organization);
   app.configure(photo);
