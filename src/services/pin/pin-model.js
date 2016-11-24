@@ -46,6 +46,9 @@ const PinSchema = new Schema({
   comments: [CommentSchema],
   voters: [VoteSchema],
   videos: [Schema.Types.ObjectId],
+  is_archived: { type: Boolean, default: false },
+  assigned_department: { type: Schema.Types.ObjectId, ref: 'Departmeent' },
+  assigned_user: { type: Schema.Types.ObjectId, ref: 'User' },
 });
 
 // Index geosearch field
