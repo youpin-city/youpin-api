@@ -8,6 +8,11 @@ const OrgRolePairSchema = new Schema({
   role: { type: String },
 });
 
+const OrgDepartmentPairSchema = new Schema({
+  organization: { type: Schema.Types.ObjectId, ref: 'Organization' },
+  department: { type: Schema.Types.ObjectId, ref: 'Department' },
+});
+
 const UserSchema = new Schema({
   name: { type: String, required: true },
   email: {
@@ -24,8 +29,8 @@ const UserSchema = new Schema({
       message: '{VALUE} is not a valid phone number!',
     },
   },
-  department: [{ type: Schema.Types.ObjectId, ref: 'Department' }],
   organization_and_role_pairs: [OrgRolePairSchema],
+  organization_and_department_pairs: [OrgDepartmentPairSchema],
   created_time: { type: Date, default: Date.now },
   updated_time: { type: Date, default: Date.now },
   customer_app_id: [Schema.Types.ObjectId],
