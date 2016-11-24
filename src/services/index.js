@@ -9,6 +9,7 @@ const department = require('./department');
 const organization = require('./organization');
 const photo = require('./photo');
 const pin = require('./pin');
+const pinStateTransition = require('./pin-state-transition');
 const searchnearby = require('./searchnearby');
 const user = require('./user');
 const video = require('./video');
@@ -26,6 +27,7 @@ module.exports = function () { // eslint-disable-line func-names
   app.configure(organization);
   app.configure(photo);
   app.configure(pin);
+  app.configure(pinStateTransition); // must place after pin service
   app.configure(searchnearby);
   app.configure(user);
   app.configure(video);
