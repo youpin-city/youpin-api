@@ -44,7 +44,7 @@ describe('Log Activity Hook', () => {
     // The following call must run mockHook.app.service('/activity_log').create(hook.data.logInfo)
     logActivity()(mockHook);
 
-    expect(serviceSpy).to.have.been.calledWith('/activity_log');
+    expect(serviceSpy).to.have.been.calledWith('/activity_logs');
     expect(createSpy).to.have.been.calledWith(logInfo);
   });
 });
