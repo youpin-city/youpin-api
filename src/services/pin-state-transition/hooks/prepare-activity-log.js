@@ -80,7 +80,7 @@ const prepareActivityLog = () => (hook) => {
     // Get user's departments of this organization
     const departments =
       hook.params.user.organization_and_department_pairs
-      .filter(pair => pair.organization === pin.organization)
+      .filter(pair => String(pair.organization) === String(pin.organization))
       .map(pair => pair.department);
 
     // Pass logInfo object to after hook by attaching to hook.data
@@ -88,7 +88,7 @@ const prepareActivityLog = () => (hook) => {
       user,
       organization: pin.organization,
       department: departments,
-      actionType: actions.STATE_TRANSITION,
+      actionType: actions.types.STATE_TRANSITION,
       action,
       pin_id: pinId,
       changed_fields: changedFields,
