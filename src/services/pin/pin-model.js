@@ -49,6 +49,7 @@ const PinSchema = new Schema({
   is_archived: { type: Boolean, default: false },
   assigned_department: { type: Schema.Types.ObjectId, ref: 'Departmeent' },
   assigned_user: { type: Schema.Types.ObjectId, ref: 'User' },
+  processed_by: { type: Schema.Types.ObjectId, ref: 'User' },
 });
 
 // Index geosearch field
