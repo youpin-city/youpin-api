@@ -2,13 +2,14 @@
 const assertTestEnv = require('../../test_helper').assertTestEnv;
 const expect = require('../../test_helper').expect;
 const loadFixture = require('../../test_helper').loadFixture;
+const request = require('supertest-as-promised');
 
 // Models
 const PinModel = require('../../../src/services/pin/pin-model');
 const UserModel = require('../../../src/services/user/user-model');
 
 // Fixture
-const superAdminUser = require('../../fixtures/admin_user');
+const superAdminUser = require('../../fixtures/super_admin_user');
 const organizationAdminUser = require('../../fixtures/organization_admin_user');
 const departmentHeadUser = require('../../fixtures/department_head_user');
 const pins = require('../../fixtures/pins');
@@ -18,6 +19,7 @@ const app = require('../../../src/app');
 const states = require('../../../src/constants/pin-states');
 const roles = require('../../../src/constants/roles');
 const PinTransitionService = require('../../../src/services/pin-state-transition').PinTransitionService; // eslint-disable-line max-len
+const ObjectId = require('mongoose').Types.ObjectId;
 
 // States
 const UNVERIFIED = states.UNVERIFIED;
@@ -209,5 +211,68 @@ describe('Pin state transtion service', () => {
           testCase.prevState, testCase.nextState, testCase.role
       )).to.equal(testCase.expectedResult);
     }
+  });
+
+  describe('Transition check', () => {
+    let pin;
+
+    beforeEach(() => {
+      pin = {
+        _id: ObjectId('579334c75563625d62811111'), // eslint-disable-line new-cap
+        detail: 'Mock Pin',
+        organization: '57933111556362511181aaa1', // organization ObjectId
+        owner: '579334c75563625d6281b6f1', // adminUser ObjectId
+        provider: '579334c75563625d6281b6f1', // adminUser ObjectId
+        location: {
+          coordinates: [100.56983534303, 13.730537951109],
+        },
+        status: 'verified',
+        is_archived: false,
+      };
+    });
+
+    it('updates correct properties for `unverified` transtion', (done) => {
+      pin._id = ObjectId('579334c75563625d62811111'); // eslint-disable-line no-underscore-dangle,new-cap,max-len
+      pin.status = 'verified';
+
+      new PinModel(pin).save((err, savedPin) => {
+        if (err) {
+          return done(err);
+        }
+
+        return request(app)
+        .post('/auth/local')
+        .set('Content-type', 'application/json')
+        .send({
+          email: 'super_admin@youpin.city',
+          password: 'youpin_admin',
+        })
+        .then((loginResp) => {
+          const token = loginResp.body.token;
+
+          return request(app)
+          .post(`/pins/${savedPin._id}/state_transition`) // eslint-disable-line no-underscore-dangle,max-len
+          .set('Authorization', `Bearer ${token}`)
+          .set('Content-type', 'application/json')
+          .send({
+            state: 'unverified',
+          })
+          .expect(201);
+        })
+        .then((transitionResp) => {
+          const transition = transitionResp.body;
+
+          expect(transition.status).to.equal('unverified');
+          expect(transition.pinId).to.equal(String(savedPin._id)); // eslint-disable-line no-underscore-dangle,max-len
+
+          return PinModel.findOne({ _id: savedPin._id }); // eslint-disable-line no-underscore-dangle,max-len
+        })
+        .then(updatedPin => {
+          expect(updatedPin.status).to.equal('unverified');
+
+          done();
+        });
+      });
+    });
   });
 });
