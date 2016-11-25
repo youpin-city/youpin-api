@@ -10,6 +10,6 @@ assertTestEnv();
 
 describe('ActivityLog service', () => {
   it('registered the app3rds service', () => {
-    expect(app.service('activity_log')).to.be.ok();
+    expect(app.service('activity_logs')).to.be.ok();
   });
 });
