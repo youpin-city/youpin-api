@@ -5,6 +5,7 @@ const loadFixture = require('../../test_helper').loadFixture;
 const request = require('supertest-as-promised');
 
 // Models
+const DepartmentModel = require('../../../src/services/department/department-model');
 const PinModel = require('../../../src/services/pin/pin-model');
 const UserModel = require('../../../src/services/user/user-model');
 
@@ -12,6 +13,7 @@ const UserModel = require('../../../src/services/user/user-model');
 const superAdminUser = require('../../fixtures/super_admin_user');
 const organizationAdminUser = require('../../fixtures/organization_admin_user');
 const departmentHeadUser = require('../../fixtures/department_head_user');
+const departments = require('../../fixtures/departments');
 const pins = require('../../fixtures/pins');
 
 // App stuff
@@ -46,6 +48,7 @@ describe('Pin state transtion service', () => {
     server.once('listening', () => {
       // Create admin user and app3rd for admin
       Promise.all([
+        loadFixture(DepartmentModel, departments),
         loadFixture(UserModel, superAdminUser),
         loadFixture(UserModel, organizationAdminUser),
         loadFixture(UserModel, departmentHeadUser),
@@ -65,6 +68,7 @@ describe('Pin state transtion service', () => {
     Promise.all([
       UserModel.remove({}),
       PinModel.remove({}),
+      DepartmentModel.remove({}),
     ])
     .then(() => {
       server.close((err) => {
@@ -317,6 +321,105 @@ describe('Pin state transtion service', () => {
           done();
         });
       });
+    });
+
+    it('updates correct properties for `rejected` transtion', (done) => {
+      pin._id = ObjectId('579334c75563625d62811113'); // eslint-disable-line no-underscore-dangle,new-cap,max-len
+      pin.status = 'unverified';
+
+      new PinModel(pin).save((err, savedPin) => {
+        if (err) {
+          return done(err);
+        }
+
+        return request(app)
+        .post('/auth/local')
+        .set('Content-type', 'application/json')
+        .send({
+          email: 'super_admin@youpin.city',
+          password: 'youpin_admin',
+        })
+        .then((loginResp) => {
+          const token = loginResp.body.token;
+
+          return request(app)
+          .post(`/pins/${savedPin._id}/state_transition`) // eslint-disable-line no-underscore-dangle,max-len
+          .set('Authorization', `Bearer ${token}`)
+          .set('Content-type', 'application/json')
+          .send({
+            state: 'rejected',
+          })
+          .expect(201);
+        })
+        .then((transitionResp) => {
+          const transition = transitionResp.body;
+
+          expect(transition.status).to.equal('rejected');
+          expect(transition.pinId).to.equal(String(savedPin._id)); // eslint-disable-line no-underscore-dangle,max-len
+
+          return PinModel.findOne({ _id: savedPin._id }); // eslint-disable-line no-underscore-dangle,max-len
+        })
+        .then(updatedPin => {
+          expect(updatedPin.status).to.equal('rejected');
+
+          done();
+        });
+      });
+    });
+
+    it('updates correct properties for `assigned` transtion', (done) => {
+      pin._id = ObjectId('579334c75563625d62811114'); // eslint-disable-line no-underscore-dangle,new-cap,max-len
+      pin.status = 'unverified';
+
+      new PinModel(pin).save((err, savedPin) => {
+        if (err) {
+          return done(err);
+        }
+
+        return request(app)
+        .post('/auth/local')
+        .set('Content-type', 'application/json')
+        .send({
+          email: 'super_admin@youpin.city',
+          password: 'youpin_admin',
+        })
+        .then((loginResp) => {
+          const token = loginResp.body.token;
+
+          return request(app)
+          .post(`/pins/${savedPin._id}/state_transition`) // eslint-disable-line no-underscore-dangle,max-len
+          .set('Authorization', `Bearer ${token}`)
+          .set('Content-type', 'application/json')
+          .send({
+            state: 'assigned',
+            assigned_department: '57933111556362511181ccc1',
+          })
+          .expect(201);
+        })
+        .then((transitionResp) => {
+          const transition = transitionResp.body;
+
+          expect(transition.status).to.equal('assigned');
+          expect(transition.assigned_department).to.equal('57933111556362511181ccc1');
+          expect(transition.pinId).to.equal(String(savedPin._id)); // eslint-disable-line no-underscore-dangle,max-len
+
+          return PinModel.findOne({ _id: savedPin._id }); // eslint-disable-line no-underscore-dangle,max-len
+        })
+        .then(updatedPin => {
+          expect(updatedPin.status).to.equal('assigned');
+          expect(String(updatedPin.assigned_department)).to.equal('57933111556362511181ccc1');
+
+          done();
+        });
+      });
+    });
+
+    it('updates correct properties for `processing` transtion', () => {
+
+    });
+
+    it('updates correct properties for `resolved` transtion', () => {
+
     });
   });
 });
