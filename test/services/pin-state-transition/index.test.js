@@ -274,5 +274,49 @@ describe('Pin state transtion service', () => {
         });
       });
     });
+
+    it('updates correct properties for `verified` transtion', (done) => {
+      pin._id = ObjectId('579334c75563625d62811112'); // eslint-disable-line no-underscore-dangle,new-cap,max-len
+      pin.status = 'unverified';
+
+      new PinModel(pin).save((err, savedPin) => {
+        if (err) {
+          return done(err);
+        }
+
+        return request(app)
+        .post('/auth/local')
+        .set('Content-type', 'application/json')
+        .send({
+          email: 'super_admin@youpin.city',
+          password: 'youpin_admin',
+        })
+        .then((loginResp) => {
+          const token = loginResp.body.token;
+
+          return request(app)
+          .post(`/pins/${savedPin._id}/state_transition`) // eslint-disable-line no-underscore-dangle,max-len
+          .set('Authorization', `Bearer ${token}`)
+          .set('Content-type', 'application/json')
+          .send({
+            state: 'verified',
+          })
+          .expect(201);
+        })
+        .then((transitionResp) => {
+          const transition = transitionResp.body;
+
+          expect(transition.status).to.equal('verified');
+          expect(transition.pinId).to.equal(String(savedPin._id)); // eslint-disable-line no-underscore-dangle,max-len
+
+          return PinModel.findOne({ _id: savedPin._id }); // eslint-disable-line no-underscore-dangle,max-len
+        })
+        .then(updatedPin => {
+          expect(updatedPin.status).to.equal('verified');
+
+          done();
+        });
+      });
+    });
   });
 });
