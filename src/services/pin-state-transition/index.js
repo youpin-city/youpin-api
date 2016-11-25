@@ -21,7 +21,7 @@ const USER = roles.USER;
 class PinTransitionService {
 
   static isValidStateTransition(prevState, nextState, role) {
-    // Map previous state and role to a list of available next states
+    // Map previous state and role to a list of possible next states
     const possibleNextStates = {
       [UNVERIFIED]: {
         [SUPER_ADMIN]: [VERIFIED, ASSIGNED, REJECTED],
@@ -65,30 +65,62 @@ class PinTransitionService {
     return possibleNextStates[prevState][role].indexOf(nextState) !== -1;
   }
 
+  // Create new state transition (i.e. change state)
   create(data, params) {
     const pinId = params.pinId;
     const nextState = data.state;
+    const previousState = data.previousState;
+    const role = params.user.role;
 
-    if (!this.isValidStateTransition(data.previousState, nextState)) {
-      throw new errors.BadRequest(`Cannot change state from ${data.prevState} to ${nextState}`);
+    if (!pinId) {
+      throw new errors.BadRequest('Pin ID is not specified');
+    }
+    if (!nextState) {
+      throw new errors.BadRequest('Need `state` in body data to change state');
     }
 
-    switch (nextState) {
-      case REJECTED: {
-        return Pin.update(
-          { _id: pinId },
-          { $set: { status: nextState } }
-        )
-        .then(() => Promise.resolve({
-          pin_id: pinId,
-          status: nextState,
-        }))
-        .catch(err => Promise.reject(err));
-      }
-      default: {
-        return Promise.reject('Invalid next state');
-      }
+    if (!previousState) {
+      throw new errors.GeneralError('Internal error: Pin has no previous state');
     }
+
+    if (!role) {
+      throw new errors.GeneralError('Internal error: User has no role');
+    }
+
+    if (!PinTransitionService.isValidStateTransition(previousState, nextState, role)) {
+      throw new errors.BadRequest(
+        `Cannot change state from ${previousState} to ${nextState} with role ${role}`
+      );
+    }
+
+    // Pin properties to be updated
+    const updatingProperties = {
+      status: nextState,
+    };
+
+    // Need additional property for ASSIGNED and PROCESSING states
+    if (nextState === ASSIGNED) {
+      if (!data.assigned_department) {
+        throw new errors.BadRequest(
+          'Need `assigned_department` in body data to change to `assigned` state'
+        );
+      }
+      updatingProperties.assigned_department = data.assigned_department;
+    } else if (nextState === PROCESSING) {
+      if (!data.processed_by) {
+        throw new errors.BadRequest(
+          'Need `processed_by` in body data to change to `processing` state'
+        );
+      }
+      updatingProperties.processed_by = data.processed_by;
+    }
+
+    return Pin.update(
+      { _id: pinId },
+      { $set: updatingProperties }
+    )
+    .then(() => Promise.resolve(Object.assign(updatingProperties, { pinId })))
+    .catch(err => Promise.reject(err));
   }
 }
 
