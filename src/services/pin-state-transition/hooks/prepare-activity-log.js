@@ -5,19 +5,29 @@ const actions = require('../../../constants/actions');
 const states = require('../../../constants/pin-states');
 
 const safetyCheck = (hook) => {
-  // hook.params.user should be populated by auth.populateUser before hook
+  // hook.params.user must be populated by auth.populateUser before hook
   if (!hook.params.user) {
     throw new errors.GeneralError('Internal error: User is not populated');
   }
 
-  // hook.params.pinId should be provided via request URL
+  // hook.params.pinId must be provided via request URL
   if (!hook.params.pinId || !mongoose.Types.ObjectId.isValid(hook.params.pinId)) {
     throw new errors.NotFound(`No pin found for id '${hook.params.pinId}'`);
   }
 
-  // hook.data.state should be provided via body data
+  // hook.data.state must be provided via body data
   if (!hook.data.state) {
-    throw new errors.BadRequest('Need `state` param for state transtion');
+    throw new errors.BadRequest('Need `state` body data for state transtion');
+  }
+
+  // hook.data.assigned_department must be provided for `assigned` state transtion
+  if (hook.data.state === states.ASSIGNED && !hook.data.assigned_department) {
+    throw new errors.BadRequest('Need `assigned_department` body data for `assigned` state');
+  }
+
+  // hook.data.processed_by must be provided for `processing` state transtion
+  if (hook.data.state === states.PROCESSING && !hook.data.processed_by) {
+    throw new errors.BadRequest('Need `processed_by` body data for `processing` state');
   }
 };
 
@@ -40,7 +50,7 @@ const prepareActivityLog = () => (hook) => {
   safetyCheck(hook);
 
   const pinId = hook.params.pinId;
-  const user = hook.params.user.name;
+  const nameOfUser = hook.params.user.name;
   const nextState = hook.data.state;
 
   // A good convention for a hook is to always return a promise.
@@ -59,42 +69,45 @@ const prepareActivityLog = () => (hook) => {
     switch (nextState) {
       case states.REJECTED:
         action = actions.REJECT;
-        description = `${user} rejected pin ${pin._id}`;
+        description = `${nameOfUser} rejected pin ${pin._id}`;
         break;
       case states.UNVERIFIED:
         action = actions.UNVERIFY;
-        description = `${user} unverified pin ${pin._id}`;
+        description = `${nameOfUser} unverified pin ${pin._id}`;
         break;
       case states.VERIFIED:
         if (previousState === states.UNVERIFIED) {
           action = actions.VERIFY;
-          description = `${user} verified pin ${pin._id}`;
+          description = `${nameOfUser} verified pin ${pin._id}`;
         } else if (previousState === states.ASSIGNED) {
-          // If a department denies assignment, remove assigned_department value
+          // If a pin has already been assigned to a department (in ASSIGNED state),
+          // but the department denies that assignment,
+          // the pin's next state will go back to VERIFIED (and need to re-assign).
+          // So, we will remove `assigned_department` value from the pin.
           action = actions.DENY;
           changedFields.push('assigned_department');
           previousValues.push(pin.assigned_department);
           updatedValues.push(null);
-          description = `${user} denies pin ${pin._id}`;
+          description = `${nameOfUser} denies pin ${pin._id}`;
         }
         break;
       case states.ASSIGNED:
+        action = actions.ASSIGN;
         changedFields.push('assigned_department');
         previousValues.push(pin.assigned_department);
         updatedValues.push(hook.data.assigned_department);
-        action = actions.ASSIGN;
-        description = `${user} assigned pin ${pin._id} to ${pin.assigned_department}`;
+        description = `${nameOfUser} assigned pin ${pin._id} to ${pin.assigned_department}`;
         break;
       case states.PROCESSING:
+        action = actions.PROCESS;
         changedFields.push('processed_by');
         previousValues.push(pin.processed_by);
         updatedValues.push(hook.data.processed_by);
-        action = actions.PROCESS;
-        description = `${user} is processing pin ${pin._id}`;
+        description = `${nameOfUser} is processing pin ${pin._id}`;
         break;
       case states.RESOLVED:
         action = actions.RESOLVE;
-        description = `${user} marked pin ${pin._id} as resolved`;
+        description = `${nameOfUser} marked pin ${pin._id} as resolved`;
         break;
       default:
         action = null;
@@ -111,7 +124,7 @@ const prepareActivityLog = () => (hook) => {
 
     // Pass logInfo object to after hook by attaching to hook.data
     const logInfo = {
-      user,
+      user: nameOfUser,
       organization: pin.organization,
       department: departments,
       actionType: actions.types.STATE_TRANSITION,
