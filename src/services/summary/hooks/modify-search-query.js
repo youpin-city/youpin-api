@@ -1,4 +1,4 @@
-const _ = require('underscore');
+const _ = require('lodash');
 const errors = require('feathers-errors');
 const Organization = require('../../organization/organization-model');
 
@@ -21,7 +21,6 @@ const modifySearchQuery = () => (hook) => {
   if (!_.isEmpty(date)) {
     hook.params.query.date = date; // eslint-disable-line no-param-reassign
   }
-  console.log(hook.params);
   // Return error if no organization is specified.
   if (!organizationName) {
     throw new errors.BadRequest('No `organization` specified in a query');
