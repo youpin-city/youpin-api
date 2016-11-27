@@ -1,5 +1,6 @@
 const validator = require('validator');
 const mongoose = require('mongoose');
+const USER = require('../../constants/roles').USER;
 
 const Schema = mongoose.Schema;
 
@@ -21,7 +22,8 @@ const UserSchema = new Schema({
     unique: true,
     validate: { validator: validator.isEmail, message: '{VALUE} is not a valid email!' },
   },
-  password: { type: String, required: true },
+  password: { type: String },
+  facebookId: { type: String },
   phone: {
     type: String,
     validate: {
@@ -34,7 +36,7 @@ const UserSchema = new Schema({
   created_time: { type: Date, default: Date.now },
   updated_time: { type: Date, default: Date.now },
   customer_app_id: [Schema.Types.ObjectId],
-  role: { type: String, required: true },
+  role: { type: String, required: true, default: USER },
   owner_app_id: [Schema.Types.ObjectId],
 });
 
