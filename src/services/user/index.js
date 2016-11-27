@@ -11,6 +11,9 @@ module.exports = function () { // eslint-disable-line func-names
       default: 5,
       max: 25,
     },
+    // Convert mongoose document to plain object to fix facebook user patch service
+    // Ref: https://github.com/feathersjs/feathers-mongoose/issues/110
+    lean: true,
   };
   /* eslint-disable max-len */
   /**
