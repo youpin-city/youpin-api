@@ -62,7 +62,7 @@ describe('organization service', () => {
   describe('POST', () => {
     it('return 401 (unauthorized) if user is not authenticated', (done) => {
       const newOrganization = {
-        name: 'YouPin',
+        name: 'newOrganization',
         users: [superAdminUser._id, adminUser._id], // eslint-disable-line no-underscore-dangle
         detail: 'An awesome organization', // eslint-disable-line no-underscore-dangle
       };
@@ -86,7 +86,7 @@ describe('organization service', () => {
 
     it('return 201 when posting by super admin user', (done) => {
       const newOrganization = {
-        name: 'YouPin',
+        name: 'newOrganization',
         users: [superAdminUser._id, adminUser._id], // eslint-disable-line no-underscore-dangle
         detail: 'An awesome organization',
       };

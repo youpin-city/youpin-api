@@ -9,6 +9,7 @@ const organization = require('./organization');
 const photo = require('./photo');
 const pin = require('./pin');
 const searchnearby = require('./searchnearby');
+const summary = require('./summary');
 const user = require('./user');
 const video = require('./video');
 
@@ -27,4 +28,5 @@ module.exports = function () { // eslint-disable-line func-names
   app.configure(searchnearby);
   app.configure(user);
   app.configure(video);
+  app.configure(summary);
 };
