@@ -1,6 +1,7 @@
 const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication').hooks;
 const validateObjectId = require('../../../utils/hooks/validate-object-id-hook');
+const handleFacebookCreate = require('./handle-facebook-create');
 
 exports.before = {
   all: [],
@@ -17,6 +18,7 @@ exports.before = {
     auth.restrictToOwner({ ownerField: '_id' }),
   ],
   create: [
+    handleFacebookCreate(),
     auth.hashPassword(),
   ],
   update: [

@@ -5,6 +5,8 @@
   "mongodb": "mongodb://mongodb:27017/youpin-dev",
   "public": "../public/",
   "auth": {
+    "successRedirect": "your url for success login",
+    "failureRedirect": "your url for fail login",
     "token": {
       "secret": "SECRET_AUTH_TOKEN"
     },
@@ -12,8 +14,10 @@
       "clientID": "your facebook client id",
       "clientSecret": "your facebook client secret",
       "permissions": {
+        "authType": "rerequest",
         "scope": ["public_profile","email"]
-      }
+      },
+      "profileFields": ["id", "first_name", "last_name", "email"]
     },
     "github": {
       "clientID": "your github client id",
