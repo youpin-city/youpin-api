@@ -7,7 +7,7 @@ const byDepartmentSchema = new Schema({
   assigned: { type: Number },
   processing: { type: Number },
   resolved: { type: Number },
-  rejected: { type: Number }
+  rejected: { type: Number },
 });
 
 const summarySchema = new Schema({
@@ -33,9 +33,9 @@ const summarySchema = new Schema({
 });
 
 
-summarySchema.pre('find', function(next, res) {
-    this.populate('by_department.department');
-    next();
+summarySchema.pre('find', function preFind(next) {
+  this.populate('by_department.department');
+  next();
 });
 
 const Model = mongoose.model('summary', summarySchema);
