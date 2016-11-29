@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const UNVERIFIED = require('../../constants/pin-states').UNVERIFIED;
 
 const Schema = mongoose.Schema;
 
@@ -35,7 +36,7 @@ const PinSchema = new Schema({
   organization: { type: Schema.Types.ObjectId, ref: 'Organization', required: true },
   owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   photos: [String],
-  status: String,
+  status: { type: String, required: true, default: UNVERIFIED },
   location: {
     type: { type: String, enum: 'Point', default: 'Point' },
     // default to Thailand Democracy Monument
