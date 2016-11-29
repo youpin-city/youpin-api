@@ -5,15 +5,15 @@ const loadFixture = require('../../test_helper').loadFixture;
 const request = require('supertest-as-promised');
 
 // Models
-const UserModel = require('../../../src/services/user/user-model');
-const OrganizationModel = require('../../../src/services/organization/organization-model');
 const DepartmentModel = require('../../../src/services/department/department-model');
+const OrganizationModel = require('../../../src/services/organization/organization-model');
+const UserModel = require('../../../src/services/user/user-model');
 
 // Fixtures
-const superAdminUser = require('../../fixtures/super_admin_user');
+const departments = require('../../fixtures/departments');
 const organizationAdminUser = require('../../fixtures/organization_admin_user');
 const organizations = require('../../fixtures/organizations');
-const departments = require('../../fixtures/departments');
+const superAdminUser = require('../../fixtures/super_admin_user');
 
 // App stuff
 const app = require('../../../src/app');

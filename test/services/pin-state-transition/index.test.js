@@ -10,18 +10,18 @@ const PinModel = require('../../../src/services/pin/pin-model');
 const UserModel = require('../../../src/services/user/user-model');
 
 // Fixture
-const superAdminUser = require('../../fixtures/super_admin_user');
-const organizationAdminUser = require('../../fixtures/organization_admin_user');
 const departmentHeadUser = require('../../fixtures/department_head_user');
 const departments = require('../../fixtures/departments');
+const organizationAdminUser = require('../../fixtures/organization_admin_user');
 const pins = require('../../fixtures/pins');
+const superAdminUser = require('../../fixtures/super_admin_user');
 
 // App stuff
 const app = require('../../../src/app');
-const states = require('../../../src/constants/pin-states');
 const roles = require('../../../src/constants/roles');
-const PinTransitionService = require('../../../src/services/pin-state-transition').PinTransitionService; // eslint-disable-line max-len
+const states = require('../../../src/constants/pin-states');
 const ObjectId = require('mongoose').Types.ObjectId;
+const PinTransitionService = require('../../../src/services/pin-state-transition').PinTransitionService; // eslint-disable-line max-len
 
 // States
 const UNVERIFIED = states.UNVERIFIED;

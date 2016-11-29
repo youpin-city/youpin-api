@@ -10,8 +10,8 @@ const PhotoModel = require('../../../src/services/photo/photo-model');
 const UserModel = require('../../../src/services/user/user-model');
 
 // Fixtures
-const photos = require('../../fixtures/photos');
 const adminUser = require('../../fixtures/admin_user');
+const photos = require('../../fixtures/photos');
 
 // App stuff
 const app = require('../../../src/app');

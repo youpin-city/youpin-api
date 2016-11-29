@@ -1,8 +1,8 @@
 // Test helper functions
 const assertTestEnv = require('../../../test_helper').assertTestEnv;
 const expect = require('../../../test_helper').expect;
-const stub = require('../../../test_helper').stub;
 const loadFixture = require('../../../test_helper').loadFixture;
+const stub = require('../../../test_helper').stub;
 
 // Models
 const PinModel = require('../../../../src/services/pin/pin-model');
@@ -13,10 +13,7 @@ const pins = require('../../../fixtures/pins');
 // App stuff
 const mongoose = require('mongoose');
 const actions = require('../../../../src/constants/actions');
-
-/* eslint-disable max-len */
-const prepareActivityLog = require('../../../../src/services/pin-state-transition/hooks/prepare-activity-log');
-/* eslint-enable */
+const prepareActivityLog = require('../../../../src/services/pin-state-transition/hooks/prepare-activity-log'); // eslint-disable-line max-len
 
 // Exit test if NODE_ENV is not equal `test`
 assertTestEnv();

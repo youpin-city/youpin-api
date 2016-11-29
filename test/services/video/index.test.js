@@ -10,8 +10,8 @@ const VideoModel = require('../../../src/services/video/video-model');
 const UserModel = require('../../../src/services/user/user-model');
 
 // Fixtures
-const Videos = require('../../fixtures/videos');
 const adminUser = require('../../fixtures/admin_user');
+const videos = require('../../fixtures/videos');
 
 // App stuff
 const app = require('../../../src/app');
@@ -30,7 +30,7 @@ describe('Video service', () => {
       // Create admin user and app3rd for admin
       Promise.all([
         loadFixture(UserModel, adminUser),
-        loadFixture(VideoModel, Videos),
+        loadFixture(VideoModel, videos),
       ])
       .then(() => {
         done();
