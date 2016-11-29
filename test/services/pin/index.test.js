@@ -18,6 +18,7 @@ const pins = require('../../fixtures/pins');
 // App stuff
 const app = require('../../../src/app');
 const mongoose = require('mongoose');
+const UNVERIFIED = require('../../../src/constants/pin-states').UNVERIFIED;
 
 // Exit test if NODE_ENV is not equal `test`
 assertTestEnv();
@@ -214,6 +215,46 @@ describe('pin service', () => {
                   'videos', 'voters', 'comments', 'tags',
                   'location', 'photos', 'neighborhood', 'mentions',
                   'followers', 'updated_time', 'created_time', 'categories']);
+
+              done();
+            });
+        });
+    });
+
+    it('craetes pin with `unverified` status as default status', (done) => {
+      const newPin = {
+        detail: casual.text,
+        organization: '57933111556362511181aaa1',
+        owner: adminUser._id, // eslint-disable-line no-underscore-dangle
+        provider: adminUser._id, // eslint-disable-line no-underscore-dangle
+        location: {
+          coordinates: [10.733626, 10.5253153],
+        },
+      };
+
+      request(app)
+        .post('/auth/local')
+        .send({
+          email: 'contact@youpin.city',
+          password: 'youpin_admin',
+        })
+        .then((tokenResp) => {
+          const token = tokenResp.body.token;
+
+          if (!token) {
+            done(new Error('No token returns'));
+          }
+
+          request(app)
+            .post('/pins')
+            .set('X-YOUPIN-3-APP-KEY',
+              '579b04ac516706156da5bba1:ed545297-4024-4a75-89b4-c95fed1df436')
+            .send(newPin)
+            .set('Authorization', `Bearer ${token}`)
+            .expect(201)
+            .then((res) => {
+              const createdPin = res.body;
+              expect(createdPin.status).to.equal(UNVERIFIED);
 
               done();
             });
