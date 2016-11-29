@@ -2,20 +2,11 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
-const byDepartmentSchema = new Schema({
-  department: { type: Schema.Types.ObjectId, ref: 'Department', required: true },
-  assigned: { type: Number },
-  processing: { type: Number },
-  resolved: { type: Number },
-  rejected: { type: Number },
-});
-
-const summarySchema = new Schema({
-  organization: { type: Schema.Types.ObjectId, ref: 'Organization', required: true },
+const SummarySchema = new Schema({
+  organization: { type: String, required: true },
   date: {
     type: String,
     required: true,
-    unique: true,
     validate: {
       validator: (v) => /\d{4}-\d{2}-\d{2}/.test(v),
       message: '{VALUE} has to be in YYYY-MM-DD format!',
@@ -27,17 +18,13 @@ const summarySchema = new Schema({
   total_processing: { type: Number },
   total_resolved: { type: Number },
   total_rejected: { type: Number },
-  by_department: [byDepartmentSchema],
+  by_department: Schema.Types.Mixed,
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });
 
+SummarySchema.index({ organization: 1, date: 1 }, { unique: true });
 
-summarySchema.pre('find', function preFind(next) {
-  this.populate('by_department.department');
-  next();
-});
-
-const Model = mongoose.model('summary', summarySchema);
+const Model = mongoose.model('Summary', SummarySchema);
 
 module.exports = Model;
