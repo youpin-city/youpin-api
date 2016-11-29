@@ -64,21 +64,22 @@ const prepareActivityLog = () => (hook) => {
     const changedFields = ['status'];
     const previousValues = [previousState];
     const updatedValues = [nextState];
+    const shortenDetail = `${pin.detail.substring(0, 20)}...`;
 
     /* eslint-disable no-underscore-dangle */
     switch (nextState) {
       case states.REJECTED:
         action = actions.REJECT;
-        description = `${nameOfUser} rejected pin ${pin._id}`;
+        description = `${nameOfUser} rejected pin ${shortenDetail}`;
         break;
       case states.UNVERIFIED:
         action = actions.UNVERIFY;
-        description = `${nameOfUser} unverified pin ${pin._id}`;
+        description = `${nameOfUser} unverified pin ${shortenDetail}`;
         break;
       case states.VERIFIED:
         if (previousState === states.UNVERIFIED) {
           action = actions.VERIFY;
-          description = `${nameOfUser} verified pin ${pin._id}`;
+          description = `${nameOfUser} verified pin ${shortenDetail}`;
         } else if (previousState === states.ASSIGNED) {
           // If a pin has already been assigned to a department (in ASSIGNED state),
           // but the department denies that assignment,
@@ -88,7 +89,7 @@ const prepareActivityLog = () => (hook) => {
           changedFields.push('assigned_department');
           previousValues.push(pin.assigned_department);
           updatedValues.push(null);
-          description = `${nameOfUser} denies pin ${pin._id}`;
+          description = `${nameOfUser} denies pin ${shortenDetail}`;
         }
         break;
       case states.ASSIGNED:
@@ -96,18 +97,18 @@ const prepareActivityLog = () => (hook) => {
         changedFields.push('assigned_department');
         previousValues.push(pin.assigned_department);
         updatedValues.push(hook.data.assigned_department);
-        description = `${nameOfUser} assigned pin ${pin._id} to ${pin.assigned_department}`;
+        description = `${nameOfUser} assigned pin ${shortenDetail} to ${pin.assigned_department}`;
         break;
       case states.PROCESSING:
         action = actions.PROCESS;
         changedFields.push('processed_by');
         previousValues.push(pin.processed_by);
         updatedValues.push(hook.data.processed_by);
-        description = `${nameOfUser} is processing pin ${pin._id}`;
+        description = `${nameOfUser} is processing pin ${shortenDetail}`;
         break;
       case states.RESOLVED:
         action = actions.RESOLVE;
-        description = `${nameOfUser} marked pin ${pin._id} as resolved`;
+        description = `${nameOfUser} marked pin ${shortenDetail} as resolved`;
         break;
       default:
         action = null;
