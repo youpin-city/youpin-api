@@ -77,7 +77,7 @@ describe('Prepare Activity Log Hook', () => {
         changed_fields: ['status'],
         previous_values: ['unverified'],
         updated_values: ['verified'],
-        description: `Aunt You-pin verified pin ${pinId}`,
+        description: `Aunt You-pin verified pin ${pins[0].detail.substring(0, 20)}...`,
         timestamp: Date.now(),
       };
 
