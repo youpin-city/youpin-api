@@ -1,6 +1,5 @@
 const _ = require('lodash');
 const errors = require('feathers-errors');
-const Organization = require('../../organization/organization-model');
 
 // modifySearchQuery is a before hook function to transform a summary
 // query into the correct mongoose format.
@@ -25,20 +24,8 @@ const modifySearchQuery = () => (hook) => {
   if (!organizationName) {
     throw new errors.BadRequest('No `organization` specified in a query');
   }
-  // Search for organization id since the legitimate query needs an id not a name.
-  return Organization.findOne({ name: organizationName })
-    .then(organization => {
-      if (!organization) {
-        throw new errors.NotFound(`No organization with a name called "${organizationName}".`);
-      }
-      /* eslint-disable no-param-reassign,no-underscore-dangle */
-      hook.params.query.organization = organization._id;
-      /* eslint-enable */
-      return Promise.resolve(hook);
-    })
-    .catch(err => {
-      throw new Error(err);
-    });
+  hook.params.query.organization = organizationName; // eslint-disable-line no-param-reassign
+  return Promise.resolve(hook);
 };
 
 module.exports = modifySearchQuery;
