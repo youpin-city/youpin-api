@@ -7,6 +7,7 @@ const byDepartmentSchema = new Schema({
   assigned: { type: Number },
   processing: { type: Number },
   resolved: { type: Number },
+  rejected: { type: Number },
 });
 
 const summarySchema = new Schema({
@@ -29,6 +30,12 @@ const summarySchema = new Schema({
   by_department: [byDepartmentSchema],
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
+});
+
+
+summarySchema.pre('find', function preFind(next) {
+  this.populate('by_department.department');
+  next();
 });
 
 const Model = mongoose.model('summary', summarySchema);
