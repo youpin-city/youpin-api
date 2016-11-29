@@ -1,13 +1,13 @@
 const errors = require('feathers-errors');
-const GCSUploader = require('../../utils/gcs-uploader');
-const hooks = require('./hooks');
-const Photo = require('./photo-model');
 const Promise = require('bluebird');
+const hooks = require('./hooks');
+const GCSUploader = require('../../utils/gcs-uploader');
+const Photo = require('./photo-model');
 
 // Middleware for handling file upload
 const IMAGE_SIZE = 5 * 1024 * 1024;
-const prepareMultipart = require('../../middleware/prepare-multipart')('image', IMAGE_SIZE);
 const attachFileToFeathers = require('../../middleware/attach-file-to-feathers')();
+const prepareMultipart = require('../../middleware/prepare-multipart')('image', IMAGE_SIZE);
 
 // Save photo metadata to database
 function savePhotoMetadata(file) {

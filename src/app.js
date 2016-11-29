@@ -1,17 +1,17 @@
-const path = require('path');
-const serveStatic = require('feathers').static;
-const favicon = require('serve-favicon');
-const compress = require('compression');
-const cors = require('cors');
-const feathers = require('feathers');
-const configuration = require('feathers-configuration');
-const hooks = require('feathers-hooks');
-const init = require('./init');
-const rest = require('feathers-rest');
 const bodyParser = require('body-parser');
-const socketio = require('feathers-socketio');
-const middleware = require('./middleware');
+const compress = require('compression');
+const configuration = require('feathers-configuration');
+const cors = require('cors');
+const path = require('path');
+const favicon = require('serve-favicon');
+const feathers = require('feathers');
+const hooks = require('feathers-hooks');
+const rest = require('feathers-rest');
+const serveStatic = require('feathers').static;
 const session = require('express-session');
+const socketio = require('feathers-socketio');
+const init = require('./init');
+const middleware = require('./middleware');
 
 init();
 

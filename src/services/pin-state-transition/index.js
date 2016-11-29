@@ -1,21 +1,21 @@
 const errors = require('feathers-errors');
 const hooks = require('./hooks');
-const Pin = require('../pin/pin-model');
 const roles = require('../../constants/roles');
 const states = require('../../constants/pin-states');
+const Pin = require('../pin/pin-model');
 
 // States
-const UNVERIFIED = states.UNVERIFIED;
-const VERIFIED = states.VERIFIED;
 const ASSIGNED = states.ASSIGNED;
 const PROCESSING = states.PROCESSING;
-const RESOLVED = states.RESOLVED;
 const REJECTED = states.REJECTED;
+const RESOLVED = states.RESOLVED;
+const UNVERIFIED = states.UNVERIFIED;
+const VERIFIED = states.VERIFIED;
 
 // Roles
-const SUPER_ADMIN = roles.SUPER_ADMIN;
-const ORGANIZATION_ADMIN = roles.ORGANIZATION_ADMIN;
 const DEPARTMENT_HEAD = roles.DEPARTMENT_HEAD;
+const ORGANIZATION_ADMIN = roles.ORGANIZATION_ADMIN;
+const SUPER_ADMIN = roles.SUPER_ADMIN;
 const USER = roles.USER;
 
 class PinTransitionService {

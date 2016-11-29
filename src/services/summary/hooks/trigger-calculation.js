@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const moment = require('moment');
-const ActivityLog = require('../../activity-log/activity-log-model');
 const actions = require('../../../constants/actions');
+const ActivityLog = require('../../activity-log/activity-log-model');
 const Summary = require('../../summary/summary-model');
 
 // triggerCalculation is a before hook function to trigger a summary

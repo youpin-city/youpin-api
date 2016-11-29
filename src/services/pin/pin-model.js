@@ -11,46 +11,46 @@ const VoteSchema = new Schema({
 { _id: false });
 
 const CommentSchema = new Schema({
+  created_time: { type: Date, required: true, default: Date.now },
   detail: { type: String, required: true },
   mentions: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-  tags: [String],
   photos: [Schema.Types.ObjectId],
+  tags: [String],
+  updated_time: { type: Date, required: true, default: Date.now },
   videos: [Schema.Types.ObjectId],
   voters: [VoteSchema],
-  created_time: { type: Date, required: true, default: Date.now },
-  updated_time: { type: Date, required: true, default: Date.now },
 },
 // disable _id field
 { _id: false });
 
 const PinSchema = new Schema({
-  detail: { type: String, required: true },
+  assigned_department: { type: Schema.Types.ObjectId, ref: 'Departmeent' },
+  assigned_user: { type: Schema.Types.ObjectId, ref: 'User' },
   categories: [String],
+  comments: [CommentSchema],
   created_time: { type: Date, required: true, default: Date.now },
-  updated_time: { type: Date, required: true, default: Date.now },
-  resolved_time: { type: Date },
+  detail: { type: String, required: true },
   followers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+  is_archived: { type: Boolean, default: false },
   level: String,
-  mentions: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-  neighborhood: [String],
-  organization: { type: Schema.Types.ObjectId, ref: 'Organization', required: true },
-  owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  photos: [String],
-  status: { type: String, required: true, default: UNVERIFIED },
   location: {
     type: { type: String, enum: 'Point', default: 'Point' },
     // default to Thailand Democracy Monument
     coordinates: { type: [Number], default: [100.5018549, 13.756727] },
   },
-  tags: [String],
+  mentions: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+  neighborhood: [String],
+  organization: { type: Schema.Types.ObjectId, ref: 'Organization', required: true },
+  owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  photos: [String],
   provider: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  comments: [CommentSchema],
-  voters: [VoteSchema],
-  videos: [Schema.Types.ObjectId],
-  is_archived: { type: Boolean, default: false },
-  assigned_department: { type: Schema.Types.ObjectId, ref: 'Departmeent' },
-  assigned_user: { type: Schema.Types.ObjectId, ref: 'User' },
   processed_by: { type: Schema.Types.ObjectId, ref: 'User' },
+  resolved_time: { type: Date },
+  status: { type: String, required: true, default: UNVERIFIED },
+  tags: [String],
+  updated_time: { type: Date, required: true, default: Date.now },
+  videos: [Schema.Types.ObjectId],
+  voters: [VoteSchema],
 });
 
 // Index geosearch field

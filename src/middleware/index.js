@@ -1,6 +1,6 @@
 const handler = require('feathers-errors/handler');
-const notFound = require('./not-found-handler');
 const logger = require('./logger');
+const notFound = require('./not-found-handler');
 
 module.exports = function () { // eslint-disable-line func-names
   // Add your custom middleware here. Remember, that

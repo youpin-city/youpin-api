@@ -3,10 +3,10 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const app3rdSchema = new Schema({
-  name: { type: String, required: true },
-  homepage: { type: String },
   apikey: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
+  homepage: { type: String },
+  name: { type: String, required: true },
   updatedAt: { type: Date, default: Date.now },
 });
 

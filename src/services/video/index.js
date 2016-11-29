@@ -1,8 +1,8 @@
 const errors = require('feathers-errors');
 const Promise = require('bluebird');
 const hooks = require('./hooks');
-const Video = require('./video-model');
 const GCSUploader = require('../../utils/gcs-uploader');
+const Video = require('./video-model');
 
 // Middleware for handling file upload
 const VIDEO_SIZE = 20 * 1024 * 1024;

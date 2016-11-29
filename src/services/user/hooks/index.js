@@ -1,7 +1,7 @@
-const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication').hooks;
-const validateObjectId = require('../../../utils/hooks/validate-object-id-hook');
+const hooks = require('feathers-hooks');
 const handleFacebookCreate = require('./handle-facebook-create');
+const validateObjectId = require('../../../utils/hooks/validate-object-id-hook');
 
 exports.before = {
   all: [],

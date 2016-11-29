@@ -1,8 +1,8 @@
-const hooks = require('./hooks');
 const Promise = require('bluebird');
 const errors = require('feathers-errors');
-const Pin = require('../pin/pin-model.js');
+const hooks = require('./hooks');
 const NumberHelper = require('../../utils/number');
+const Pin = require('../pin/pin-model.js');
 
 class Service {
   constructor(options) {

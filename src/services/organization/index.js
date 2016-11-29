@@ -1,6 +1,6 @@
 const service = require('feathers-mongoose');
-const organization = require('./organization-model');
 const hooks = require('./hooks');
+const organization = require('./organization-model');
 
 module.exports = function () { // eslint-disable-line func-names
   const app = this;
