@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+
 const UNVERIFIED = require('../../constants/pin-states').UNVERIFIED;
 
 const Schema = mongoose.Schema;

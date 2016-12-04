@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const moment = require('moment');
+
 const actions = require('../../../constants/actions');
 const ActivityLog = require('../../activity-log/activity-log-model');
 const Summary = require('../../summary/summary-model');

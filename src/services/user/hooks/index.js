@@ -1,5 +1,6 @@
 const auth = require('feathers-authentication').hooks;
 const hooks = require('feathers-hooks');
+
 const handleFacebookCreate = require('./handle-facebook-create');
 const validateObjectId = require('../../../utils/hooks/validate-object-id-hook');
 

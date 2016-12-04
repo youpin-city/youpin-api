@@ -1,4 +1,5 @@
 const auth = require('feathers-authentication').hooks;
+
 const validateObjectId = require('../../../utils/hooks/validate-object-id-hook');
 const SUPER_ADMIN = require('../../../constants/roles').SUPER_ADMIN;
 

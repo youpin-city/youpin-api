@@ -1,4 +1,5 @@
 const service = require('feathers-mongoose');
+
 const hooks = require('./hooks');
 const Pin = require('./pin-model');
 

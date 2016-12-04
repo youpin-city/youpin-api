@@ -1,5 +1,6 @@
 const errors = require('feathers-errors');
 const mongoose = require('mongoose');
+
 const actions = require('../../../constants/actions');
 const states = require('../../../constants/pin-states');
 const Pin = require('../../pin/pin-model');

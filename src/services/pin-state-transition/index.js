@@ -1,4 +1,5 @@
 const errors = require('feathers-errors');
+
 const hooks = require('./hooks');
 const roles = require('../../constants/roles');
 const states = require('../../constants/pin-states');

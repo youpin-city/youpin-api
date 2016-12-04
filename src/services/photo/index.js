@@ -1,5 +1,6 @@
 const errors = require('feathers-errors');
 const Promise = require('bluebird');
+
 const hooks = require('./hooks');
 const GCSUploader = require('../../utils/gcs-uploader');
 const Photo = require('./photo-model');

@@ -1,4 +1,5 @@
 const auth = require('feathers-authentication').hooks;
+
 const logActivity = require('./log-activity');
 const prepareActivityLog = require('./prepare-activity-log');
 

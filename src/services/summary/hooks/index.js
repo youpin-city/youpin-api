@@ -1,4 +1,5 @@
 const auth = require('feathers-authentication').hooks;
+
 const modifySearchQuery = require('./modify-search-query');
 const triggerCalculation = require('./trigger-calculation.js');
 const validateObjectId = require('../../../utils/hooks/validate-object-id-hook');

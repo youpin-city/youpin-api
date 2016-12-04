@@ -1,4 +1,5 @@
 const handler = require('feathers-errors/handler');
+
 const logger = require('./logger');
 const notFound = require('./not-found-handler');
 
