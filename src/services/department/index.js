@@ -1,4 +1,5 @@
 const service = require('feathers-mongoose');
+
 const department = require('./department-model');
 const hooks = require('./hooks');
 

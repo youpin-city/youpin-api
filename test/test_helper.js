@@ -1,9 +1,9 @@
 const chai = require('chai');
-const sinon = require('sinon');
 const dirtyChai = require('dirty-chai');
-const sinonChai = require('sinon-chai');
-const mongoose = require('mongoose');
 const loadFixture = require('mongoose-fixture-loader');
+const mongoose = require('mongoose');
+const sinon = require('sinon');
+const sinonChai = require('sinon-chai');
 
 const expect = chai.expect;
 const spy = sinon.spy;

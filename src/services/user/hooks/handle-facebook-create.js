@@ -1,4 +1,3 @@
-
 const handleFacebookCreate = () => (hook) => {
   // Pass through this hook if there's no facebook data
   if (!hook.data.facebookId

@@ -1,9 +1,9 @@
 // Test helper functions
+const _ = require('lodash');
 const assertTestEnv = require('../../test_helper').assertTestEnv;
 const expect = require('../../test_helper').expect;
 const loadFixture = require('../../test_helper').loadFixture;
 const request = require('supertest-as-promised');
-const _ = require('lodash');
 
 // Models
 const ActivityLogModel = require('../../../src/services/activity-log/activity-log-model');
@@ -12,8 +12,8 @@ const ActivityLogModel = require('../../../src/services/activity-log/activity-lo
 const activityLogs = require('../../fixtures/activity_logs');
 
 // App staff
-const app = require('../../../src/app');
 const actions = require('../../../src/constants/actions');
+const app = require('../../../src/app');
 
 // Exit test if NODE_ENV is not equal `test`
 assertTestEnv();

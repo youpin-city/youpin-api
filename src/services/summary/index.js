@@ -1,6 +1,8 @@
 const service = require('feathers-mongoose');
-const Summary = require('./summary-model');
+
 const hooks = require('./hooks');
+
+const Summary = require('./summary-model');
 
 module.exports = function () { // eslint-disable-line func-names
   const app = this;

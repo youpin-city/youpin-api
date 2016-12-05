@@ -1,5 +1,6 @@
 const validator = require('validator');
 const mongoose = require('mongoose');
+
 const USER = require('../../constants/roles').USER;
 
 const Schema = mongoose.Schema;

@@ -1,5 +1,5 @@
-// Hooks
 const auth = require('feathers-authentication').hooks;
+
 const restrictToOwnerOfPin = require('../../../utils/hooks/restrict-to-owner-of-pin-hook');
 const swapLatLong = require('../../../utils/hooks/swap-lat-long');
 const validateObjectId = require('../../../utils/hooks/validate-object-id-hook');

@@ -1,8 +1,9 @@
-const mongoose = require('mongoose');
 const errors = require('feathers-errors');
-const Pin = require('../../pin/pin-model');
+const mongoose = require('mongoose');
+
 const actions = require('../../../constants/actions');
 const states = require('../../../constants/pin-states');
+const Pin = require('../../pin/pin-model');
 
 const safetyCheck = (hook) => {
   // hook.params.user must be populated by auth.populateUser before hook

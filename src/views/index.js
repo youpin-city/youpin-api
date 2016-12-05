@@ -1,8 +1,8 @@
-const feathers = require('feathers/client');
-const rest = require('feathers-rest/client');
-const hooks = require('feathers-hooks');
 const authentication = require('feathers-authentication/client');
+const feathers = require('feathers/client');
+const hooks = require('feathers-hooks');
 const request = require('superagent');
+const rest = require('feathers-rest/client');
 
 module.exports = function () { // eslint-disable-line func-names
   const app = this;

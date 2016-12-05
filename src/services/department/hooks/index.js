@@ -1,7 +1,8 @@
 const auth = require('feathers-authentication').hooks;
+
 const validateObjectId = require('../../../utils/hooks/validate-object-id-hook');
-const SUPER_ADMIN = require('../../../constants/roles').SUPER_ADMIN;
 const ORGANIZATION_ADMIN = require('../../../constants/roles').ORGANIZATION_ADMIN;
+const SUPER_ADMIN = require('../../../constants/roles').SUPER_ADMIN;
 
 exports.before = {
   all: [],

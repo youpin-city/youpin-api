@@ -1,9 +1,10 @@
 const auth = require('feathers-authentication').hooks;
+
 const modifySearchQuery = require('./modify-search-query');
-const ORGANIZATION_ADMIN = require('../../../constants/roles').ORGANIZATION_ADMIN;
-const SUPER_ADMIN = require('../../../constants/roles').SUPER_ADMIN;
 const triggerCalculation = require('./trigger-calculation.js');
 const validateObjectId = require('../../../utils/hooks/validate-object-id-hook');
+const ORGANIZATION_ADMIN = require('../../../constants/roles').ORGANIZATION_ADMIN;
+const SUPER_ADMIN = require('../../../constants/roles').SUPER_ADMIN;
 
 exports.before = {
   all: [],
@@ -55,4 +56,3 @@ exports.after = {
   patch: [],
   remove: [],
 };
-

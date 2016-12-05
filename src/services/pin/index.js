@@ -1,6 +1,7 @@
-const Pin = require('./pin-model');
-const hooks = require('./hooks');
 const service = require('feathers-mongoose');
+
+const hooks = require('./hooks');
+const Pin = require('./pin-model');
 
 module.exports = function () { // eslint-disable-line func-names
   const app = this;

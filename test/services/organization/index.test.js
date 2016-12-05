@@ -9,9 +9,9 @@ const UserModel = require('../../../src/services/user/user-model');
 const OrganizationModel = require('../../../src/services/organization/organization-model');
 
 // Fixtures
-const superAdminUser = require('../../fixtures/super_admin_user');
 const adminUser = require('../../fixtures/admin_user');
 const organizations = require('../../fixtures/organizations');
+const superAdminUser = require('../../fixtures/super_admin_user');
 
 // App stuff
 const app = require('../../../src/app');

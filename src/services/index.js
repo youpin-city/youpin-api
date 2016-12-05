@@ -30,7 +30,7 @@ module.exports = function () { // eslint-disable-line func-names
   app.configure(pin);
   app.configure(pinStateTransition); // must place after pin service
   app.configure(searchnearby);
+  app.configure(summary);
   app.configure(user);
   app.configure(video);
-  app.configure(summary);
 };
