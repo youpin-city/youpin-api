@@ -4,12 +4,12 @@ require('mongoose-type-url');
 const Schema = mongoose.Schema;
 const Url = mongoose.SchemaTypes.Url;
 
-const PhotoSchema = new Schema({
+const photoSchema = new Schema({
   mimetype: { type: String, required: true },
   size: { type: Number, required: true },
   url: { type: Url, required: true },
 });
 
-const PhotoModel = mongoose.model('Photo', PhotoSchema);
+const Photo = mongoose.model('Photo', photoSchema);
 
-module.exports = PhotoModel;
+module.exports = Photo;

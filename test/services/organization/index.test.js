@@ -5,8 +5,8 @@ const loadFixture = require('../../test_helper').loadFixture;
 const request = require('supertest-as-promised');
 
 // Models
-const UserModel = require('../../../src/services/user/user-model');
-const OrganizationModel = require('../../../src/services/organization/organization-model');
+const User = require('../../../src/services/user/user-model');
+const Organization = require('../../../src/services/organization/organization-model');
 
 // Fixtures
 const adminUser = require('../../fixtures/admin_user');
@@ -27,9 +27,9 @@ describe('organization service', () => {
     server.once('listening', () => {
       // Create admin user and app3rd for admin
       Promise.all([
-        loadFixture(UserModel, superAdminUser),
-        loadFixture(UserModel, adminUser),
-        loadFixture(OrganizationModel, organizations),
+        loadFixture(User, superAdminUser),
+        loadFixture(User, adminUser),
+        loadFixture(Organization, organizations),
       ])
       .then(() => {
         done();
@@ -43,8 +43,8 @@ describe('organization service', () => {
   after((done) => {
     // Clear collections after finishing all tests.
     Promise.all([
-      UserModel.remove({}),
-      OrganizationModel.remove({}),
+      User.remove({}),
+      Organization.remove({}),
     ])
     .then(() => {
       server.close((err) => {

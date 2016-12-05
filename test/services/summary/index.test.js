@@ -6,7 +6,7 @@ const loadFixture = require('../../test_helper').loadFixture;
 const request = require('supertest-as-promised');
 
 // Models
-const ActivityLogModel = require('../../../src/services/activity-log/activity-log-model');
+const ActivityLog = require('../../../src/services/activity-log/activity-log-model');
 
 // Fixture
 const activityLogs = require('../../fixtures/activity_logs');
@@ -25,7 +25,7 @@ describe('summary service', () => {
     server = app.listen(app.get('port'));
     server.once('listening', () => {
       // Load activity log fixture
-      loadFixture(ActivityLogModel, activityLogs)
+      loadFixture(ActivityLog, activityLogs)
       .then(() => {
         done();
       })
@@ -37,7 +37,7 @@ describe('summary service', () => {
 
   after((done) => {
     // Clear collections after finishing all tests.
-    ActivityLogModel.remove({})
+    ActivityLog.remove({})
     .then(() => {
       server.close((err) => {
         if (err) return done(err);

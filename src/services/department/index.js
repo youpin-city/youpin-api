@@ -1,13 +1,13 @@
 const service = require('feathers-mongoose');
 
-const department = require('./department-model');
+const Department = require('./department-model');
 const hooks = require('./hooks');
 
 module.exports = function () { // eslint-disable-line func-names
   const app = this;
 
   const options = {
-    Model: department,
+    Model: Department,
     paginate: {
       default: 5,
       max: 25,

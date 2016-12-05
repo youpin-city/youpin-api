@@ -6,8 +6,8 @@ const loadFixture = require('../../test_helper').loadFixture;
 const request = require('supertest-as-promised');
 
 // Models
-const App3rdModel = require('../../../src/services/app3rd/app3rd-model');
-const UserModel = require('../../../src/services/user/user-model');
+const App3rd = require('../../../src/services/app3rd/app3rd-model');
+const User = require('../../../src/services/user/user-model');
 
 // Fixtures
 const adminApp3rd = require('../../fixtures/admin_app3rd');
@@ -26,8 +26,8 @@ describe('user service', () => {
     server = app.listen(app.get('port'));
     server.once('listening', () => {
       Promise.all([
-        loadFixture(UserModel, adminUser),
-        loadFixture(App3rdModel, adminApp3rd),
+        loadFixture(User, adminUser),
+        loadFixture(App3rd, adminApp3rd),
       ])
       .then(() => {
         done();
@@ -41,8 +41,8 @@ describe('user service', () => {
   after((done) => {
     // Clear all collections after finishing all tests.
     Promise.all([
-      UserModel.remove({}),
-      App3rdModel.remove({}),
+      User.remove({}),
+      App3rd.remove({}),
     ])
     .then(() => {
       // Close the server

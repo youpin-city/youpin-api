@@ -6,9 +6,9 @@ const loadFixture = require('../../test_helper').loadFixture;
 const request = require('supertest-as-promised');
 
 // Models
-const App3rdModel = require('../../../src/services/app3rd/app3rd-model');
-const PinModel = require('../../../src/services/pin/pin-model');
-const UserModel = require('../../../src/services/user/user-model');
+const App3rd = require('../../../src/services/app3rd/app3rd-model');
+const Pin = require('../../../src/services/pin/pin-model');
+const User = require('../../../src/services/user/user-model');
 
 // Fixtures
 const adminApp3rd = require('../../fixtures/admin_app3rd');
@@ -31,9 +31,9 @@ describe('pin service', () => {
     server.once('listening', () => {
       // Create admin user and app3rd for admin
       Promise.all([
-        loadFixture(UserModel, adminUser),
-        loadFixture(App3rdModel, adminApp3rd),
-        loadFixture(PinModel, pins),
+        loadFixture(User, adminUser),
+        loadFixture(App3rd, adminApp3rd),
+        loadFixture(Pin, pins),
       ])
       .then(() => {
         done();
@@ -47,9 +47,9 @@ describe('pin service', () => {
   after((done) => {
     // Clear collections after finishing all tests.
     Promise.all([
-      UserModel.remove({}),
-      PinModel.remove({}),
-      App3rdModel.remove({}),
+      User.remove({}),
+      Pin.remove({}),
+      App3rd.remove({}),
     ])
     .then(() => {
       server.close((err) => {
