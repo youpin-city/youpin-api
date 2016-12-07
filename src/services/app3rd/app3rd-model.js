@@ -10,6 +10,6 @@ const app3rdSchema = new Schema({
   updatedAt: { type: Date, default: Date.now },
 });
 
-const app3rdModel = mongoose.model('app3rd', app3rdSchema);
+const App3rd = mongoose.model('App3rd', app3rdSchema);
 
-module.exports = app3rdModel;
+module.exports = App3rd;

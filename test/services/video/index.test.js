@@ -6,8 +6,8 @@ const request = require('supertest-as-promised');
 const stub = require('../../test_helper').stub;
 
 // Models
-const VideoModel = require('../../../src/services/video/video-model');
-const UserModel = require('../../../src/services/user/user-model');
+const Video = require('../../../src/services/video/video-model');
+const User = require('../../../src/services/user/user-model');
 
 // Fixtures
 const adminUser = require('../../fixtures/admin_user');
@@ -29,8 +29,8 @@ describe('Video service', () => {
     server.once('listening', () => {
       // Create admin user and app3rd for admin
       Promise.all([
-        loadFixture(UserModel, adminUser),
-        loadFixture(VideoModel, videos),
+        loadFixture(User, adminUser),
+        loadFixture(Video, videos),
       ])
       .then(() => {
         done();
@@ -44,8 +44,8 @@ describe('Video service', () => {
   after((done) => {
     // Clear collections after finishing all tests.
     Promise.all([
-      UserModel.remove({}),
-      VideoModel.remove({}),
+      User.remove({}),
+      Video.remove({}),
     ])
     .then(() => {
       server.close((err) => {
@@ -143,7 +143,7 @@ describe('Video service', () => {
           expect(body.size).to.equal(349612);
 
           // Check file metadata is inserted into database
-          VideoModel.findById(body.id, (error, video) => {
+          Video.findById(body.id, (error, video) => {
             if (error) return done(error);
 
             expect(video).to.be.ok();

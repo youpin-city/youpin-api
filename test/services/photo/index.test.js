@@ -6,8 +6,8 @@ const request = require('supertest-as-promised');
 const stub = require('../../test_helper').stub;
 
 // Models
-const PhotoModel = require('../../../src/services/photo/photo-model');
-const UserModel = require('../../../src/services/user/user-model');
+const Photo = require('../../../src/services/photo/photo-model');
+const User = require('../../../src/services/user/user-model');
 
 // Fixtures
 const adminUser = require('../../fixtures/admin_user');
@@ -29,8 +29,8 @@ describe('photo service', () => {
     server.once('listening', () => {
       // Create admin user and app3rd for admin
       Promise.all([
-        loadFixture(UserModel, adminUser),
-        loadFixture(PhotoModel, photos),
+        loadFixture(User, adminUser),
+        loadFixture(Photo, photos),
       ])
       .then(() => {
         done();
@@ -44,8 +44,8 @@ describe('photo service', () => {
   after((done) => {
     // Clear collections after finishing all tests.
     Promise.all([
-      UserModel.remove({}),
-      PhotoModel.remove({}),
+      User.remove({}),
+      Photo.remove({}),
     ])
     .then(() => {
       server.close((err) => {
@@ -143,7 +143,7 @@ describe('photo service', () => {
           expect(body.size).to.equal(4434);
 
           // Check file metadata is inserted into database
-          PhotoModel.findById(body.id, (error, photo) => {
+          Photo.findById(body.id, (error, photo) => {
             if (error) return done(error);
 
             expect(photo).to.be.ok();

@@ -4,12 +4,12 @@ require('mongoose-type-url');
 const Schema = mongoose.Schema;
 const Url = mongoose.SchemaTypes.Url;
 
-const VideoSchema = new Schema({
+const videoSchema = new Schema({
   url: { type: Url, required: true },
   mimetype: { type: String, required: true },
   size: { type: Number, required: true },
 });
 
-const VideoModel = mongoose.model('Video', VideoSchema);
+const Video = mongoose.model('Video', videoSchema);
 
-module.exports = VideoModel;
+module.exports = Video;

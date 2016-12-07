@@ -10,6 +10,6 @@ const departmentSchema = new Schema({
   updated_time: { type: Date, default: Date.now },
 });
 
-const departmentModel = mongoose.model('Department', departmentSchema);
+const Department = mongoose.model('Department', departmentSchema);
 
-module.exports = departmentModel;
+module.exports = Department;

@@ -5,9 +5,9 @@ const loadFixture = require('../../test_helper').loadFixture;
 const request = require('supertest-as-promised');
 
 // Models
-const DepartmentModel = require('../../../src/services/department/department-model');
-const PinModel = require('../../../src/services/pin/pin-model');
-const UserModel = require('../../../src/services/user/user-model');
+const Department = require('../../../src/services/department/department-model');
+const Pin = require('../../../src/services/pin/pin-model');
+const User = require('../../../src/services/user/user-model');
 
 // Fixture
 const departmentHeadUser = require('../../fixtures/department_head_user');
@@ -48,11 +48,11 @@ describe('Pin state transtion service', () => {
     server.once('listening', () => {
       // Create admin user and app3rd for admin
       Promise.all([
-        loadFixture(DepartmentModel, departments),
-        loadFixture(UserModel, superAdminUser),
-        loadFixture(UserModel, organizationAdminUser),
-        loadFixture(UserModel, departmentHeadUser),
-        loadFixture(PinModel, pins),
+        loadFixture(Department, departments),
+        loadFixture(User, superAdminUser),
+        loadFixture(User, organizationAdminUser),
+        loadFixture(User, departmentHeadUser),
+        loadFixture(Pin, pins),
       ])
       .then(() => {
         done();
@@ -66,9 +66,9 @@ describe('Pin state transtion service', () => {
   after((done) => {
     // Clear collections after finishing all tests.
     Promise.all([
-      UserModel.remove({}),
-      PinModel.remove({}),
-      DepartmentModel.remove({}),
+      User.remove({}),
+      Pin.remove({}),
+      Department.remove({}),
     ])
     .then(() => {
       server.close((err) => {
@@ -239,7 +239,7 @@ describe('Pin state transtion service', () => {
       pin._id = ObjectId('579334c75563625d62811111'); // eslint-disable-line no-underscore-dangle,new-cap,max-len
       pin.status = 'verified';
 
-      new PinModel(pin).save((err, savedPin) => {
+      new Pin(pin).save((err, savedPin) => {
         if (err) {
           return done(err);
         }
@@ -269,7 +269,7 @@ describe('Pin state transtion service', () => {
           expect(transition.status).to.equal('unverified');
           expect(transition.pinId).to.equal(String(savedPin._id)); // eslint-disable-line no-underscore-dangle,max-len
 
-          return PinModel.findOne({ _id: savedPin._id }); // eslint-disable-line no-underscore-dangle,max-len
+          return Pin.findOne({ _id: savedPin._id }); // eslint-disable-line no-underscore-dangle,max-len
         })
         .then(updatedPin => {
           expect(updatedPin.status).to.equal('unverified');
@@ -283,7 +283,7 @@ describe('Pin state transtion service', () => {
       pin._id = ObjectId('579334c75563625d62811112'); // eslint-disable-line no-underscore-dangle,new-cap,max-len
       pin.status = 'unverified';
 
-      new PinModel(pin).save((err, savedPin) => {
+      new Pin(pin).save((err, savedPin) => {
         if (err) {
           return done(err);
         }
@@ -313,7 +313,7 @@ describe('Pin state transtion service', () => {
           expect(transition.status).to.equal('verified');
           expect(transition.pinId).to.equal(String(savedPin._id)); // eslint-disable-line no-underscore-dangle,max-len
 
-          return PinModel.findOne({ _id: savedPin._id }); // eslint-disable-line no-underscore-dangle,max-len
+          return Pin.findOne({ _id: savedPin._id }); // eslint-disable-line no-underscore-dangle,max-len
         })
         .then(updatedPin => {
           expect(updatedPin.status).to.equal('verified');
@@ -327,7 +327,7 @@ describe('Pin state transtion service', () => {
       pin._id = ObjectId('579334c75563625d62811113'); // eslint-disable-line no-underscore-dangle,new-cap,max-len
       pin.status = 'unverified';
 
-      new PinModel(pin).save((err, savedPin) => {
+      new Pin(pin).save((err, savedPin) => {
         if (err) {
           return done(err);
         }
@@ -357,7 +357,7 @@ describe('Pin state transtion service', () => {
           expect(transition.status).to.equal('rejected');
           expect(transition.pinId).to.equal(String(savedPin._id)); // eslint-disable-line no-underscore-dangle,max-len
 
-          return PinModel.findOne({ _id: savedPin._id }); // eslint-disable-line no-underscore-dangle,max-len
+          return Pin.findOne({ _id: savedPin._id }); // eslint-disable-line no-underscore-dangle,max-len
         })
         .then(updatedPin => {
           expect(updatedPin.status).to.equal('rejected');
@@ -371,7 +371,7 @@ describe('Pin state transtion service', () => {
       pin._id = ObjectId('579334c75563625d62811114'); // eslint-disable-line no-underscore-dangle,new-cap,max-len
       pin.status = 'unverified';
 
-      new PinModel(pin).save((err, savedPin) => {
+      new Pin(pin).save((err, savedPin) => {
         if (err) {
           return done(err);
         }
@@ -403,7 +403,7 @@ describe('Pin state transtion service', () => {
           expect(transition.assigned_department).to.equal('57933111556362511181ccc1');
           expect(transition.pinId).to.equal(String(savedPin._id)); // eslint-disable-line no-underscore-dangle,max-len
 
-          return PinModel.findOne({ _id: savedPin._id }); // eslint-disable-line no-underscore-dangle,max-len
+          return Pin.findOne({ _id: savedPin._id }); // eslint-disable-line no-underscore-dangle,max-len
         })
         .then(updatedPin => {
           expect(updatedPin.status).to.equal('assigned');
@@ -418,7 +418,7 @@ describe('Pin state transtion service', () => {
       pin._id = ObjectId('579334c75563625d62811115'); // eslint-disable-line no-underscore-dangle,new-cap,max-len
       pin.status = 'assigned';
 
-      new PinModel(pin).save((err, savedPin) => {
+      new Pin(pin).save((err, savedPin) => {
         if (err) {
           return done(err);
         }
@@ -450,7 +450,7 @@ describe('Pin state transtion service', () => {
           expect(transition.processed_by).to.equal('579334c75553625d6281b6cc');
           expect(transition.pinId).to.equal(String(savedPin._id)); // eslint-disable-line no-underscore-dangle,max-len
 
-          return PinModel.findOne({ _id: savedPin._id }); // eslint-disable-line no-underscore-dangle,max-len
+          return Pin.findOne({ _id: savedPin._id }); // eslint-disable-line no-underscore-dangle,max-len
         })
         .then(updatedPin => {
           expect(updatedPin.status).to.equal('processing');
@@ -465,7 +465,7 @@ describe('Pin state transtion service', () => {
       pin._id = ObjectId('579334c75563625d62811116'); // eslint-disable-line no-underscore-dangle,new-cap,max-len
       pin.status = 'processing';
 
-      new PinModel(pin).save((err, savedPin) => {
+      new Pin(pin).save((err, savedPin) => {
         if (err) {
           return done(err);
         }
@@ -495,7 +495,7 @@ describe('Pin state transtion service', () => {
           expect(transition.status).to.equal('resolved');
           expect(transition.pinId).to.equal(String(savedPin._id)); // eslint-disable-line no-underscore-dangle,max-len
 
-          return PinModel.findOne({ _id: savedPin._id }); // eslint-disable-line no-underscore-dangle,max-len
+          return Pin.findOne({ _id: savedPin._id }); // eslint-disable-line no-underscore-dangle,max-len
         })
         .then(updatedPin => {
           expect(updatedPin.status).to.equal('resolved');

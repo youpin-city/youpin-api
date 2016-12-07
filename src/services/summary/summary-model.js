@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
-const SummarySchema = new Schema({
+const summarySchema = new Schema({
   organization: { type: String, required: true },
   date: {
     type: String,
@@ -23,8 +23,8 @@ const SummarySchema = new Schema({
   updatedAt: { type: Date, default: Date.now },
 });
 
-SummarySchema.index({ organization: 1, date: 1 }, { unique: true });
+summarySchema.index({ organization: 1, date: 1 }, { unique: true });
 
-const Model = mongoose.model('Summary', SummarySchema);
+const Summary = mongoose.model('Summary', summarySchema);
 
-module.exports = Model;
+module.exports = Summary;

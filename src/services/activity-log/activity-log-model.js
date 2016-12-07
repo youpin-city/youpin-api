@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
-const ActivityLogSchema = new Schema({
+const activityLogSchema = new Schema({
   action: { type: String }, // See 'src/constants/actions.js'
   actionType: { type: String }, // See 'src/constants/actions.js'
   changed_fields: [{ type: String }],
@@ -15,6 +15,6 @@ const ActivityLogSchema = new Schema({
   user: { type: String },
 });
 
-const ActivityLogModel = mongoose.model('ActivityLog', ActivityLogSchema);
+const ActivityLog = mongoose.model('ActivityLog', activityLogSchema);
 
-module.exports = ActivityLogModel;
+module.exports = ActivityLog;

@@ -4,8 +4,8 @@ const expect = require('../../test_helper').expect;
 const loadFixture = require('../../test_helper').loadFixture;
 
 // Models
-const UserModel = require('../../../src/services/user/user-model');
-const PinModel = require('../../../src/services/pin/pin-model');
+const User = require('../../../src/services/user/user-model');
+const Pin = require('../../../src/services/pin/pin-model');
 const request = require('supertest-as-promised');
 
 // Fixtures
@@ -25,8 +25,8 @@ describe('searchnearby service', () => {
     server = app.listen(app.get('port'));
     server.once('listening', () => {
       Promise.all([
-        loadFixture(UserModel, adminUser),
-        loadFixture(PinModel, pins),
+        loadFixture(User, adminUser),
+        loadFixture(Pin, pins),
       ])
       .then(() => {
         done();
@@ -37,8 +37,8 @@ describe('searchnearby service', () => {
   after((done) => {
     // Clears collection after finishing all tests.
     Promise.all([
-      PinModel.remove({}),
-      UserModel.remove({}),
+      Pin.remove({}),
+      User.remove({}),
     ])
     .then(() => {
       // Close the server

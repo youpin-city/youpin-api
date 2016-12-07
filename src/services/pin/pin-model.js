@@ -4,14 +4,14 @@ const UNVERIFIED = require('../../constants/pin-states').UNVERIFIED;
 
 const Schema = mongoose.Schema;
 
-const VoteSchema = new Schema({
+const voteSchema = new Schema({
   user_id: { type: Schema.Types.ObjectId, required: true, ref: 'User' },
   vote_type: { type: String, required: true },
 },
 // disable _id field
 { _id: false });
 
-const CommentSchema = new Schema({
+const commentSchema = new Schema({
   created_time: { type: Date, required: true, default: Date.now },
   detail: { type: String, required: true },
   mentions: [{ type: Schema.Types.ObjectId, ref: 'User' }],
@@ -19,16 +19,16 @@ const CommentSchema = new Schema({
   tags: [String],
   updated_time: { type: Date, required: true, default: Date.now },
   videos: [Schema.Types.ObjectId],
-  voters: [VoteSchema],
+  voters: [voteSchema],
 },
 // disable _id field
 { _id: false });
 
-const PinSchema = new Schema({
+const pinSchema = new Schema({
   assigned_department: { type: Schema.Types.ObjectId, ref: 'Departmeent' },
   assigned_user: { type: Schema.Types.ObjectId, ref: 'User' },
   categories: [String],
-  comments: [CommentSchema],
+  comments: [commentSchema],
   created_time: { type: Date, required: true, default: Date.now },
   detail: { type: String, required: true },
   followers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
@@ -51,12 +51,12 @@ const PinSchema = new Schema({
   tags: [String],
   updated_time: { type: Date, required: true, default: Date.now },
   videos: [Schema.Types.ObjectId],
-  voters: [VoteSchema],
+  voters: [voteSchema],
 });
 
 // Index geosearch field
-PinSchema.index({ location: '2dsphere' });
+pinSchema.index({ location: '2dsphere' });
 
-const Model = mongoose.model('Pin', PinSchema);
+const Pin = mongoose.model('Pin', pinSchema);
 
-module.exports = Model;
+module.exports = Pin;

@@ -10,6 +10,6 @@ const organizationSchema = new Schema({
   updated_time: { type: Date, default: Date.now },
 });
 
-const organizationModel = mongoose.model('Organization', organizationSchema);
+const Organization = mongoose.model('Organization', organizationSchema);
 
-module.exports = organizationModel;
+module.exports = Organization;
