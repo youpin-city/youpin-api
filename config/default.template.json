@@ -18,27 +18,13 @@
         "scope": ["public_profile","email"]
       },
       "profileFields": ["id", "first_name", "last_name", "email"]
-    },
-    "github": {
-      "clientID": "your github client id",
-      "clientSecret": "your github client secret",
-      "permissions": {
-        "scope": []
-      }
-    },
-    "google": {
-      "clientID": "your google client id",
-      "clientSecret": "your google client secret",
-      "permissions": {
-        "scope": ["profile"]
-      }
     }
   },
   "gcs": {
     "gcsUrl": "https://storage.googleapis.com",
     "bucket": "your GCS bucket name",
     "projectId": "your GCS project ID",
-    "keyFile": "your credentials key file path"
+    "keyFile": "your credentials key file path (usually put under config/gcs/)."
   },
   "logger": {
     "path": "logs",
