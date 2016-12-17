@@ -2,6 +2,8 @@ version: '2'
 
 services:
   api:
+    environment:
+      - NODE_ENV=${NODE_ENV}
     build: .
     ports:
       -  "9100:9100"
