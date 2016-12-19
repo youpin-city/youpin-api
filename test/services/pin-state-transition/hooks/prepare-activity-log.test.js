@@ -42,12 +42,7 @@ describe('Prepare Activity Log Hook', () => {
         pinId: pins[0]._id, // eslint-disable-line no-underscore-dangle
         user: {
           name: 'Aunt You-pin',
-          organization_and_department_pairs: [
-            {
-              organization: mongoose.Types.ObjectId('57933111556362511181aaa1'), // eslint-disable-line new-cap,max-len
-              department: mongoose.Types.ObjectId('57933111556362511181bbb1'), // eslint-disable-line new-cap,max-len
-            },
-          ],
+          departments: [mongoose.Types.ObjectId('57933111556362511181bbb1')], // eslint-disable-line new-cap,max-len
         },
       },
       result: {},

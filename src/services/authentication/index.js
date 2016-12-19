@@ -54,7 +54,6 @@ module.exports = function () { // eslint-disable-line func-names
  *        "customer_app_id":[],
  *        "updated_time":"2016-07-27T11:45:25.358Z",
  *        "created_time":"2016-07-27T11:45:25.358Z",
- *        "organization_and_role_pairs":[],
  *        "department":[]
  *      }
  *    }
