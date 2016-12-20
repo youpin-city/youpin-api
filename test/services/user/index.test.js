@@ -12,6 +12,7 @@ const User = require('../../../src/services/user/user-model');
 // Fixtures
 const adminApp3rd = require('../../fixtures/admin_app3rd');
 const adminUser = require('../../fixtures/admin_user');
+const normalUser = require('../../fixtures/normal_user');
 
 // App stuff
 const app = require('../../../src/app');
@@ -173,6 +174,99 @@ describe('user service', () => {
               done();
             })
             .catch(done);
+        });
+    });
+  });
+
+  describe('DELETE /users', () => {
+    beforeEach((done) => {
+      // Add a normal user before each test.
+      loadFixture(User, normalUser)
+        .then(() => {
+          done();
+        })
+        .catch((err) => {
+          done(err);
+        });
+    });
+    afterEach((done) => {
+      // Delete the normal user after each test.
+      User.remove({ _id: '579334c74443625d6281b699' })
+        .then(() => {
+          done();
+        })
+        .catch((err) => {
+          done(err);
+        });
+    });
+
+    it('return 401 "Unauthorized" errors ' +
+      'when an unauthorized user attempts to delete other user', (done) => {
+      request(app)
+        .delete('/users/579334c74443625d6281b699')
+        .expect(401, done);
+    });
+
+    it('return 200 ' +
+      'when a normal user attempts to delete his/her own user', (done) => {
+      request(app)
+        .post('/auth/local')
+        .send({
+          email: 'user@youpin.city',
+          password: 'youpin_user',
+        })
+        .then((tokenResp) => {
+          const token = tokenResp.body.token;
+          if (!token) {
+            done(new Error('No token returns'));
+          }
+
+          request(app)
+            .delete('/users/579334c74443625d6281b699')
+            .set('Authorization', `Bearer ${token}`)
+            .expect(200, done);
+        });
+    });
+
+    it('return 200 ' +
+      'when a super-admin user attempts to delete other user', (done) => {
+      request(app)
+        .post('/auth/local')
+        .send({
+          email: 'contact@youpin.city',
+          password: 'youpin_admin',
+        })
+        .then((tokenResp) => {
+          const token = tokenResp.body.token;
+          if (!token) {
+            done(new Error('No token returns'));
+          }
+
+          request(app)
+            .delete('/users/579334c74443625d6281b699')
+            .set('Authorization', `Bearer ${token}`)
+            .expect(200, done);
+        });
+    });
+
+    it('return 403 "Forbidden" ' +
+      'when a normal user attempts to delete other user', (done) => {
+      request(app)
+        .post('/auth/local')
+        .send({
+          email: 'user@youpin.city',
+          password: 'youpin_user',
+        })
+        .then((tokenResp) => {
+          const token = tokenResp.body.token;
+          if (!token) {
+            done(new Error('No token returns'));
+          }
+
+          request(app)
+            .delete('/users/579334c75563625d6281b6f1') // super-admin user id
+            .set('Authorization', `Bearer ${token}`)
+            .expect(403, done);
         });
     });
   });

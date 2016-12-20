@@ -3,6 +3,8 @@ const hooks = require('feathers-hooks');
 
 const handleFacebookCreate = require('./handle-facebook-create');
 const validateObjectId = require('../../../utils/hooks/validate-object-id-hook');
+const ORGANIZATION_ADMIN = require('../../../constants/roles').ORGANIZATION_ADMIN;
+const SUPER_ADMIN = require('../../../constants/roles').SUPER_ADMIN;
 
 exports.before = {
   all: [],
@@ -10,13 +12,22 @@ exports.before = {
     auth.verifyToken(),
     auth.populateUser(),
     auth.restrictToAuthenticated(),
+    auth.restrictToRoles({
+      roles: [SUPER_ADMIN, ORGANIZATION_ADMIN],
+      fieldName: 'role',
+    }),
   ],
   get: [
     auth.verifyToken(),
     auth.populateUser(),
     auth.restrictToAuthenticated(),
     validateObjectId(),
-    auth.restrictToOwner({ ownerField: '_id' }),
+    auth.restrictToRoles({
+      roles: [SUPER_ADMIN, ORGANIZATION_ADMIN],
+      fieldName: 'role',
+      owner: true,
+      ownerField: '_id',
+    }),
   ],
   create: [
     handleFacebookCreate(),
@@ -26,19 +37,34 @@ exports.before = {
     auth.verifyToken(),
     auth.populateUser(),
     auth.restrictToAuthenticated(),
-    auth.restrictToOwner({ ownerField: '_id' }),
+    auth.restrictToRoles({
+      roles: [SUPER_ADMIN, ORGANIZATION_ADMIN],
+      fieldName: 'role',
+      owner: true,
+      ownerField: '_id',
+    }),
   ],
   patch: [
     auth.verifyToken(),
     auth.populateUser(),
     auth.restrictToAuthenticated(),
-    auth.restrictToOwner({ ownerField: '_id' }),
+    auth.restrictToRoles({
+      roles: [SUPER_ADMIN, ORGANIZATION_ADMIN],
+      fieldName: 'role',
+      owner: true,
+      ownerField: '_id',
+    }),
   ],
   remove: [
     auth.verifyToken(),
     auth.populateUser(),
     auth.restrictToAuthenticated(),
-    auth.restrictToOwner({ ownerField: '_id' }),
+    auth.restrictToRoles({
+      roles: [SUPER_ADMIN, ORGANIZATION_ADMIN],
+      fieldName: 'role',
+      owner: true,
+      ownerField: '_id',
+    }),
   ],
 };
 
