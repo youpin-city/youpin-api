@@ -201,7 +201,7 @@ describe('user service', () => {
     });
 
     it('return 401 "Unauthorized" errors ' +
-      'when an unthorized user attempts to delete other user', (done) => {
+      'when an unauthorized user attempts to delete other user', (done) => {
       request(app)
         .delete('/users/579334c74443625d6281b699')
         .expect(401, done);
