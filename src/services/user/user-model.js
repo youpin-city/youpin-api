@@ -5,16 +5,6 @@ const USER = require('../../constants/roles').USER;
 
 const Schema = mongoose.Schema;
 
-const orgRolePairSchema = new Schema({
-  organization: { type: Schema.Types.ObjectId, ref: 'Organization' },
-  role: { type: String },
-});
-
-const orgDepartmentPairSchema = new Schema({
-  organization: { type: Schema.Types.ObjectId, ref: 'Organization' },
-  department: { type: Schema.Types.ObjectId, ref: 'Department' },
-});
-
 const userSchema = new Schema({
   name: { type: String, required: true },
   email: {
@@ -32,8 +22,7 @@ const userSchema = new Schema({
       message: '{VALUE} is not a valid phone number!',
     },
   },
-  organization_and_role_pairs: [orgRolePairSchema],
-  organization_and_department_pairs: [orgDepartmentPairSchema],
+  departments: [Schema.Types.ObjectId],
   created_time: { type: Date, default: Date.now },
   updated_time: { type: Date, default: Date.now },
   customer_app_id: [Schema.Types.ObjectId],

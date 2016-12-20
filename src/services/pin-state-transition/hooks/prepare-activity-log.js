@@ -32,18 +32,6 @@ const safetyCheck = (hook) => {
   }
 };
 
-// Get user's departments belong to given organization
-const getDepartments = (user, organization) => {
-  if (!user.organization_and_department_pairs) {
-    return [];
-  }
-
-  // user.organization_and_department_pairs is an array of (organization, department) pairs
-  return user.organization_and_department_pairs
-    .filter(pair => String(pair.organization) === String(organization))
-    .map(pair => pair.department);
-};
-
 // For before hook to prepare activity log and will be used by after hook
 // Note: we can't do this in after hook because we need previous pin's properties before updated
 const prepareActivityLog = () => (hook) => {
@@ -122,7 +110,7 @@ const prepareActivityLog = () => (hook) => {
     }
 
     // Get user's departments of this organization
-    const departments = getDepartments(hook.params.user, pin.organization);
+    const departments = hook.params.user.departments;
 
     // Pass logInfo object to after hook by attaching to hook.data
     const logInfo = {
