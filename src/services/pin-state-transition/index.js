@@ -108,7 +108,9 @@ class PinTransitionService {
       }
       updatingProperties.assigned_department = data.assigned_department;
     } else if (nextState === PROCESSING) {
-      if (!data.processed_by) {
+      // Need to specify processed_by if the previousState is ASSIGNED.
+      // If the previousState is RESOLVED, the pin already has processed_by value.
+      if (previousState === ASSIGNED && !data.processed_by) {
         throw new errors.BadRequest(
           'Need `processed_by` in body data to change to `processing` state'
         );

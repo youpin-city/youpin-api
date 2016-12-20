@@ -89,11 +89,19 @@ const prepareActivityLog = () => (hook) => {
         description = `${nameOfUser} assigned pin ${shortenDetail} to ${pin.assigned_department}`;
         break;
       case states.PROCESSING:
-        action = actions.PROCESS;
-        changedFields.push('processed_by');
-        previousValues.push(pin.processed_by);
-        updatedValues.push(hook.data.processed_by);
-        description = `${nameOfUser} is processing pin ${shortenDetail}`;
+        if (previousState === states.ASSIGNED) {
+          action = actions.PROCESS;
+          changedFields.push('processed_by');
+          previousValues.push(pin.processed_by);
+          updatedValues.push(hook.data.processed_by);
+          description = `${nameOfUser} is processing pin ${shortenDetail}`;
+        } else if (previousState === states.RESOLVED) {
+          // If a department marks a pin as resolved but it does not satisfy an organization admin,
+          // the organization admin can send the pin back to be re-processed.
+          action = actions.RE_PROCESS;
+          description = `${nameOfUser} sent pin ${shortenDetail} back` +
+                        ` to be re-processed by ${pin.assigned_department}`;
+        }
         break;
       case states.RESOLVED:
         action = actions.RESOLVE;
