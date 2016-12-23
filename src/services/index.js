@@ -11,6 +11,7 @@ const photo = require('./photo');
 const pin = require('./pin');
 const pinStateTransition = require('./pin-state-transition');
 const searchnearby = require('./searchnearby');
+const summarizeState = require('./summarize-state');
 const summary = require('./summary');
 const user = require('./user');
 const video = require('./video');
@@ -30,6 +31,7 @@ module.exports = function () { // eslint-disable-line func-names
   app.configure(pin);
   app.configure(pinStateTransition); // must place after pin service
   app.configure(searchnearby);
+  app.configure(summarizeState);
   app.configure(summary);
   app.configure(user);
   app.configure(video);
