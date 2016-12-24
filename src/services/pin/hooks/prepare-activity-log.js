@@ -26,10 +26,17 @@ const prepareActivityLog = () => (hook) => {
       }
       // Get all updated fields
       _.forEach(updatedFieldObjects, (value, key) => {
+        let previousValue = pin[key];
+        let newValue = value;
+        // Add special case for location's coordinates
+        if (key === 'location') {
+          previousValue = pin[key].coordinates;
+          newValue = value.coordinates;
+        }
         allChangedFields.push(key);
-        allPreviousValues.push(pin[key]);
-        allNewValues.push(value);
-        description += `${delim} - Edit [${key}] from "${pin[key]}" to "${value}"`;
+        allPreviousValues.push(previousValue);
+        allNewValues.push(newValue);
+        description += `${delim} - Edit [${key}] from "${previousValue}" to "${newValue}"`;
         delim = '\n';
       });
       // Add description for added field
