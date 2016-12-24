@@ -105,6 +105,50 @@ describe('pin service', () => {
     });
   });
 
+  describe('PATCH', () => {
+    it('logs activities when update/add to fields', (done) => {
+      const newData = {
+        $push: {
+          progresses: {
+            photos: ['New progress photo url'],
+            detail: 'New progress',
+          },
+        },
+        owner: adminUser._id, // eslint-disable-line no-underscore-dangle
+        detail: 'Updated pin detail',
+        location: {
+          coordinates: [15, 15.9],
+          type: ['Point'],
+        }
+      };
+      request(app)
+        .post('/auth/local')
+        .send({
+          email: 'contact@youpin.city',
+          password: 'youpin_admin',
+        })
+        .then((tokenResp) => {
+          const token = tokenResp.body.token;
+
+          return request(app)
+            .patch('/pins/579334c75563625d6281b6f6')
+            .set('Authorization', `Bearer ${token}`)
+            .set('Content-type', 'application/json')
+            .send(newData)
+            .expect(200)
+        })
+        .then((res) => {
+          const updatedPin = res.body;
+          expect(updatedPin.progresses).to.have.lengthOf(1);
+          expect(updatedPin.progresses[0].detail).to.equal('New progress');
+          expect(updatedPin.detail).to.equal('Updated pin detail');
+          // Note that coordinate is swapped because we use swapLatLong hook
+          expect(updatedPin.location.coordinates).to.equal([15.9, 15]);
+          done();
+        })
+    });
+  });
+
   describe('POST', () => {
     it('return 401 (unauthorized) if user is not authenticated', (done) => {
       const newPin = {
