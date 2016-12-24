@@ -18,7 +18,7 @@ const prepareActivityLog = require('../../../../src/services/pin-state-transitio
 // Exit test if NODE_ENV is not equal `test`
 assertTestEnv();
 
-describe('Prepare Activity Log Hook', () => {
+describe('Prepare Activity Log Hook for State Transition', () => {
   let mockHook;
 
   before((done) => {

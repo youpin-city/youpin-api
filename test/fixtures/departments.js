@@ -1,8 +1,8 @@
 const ObjectId = require('mongoose').Types.ObjectId;
 
 const ORGANIZATION_ID = require('./constants').ORGANIZATION_ID;
-const NORMAL_DEPARTMENT_ID = require('./constants').NORMAL_DEPARTMENT;
-const SUPER_ADMIN_DEPARTMENT_ID = require('./constants').SUPER_ADMIN_DEPARTMENT;
+const NORMAL_DEPARTMENT_ID = require('./constants').NORMAL_DEPARTMENT_ID;
+const SUPER_ADMIN_DEPARTMENT_ID = require('./constants').SUPER_ADMIN_DEPARTMENT_ID;
 
 module.exports = [
   {
