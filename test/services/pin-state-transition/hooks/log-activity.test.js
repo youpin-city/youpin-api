@@ -4,7 +4,7 @@ const expect = require('../../../test_helper').expect;
 const spy = require('../../../test_helper').spy;
 
 // App stuff
-const logActivity = require('../../../../src/services/pin-state-transition/hooks/log-activity');
+const logActivity = require('../../../../src/utils/hooks/log-activity');
 
 // Exit test if NODE_ENV is not equal `test`
 assertTestEnv();
