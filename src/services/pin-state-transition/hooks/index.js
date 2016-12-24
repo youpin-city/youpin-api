@@ -1,6 +1,6 @@
 const auth = require('feathers-authentication').hooks;
 
-const logActivity = require('./log-activity');
+const logActivity = require('../../../utils/hooks/log-activity');
 const prepareActivityLog = require('./prepare-activity-log');
 
 exports.before = {
