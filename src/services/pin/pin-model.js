@@ -25,7 +25,7 @@ const commentSchema = new Schema({
 { _id: false });
 
 const pinSchema = new Schema({
-  assigned_department: { type: Schema.Types.ObjectId, ref: 'Departmeent' },
+  assigned_department: { type: Schema.Types.ObjectId, ref: 'Department' },
   assigned_user: { type: Schema.Types.ObjectId, ref: 'User' },
   categories: [String],
   comments: [commentSchema],
@@ -59,6 +59,11 @@ pinSchema.index({ location: '2dsphere' });
 
 pinSchema.pre('find', function populateAssignedUser(next) {
   this.populate('assigned_user');
+  next();
+});
+
+pinSchema.pre('find', function populateAssignedDepartment(next) {
+  this.populate('assigned_department');
   next();
 });
 
