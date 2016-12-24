@@ -1,14 +1,20 @@
+const ObjectId = require('mongoose').Types.ObjectId;
+
+const ORGANIZATION_ID = require('./constants').ORGANIZATION_ID;
+const NORMAL_DEPARTMENT_ID = require('./constants').NORMAL_DEPARTMENT;
+const SUPER_ADMIN_DEPARTMENT_ID = require('./constants').SUPER_ADMIN_DEPARTMENT;
+
 module.exports = [
   {
-    _id: '57933111556362511181ccc1',
+    _id: ObjectId(SUPER_ADMIN_DEPARTMENT_ID), // eslint-disable-line new-cap
     name: 'Admin Department',
-    organization: '57933111556362511181aaa1',
+    organization: ORGANIZATION_ID,
     detail: 'Admins live here',
   },
   {
-    _id: '57933111556362511181bbb1',
+    _id: ObjectId(NORMAL_DEPARTMENT_ID), // eslint-disable-line new-cap
     name: 'Department of Nerds',
-    organization: '57933111556362511181aaa1',
+    organization: ORGANIZATION_ID,
     detail: 'An awesome department',
   },
 ];
