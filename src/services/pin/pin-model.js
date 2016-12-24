@@ -57,6 +57,11 @@ const pinSchema = new Schema({
 // Index geosearch field
 pinSchema.index({ location: '2dsphere' });
 
+pinSchema.pre('find', function populateAssignedUser(next) {
+  this.populate('assigned_user');
+  next();
+});
+
 const Pin = mongoose.model('Pin', pinSchema);
 
 module.exports = Pin;
