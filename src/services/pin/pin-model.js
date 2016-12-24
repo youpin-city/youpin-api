@@ -7,28 +7,25 @@ const Schema = mongoose.Schema;
 const voteSchema = new Schema({
   user_id: { type: Schema.Types.ObjectId, required: true, ref: 'User' },
   vote_type: { type: String, required: true },
-},
-// disable _id field
-{ _id: false });
+});
 
 const commentSchema = new Schema({
   created_time: { type: Date, required: true, default: Date.now },
   detail: { type: String, required: true },
   mentions: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-  photos: [Schema.Types.ObjectId],
+  photos: [String],
   tags: [String],
   updated_time: { type: Date, required: true, default: Date.now },
-  videos: [Schema.Types.ObjectId],
+  videos: [String],
   voters: [voteSchema],
-},
-// disable _id field
-{ _id: false });
+});
 
 const pinSchema = new Schema({
   assigned_department: { type: Schema.Types.ObjectId, ref: 'Departmeent' },
   assigned_user: { type: Schema.Types.ObjectId, ref: 'User' },
   categories: [String],
   comments: [commentSchema],
+  progresses: [commentSchema],
   created_time: { type: Date, required: true, default: Date.now },
   detail: { type: String, required: true },
   followers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
