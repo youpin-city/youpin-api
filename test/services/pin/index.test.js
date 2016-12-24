@@ -105,6 +105,44 @@ describe('pin service', () => {
     });
   });
 
+  describe('PATCH', () => {
+    it('logs activities when update/add to fields', (done) => {
+      const newData = {
+        $push: {
+          progresses: {
+            photos: ['New progress photo url'],
+            detail: 'New progress',
+          },
+        },
+        owner: adminUser._id, // eslint-disable-line no-underscore-dangle
+        detail: 'Updated pin detail',
+      };
+      request(app)
+        .post('/auth/local')
+        .send({
+          email: 'contact@youpin.city',
+          password: 'youpin_admin',
+        })
+        .then((tokenResp) => {
+          const token = tokenResp.body.token;
+
+          return request(app)
+            .patch(`/pins/${pins[0]._id}`) // eslint-disable-line no-underscore-dangle
+            .set('Authorization', `Bearer ${token}`)
+            .set('Content-type', 'application/json')
+            .send(newData)
+            .expect(200);
+        })
+        .then((res) => {
+          const updatedPin = res.body;
+          expect(updatedPin.progresses).to.have.lengthOf(1);
+          expect(updatedPin.progresses[0].detail).to.equal('New progress');
+          expect(updatedPin.detail).to.equal('Updated pin detail');
+          done();
+        });
+    });
+  });
+
   describe('POST', () => {
     it('return 401 (unauthorized) if user is not authenticated', (done) => {
       const newPin = {
