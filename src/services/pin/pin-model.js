@@ -30,6 +30,7 @@ const pinSchema = new Schema({
   detail: { type: String, required: true },
   followers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
   is_archived: { type: Boolean, default: false },
+  is_merged: { type: Boolean, default: false },
   level: String,
   location: {
     type: { type: String, enum: 'Point', default: 'Point' },
@@ -37,6 +38,8 @@ const pinSchema = new Schema({
     coordinates: { type: [Number], default: [100.5018549, 13.756727] },
   },
   mentions: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+  merged_children_pins: [{ type: Schema.Types.ObjectId, ref: 'Pin' }],
+  merged_parent_pin: { type: Schema.Types.ObjectId, ref: 'Pin' },
   neighborhood: [String],
   organization: { type: Schema.Types.ObjectId, ref: 'Organization', required: true },
   owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },
