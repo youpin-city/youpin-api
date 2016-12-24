@@ -116,10 +116,6 @@ describe('pin service', () => {
         },
         owner: adminUser._id, // eslint-disable-line no-underscore-dangle
         detail: 'Updated pin detail',
-        location: {
-          coordinates: [15, 15.9],
-          type: ['Point'],
-        }
       };
       request(app)
         .post('/auth/local')
@@ -131,21 +127,19 @@ describe('pin service', () => {
           const token = tokenResp.body.token;
 
           return request(app)
-            .patch('/pins/579334c75563625d6281b6f6')
+            .patch(`/pins/${pins[0]._id}`) // eslint-disable-line no-underscore-dangle
             .set('Authorization', `Bearer ${token}`)
             .set('Content-type', 'application/json')
             .send(newData)
-            .expect(200)
+            .expect(200);
         })
         .then((res) => {
           const updatedPin = res.body;
           expect(updatedPin.progresses).to.have.lengthOf(1);
           expect(updatedPin.progresses[0].detail).to.equal('New progress');
           expect(updatedPin.detail).to.equal('Updated pin detail');
-          // Note that coordinate is swapped because we use swapLatLong hook
-          expect(updatedPin.location.coordinates).to.equal([15.9, 15]);
           done();
-        })
+        });
     });
   });
 
