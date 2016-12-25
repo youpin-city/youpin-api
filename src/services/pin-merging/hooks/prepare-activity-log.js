@@ -1,9 +1,10 @@
 const errors = require('feathers-errors');
 const mongoose = require('mongoose');
 
+const Pin = require('../../pin/pin-model');
+
 const MERGE_PIN = require('../../../constants/actions').MERGE_PIN;
 const MERGING = require('../../../constants/actions').types.MERGING;
-const Pin = require('../../pin/pin-model');
 
 const safetyCheck = (hook) => {
   // hook.params.user must be populated by auth.populateUser before hook

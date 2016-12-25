@@ -1,20 +1,20 @@
 const ObjectId = require('mongoose').Types.ObjectId;
 
+const DEPARTMENT_GENERAL_ID = require('./constants').DEPARTMENT_GENERAL_ID;
 const ORGANIZATION_ID = require('./constants').ORGANIZATION_ID;
-const NORMAL_DEPARTMENT_ID = require('./constants').NORMAL_DEPARTMENT_ID;
-const ASSIGNED_PIN_ID = require('./constants').ASSIGNED_PIN_ID;
-const ASSIGNED_PIN_DETAIL = require('./constants').ASSIGNED_PIN_DETAIL;
-const UNVERIFIED_PIN_ID = require('./constants').UNVERIFIED_PIN_ID;
-const UNVERIFIED_PIN_DETAIL = require('./constants').UNVERIFIED_PIN_DETAIL;
-const VERIFIED_PIN_ID = require('./constants').VERIFIED_PIN_ID;
-const VERIFIED_PIN_DETAIL = require('./constants').VERIFIED_PIN_DETAIL;
+const PIN_ASSIGNED_ID = require('./constants').PIN_ASSIGNED_ID;
+const PIN_ASSIGNED_DETAIL = require('./constants').PIN_ASSIGNED_DETAIL;
+const PIN_UNVERIFIED_ID = require('./constants').PIN_UNVERIFIED_ID;
+const PIN_UNVERIFIED_DETAIL = require('./constants').PIN_UNVERIFIED_DETAIL;
+const PIN_VERIFIED_ID = require('./constants').PIN_VERIFIED_ID;
+const PIN_VERIFIED_DETAIL = require('./constants').PIN_VERIFIED_DETAIL;
 
 module.exports = [
   {
-    _id: ObjectId(UNVERIFIED_PIN_ID), // eslint-disable-line new-cap
-    assigned_department: NORMAL_DEPARTMENT_ID, // department ObjectId
+    _id: ObjectId(PIN_UNVERIFIED_ID), // eslint-disable-line new-cap
+    assigned_department: DEPARTMENT_GENERAL_ID, // department ObjectId
     created_time: '2016-12-01',
-    detail: UNVERIFIED_PIN_DETAIL,
+    detail: PIN_UNVERIFIED_DETAIL,
     organization: ORGANIZATION_ID, // organization ObjectId
     owner: '579334c75563625d6281b6f1', // adminUser ObjectId
     provider: '579334c75563625d6281b6f1', // adminUser ObjectId
@@ -25,10 +25,10 @@ module.exports = [
     is_archived: false,
   },
   {
-    _id: ObjectId(VERIFIED_PIN_ID), // eslint-disable-line new-cap
+    _id: ObjectId(PIN_VERIFIED_ID), // eslint-disable-line new-cap
     assigned_department: '57933111556362511181ccc1', // department ObjectId
     created_time: '2016-12-05',
-    detail: VERIFIED_PIN_DETAIL,
+    detail: PIN_VERIFIED_DETAIL,
     organization: ORGANIZATION_ID, // organization ObjectId
     owner: '579334c75563625d6281b6f1', // adminUser ObjectId
     provider: '579334c75563625d6281b6f1', // adminUser ObjectId
@@ -39,10 +39,10 @@ module.exports = [
     is_archived: false,
   },
   {
-    _id: ObjectId(ASSIGNED_PIN_ID), // eslint-disable-line new-cap
-    assigned_department: NORMAL_DEPARTMENT_ID, // department ObjectId
+    _id: ObjectId(PIN_ASSIGNED_ID), // eslint-disable-line new-cap
+    assigned_department: DEPARTMENT_GENERAL_ID, // department ObjectId
     created_time: '2016-12-03',
-    detail: ASSIGNED_PIN_DETAIL,
+    detail: PIN_ASSIGNED_DETAIL,
     organization: ORGANIZATION_ID, // organization ObjectId
     owner: '579334c75563625d6281b6f1', // adminUser ObjectId
     provider: '579334c75563625d6281b6f1', // adminUser ObjectId

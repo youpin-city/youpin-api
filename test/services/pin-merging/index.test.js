@@ -15,8 +15,8 @@ const departments = require('../../fixtures/departments');
 const organizationAdminUser = require('../../fixtures/organization_admin_user');
 const pins = require('../../fixtures/pins');
 const superAdminUser = require('../../fixtures/super_admin_user');
-const ASSIGNED_PIN_ID = require('../../fixtures/constants').ASSIGNED_PIN_ID;
-const VERIFIED_PIN_ID = require('../../fixtures/constants').VERIFIED_PIN_ID;
+const PIN_ASSIGNED_ID = require('../../fixtures/constants').PIN_ASSIGNED_ID;
+const PIN_VERIFIED_ID = require('../../fixtures/constants').PIN_VERIFIED_ID;
 
 // App stuff
 const app = require('../../../src/app');
@@ -80,11 +80,11 @@ describe('Pin merging service', () => {
       const token = loginResp.body.token;
 
       return request(app)
-      .post(`/pins/${VERIFIED_PIN_ID}/merging`)
+      .post(`/pins/${PIN_VERIFIED_ID}/merging`)
       .set('Authorization', `Bearer ${token}`)
       .set('Content-type', 'application/json')
       .send({
-        mergedParentPin: ASSIGNED_PIN_ID,
+        mergedParentPin: PIN_ASSIGNED_ID,
       })
       .expect(201);
     })
@@ -96,16 +96,16 @@ describe('Pin merging service', () => {
       expect(updatedChildPinResult.ok).to.equal(1);
       expect(updatedParentPinResult.ok).to.equal(1);
 
-      return Pin.findOne({ _id: VERIFIED_PIN_ID }); // eslint-disable-line no-underscore-dangle
+      return Pin.findOne({ _id: PIN_VERIFIED_ID }); // eslint-disable-line no-underscore-dangle
     })
     .then(updatedChildPin => {
       expect(updatedChildPin.is_merged).to.equal(true);
-      expect(updatedChildPin.merged_parent_pin).to.deep.equal(ObjectId(ASSIGNED_PIN_ID)); // eslint-disable-line new-cap,max-len
+      expect(updatedChildPin.merged_parent_pin).to.deep.equal(ObjectId(PIN_ASSIGNED_ID)); // eslint-disable-line new-cap,max-len
 
-      return Pin.findOne({ _id: ASSIGNED_PIN_ID }).lean();
+      return Pin.findOne({ _id: PIN_ASSIGNED_ID }).lean();
     })
     .then(updatedParentPin => {
-      expect(updatedParentPin.merged_children_pins).to.deep.equal([ObjectId(VERIFIED_PIN_ID)]); // eslint-disable-line new-cap,max-len
+      expect(updatedParentPin.merged_children_pins).to.deep.equal([ObjectId(PIN_VERIFIED_ID)]); // eslint-disable-line new-cap,max-len
 
       done();
     })

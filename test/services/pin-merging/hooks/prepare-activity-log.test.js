@@ -5,16 +5,16 @@ const loadFixture = require('../../../test_helper').loadFixture;
 const stub = require('../../../test_helper').stub;
 
 // Models
-const PinModel = require('../../../../src/services/pin/pin-model');
+const Pin = require('../../../../src/services/pin/pin-model');
 
 // Fixtures
 const pins = require('../../../fixtures/pins');
-const ASSIGNED_PIN_ID = require('../../../fixtures/constants').ASSIGNED_PIN_ID;
-const ASSIGNED_PIN_DETAIL = require('../../../fixtures/constants').ASSIGNED_PIN_DETAIL;
-const VERIFIED_PIN_ID = require('../../../fixtures/constants').VERIFIED_PIN_ID;
-const VERIFIED_PIN_DETAIL = require('../../../fixtures/constants').VERIFIED_PIN_DETAIL;
+const DEPARTMENT_GENERAL_ID = require('../../../fixtures/constants').DEPARTMENT_GENERAL_ID;
 const ORGANIZATION_ID = require('../../../fixtures/constants').ORGANIZATION_ID;
-const NORMAL_DEPARTMENT_ID = require('../../../fixtures/constants').NORMAL_DEPARTMENT_ID;
+const PIN_ASSIGNED_ID = require('../../../fixtures/constants').PIN_ASSIGNED_ID;
+const PIN_ASSIGNED_DETAIL = require('../../../fixtures/constants').PIN_ASSIGNED_DETAIL;
+const PIN_VERIFIED_ID = require('../../../fixtures/constants').PIN_VERIFIED_ID;
+const PIN_VERIFIED_DETAIL = require('../../../fixtures/constants').PIN_VERIFIED_DETAIL;
 
 // App stuff
 const mongoose = require('mongoose');
@@ -28,13 +28,13 @@ describe('Prepare Activity Log Hook for Pin Merging', () => {
   let mockHook;
 
   before((done) => {
-    loadFixture(PinModel, pins)
+    loadFixture(Pin, pins)
     .then(() => done())
     .catch(err => done(err));
   });
 
   after((done) => {
-    PinModel.remove({})
+    Pin.remove({})
     .then(() => done())
     .catch(err => done(err));
   });
@@ -44,15 +44,15 @@ describe('Prepare Activity Log Hook for Pin Merging', () => {
       type: 'before',
       app: {},
       params: {
-        pinId: VERIFIED_PIN_ID,
+        pinId: PIN_VERIFIED_ID,
         user: {
           name: 'Aunt You-pin',
-          departments: [mongoose.Types.ObjectId(NORMAL_DEPARTMENT_ID)], // eslint-disable-line new-cap,max-len
+          departments: [mongoose.Types.ObjectId(DEPARTMENT_GENERAL_ID)], // eslint-disable-line new-cap,max-len
         },
       },
       result: {},
       data: {
-        mergedParentPin: ASSIGNED_PIN_ID,
+        mergedParentPin: PIN_ASSIGNED_ID,
       },
     };
   });
@@ -65,15 +65,15 @@ describe('Prepare Activity Log Hook for Pin Merging', () => {
       const expectedLogInfo = {
         user: 'Aunt You-pin',
         organization: mongoose.Types.ObjectId(ORGANIZATION_ID), // eslint-disable-line new-cap
-        department: [mongoose.Types.ObjectId(NORMAL_DEPARTMENT_ID)], // eslint-disable-line new-cap
+        department: [mongoose.Types.ObjectId(DEPARTMENT_GENERAL_ID)], // eslint-disable-line new-cap
         actionType: actions.types.MERGING,
         action: actions.MERGE_PIN,
-        pin_id: VERIFIED_PIN_ID,
+        pin_id: PIN_VERIFIED_ID,
         changed_fields: ['is_merged', 'merged_parent_pin'],
         previous_values: [false, undefined],
-        updated_values: [true, ASSIGNED_PIN_ID],
-        description: `Aunt You-pin merged pin ${VERIFIED_PIN_DETAIL.substring(0, 20)}... ` +
-                     `to ${ASSIGNED_PIN_DETAIL.substring(0, 20)}...`,
+        updated_values: [true, PIN_ASSIGNED_ID],
+        description: `Aunt You-pin merged pin ${PIN_VERIFIED_DETAIL.substring(0, 20)}... ` +
+                     `to ${PIN_ASSIGNED_DETAIL.substring(0, 20)}...`,
         timestamp: Date.now(),
       };
 
