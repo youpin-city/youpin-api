@@ -22,12 +22,17 @@ const userSchema = new Schema({
       message: '{VALUE} is not a valid phone number!',
     },
   },
-  departments: [Schema.Types.ObjectId],
+  departments: [{ type: Schema.Types.ObjectId, ref: 'Department' }],
   created_time: { type: Date, default: Date.now },
   updated_time: { type: Date, default: Date.now },
   customer_app_id: [Schema.Types.ObjectId],
   role: { type: String, required: true, default: USER },
   owner_app_id: [Schema.Types.ObjectId],
+});
+
+userSchema.pre('find', function populateDepartments(next) {
+  this.populate('departments');
+  next();
 });
 
 const User = mongoose.model('User', userSchema);
