@@ -26,6 +26,7 @@
     "bluebird": "^3.4.1",
     "body-parser": "^1.15.1",
     "compression": "^1.6.2",
+    "cookie-parser": "^1.4.3",
     "cors": "^2.7.1",
     "express-session": "^1.14.0",
     "feathers": "^2.0.1",

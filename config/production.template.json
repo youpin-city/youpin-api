@@ -4,8 +4,9 @@
   "mongodb": "mongodb://mongodb:27017/youpin",
   "public": "../public/",
   "auth": {
-    "successRedirect": "your url for success login",
-    "failureRedirect": "your url for fail login",
+    "frontendSuccessRedirect": "your url for success login ex. http://youpin.city/success",
+    "successRedirect": "/auth/facebook/success",
+    "failureRedirect": "/auth/facebook/failure",
     "token": {
       "secret": "SECRET_AUTH_TOKEN"
     },
