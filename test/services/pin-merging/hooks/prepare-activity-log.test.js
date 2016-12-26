@@ -5,9 +5,11 @@ const loadFixture = require('../../../test_helper').loadFixture;
 const stub = require('../../../test_helper').stub;
 
 // Models
+const Department = require('../../../../src/services/department/department-model');
 const Pin = require('../../../../src/services/pin/pin-model');
 
 // Fixtures
+const departments = require('../../../fixtures/departments');
 const pins = require('../../../fixtures/pins');
 const DEPARTMENT_GENERAL_ID = require('../../../fixtures/constants').DEPARTMENT_GENERAL_ID;
 const ORGANIZATION_ID = require('../../../fixtures/constants').ORGANIZATION_ID;
@@ -28,13 +30,19 @@ describe('Prepare Activity Log Hook for Pin Merging', () => {
   let mockHook;
 
   before((done) => {
-    loadFixture(Pin, pins)
+    Promise.all([
+      loadFixture(Department, departments),
+      loadFixture(Pin, pins),
+    ])
     .then(() => done())
     .catch(err => done(err));
   });
 
   after((done) => {
-    Pin.remove({})
+    Promise.all([
+      Pin.remove({}),
+      Department.remove({}),
+    ])
     .then(() => done())
     .catch(err => done(err));
   });
@@ -47,7 +55,7 @@ describe('Prepare Activity Log Hook for Pin Merging', () => {
         pinId: PIN_VERIFIED_ID,
         user: {
           name: 'Aunt You-pin',
-          departments: [mongoose.Types.ObjectId(DEPARTMENT_GENERAL_ID)], // eslint-disable-line new-cap,max-len
+          department: mongoose.Types.ObjectId(DEPARTMENT_GENERAL_ID), // eslint-disable-line new-cap,max-len
         },
       },
       result: {},
@@ -65,7 +73,7 @@ describe('Prepare Activity Log Hook for Pin Merging', () => {
       const expectedLogInfo = {
         user: 'Aunt You-pin',
         organization: mongoose.Types.ObjectId(ORGANIZATION_ID), // eslint-disable-line new-cap
-        department: [mongoose.Types.ObjectId(DEPARTMENT_GENERAL_ID)], // eslint-disable-line new-cap
+        department: mongoose.Types.ObjectId(DEPARTMENT_GENERAL_ID), // eslint-disable-line new-cap
         actionType: actions.types.MERGING,
         action: actions.MERGE_PIN,
         pin_id: PIN_VERIFIED_ID,

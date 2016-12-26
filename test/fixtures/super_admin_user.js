@@ -11,6 +11,6 @@ module.exports = {
   // hash of 'youpin_admin' password
   password: '$2a$10$iorOMFOPboPeF20W20DKruey2UXXa4eOQSuReOMlxXnqNe5t6Egaq',
   email: 'super_admin@youpin.city',
-  departments: [DEPARTMENT_SUPER_ADMIN_ID],
+  department: DEPARTMENT_SUPER_ADMIN_ID,
   role: SUPER_ADMIN,
 };
