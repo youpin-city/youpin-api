@@ -22,7 +22,7 @@ const userSchema = new Schema({
       message: '{VALUE} is not a valid phone number!',
     },
   },
-  departments: [{ type: Schema.Types.ObjectId, ref: 'Department' }],
+  department: { type: Schema.Types.ObjectId, ref: 'Department' },
   created_time: { type: Date, default: Date.now },
   updated_time: { type: Date, default: Date.now },
   customer_app_id: [Schema.Types.ObjectId],
@@ -30,8 +30,8 @@ const userSchema = new Schema({
   owner_app_id: [Schema.Types.ObjectId],
 });
 
-userSchema.pre('find', function populateDepartments(next) {
-  this.populate('departments');
+userSchema.pre('find', function populateDepartment(next) {
+  this.populate('department');
   next();
 });
 

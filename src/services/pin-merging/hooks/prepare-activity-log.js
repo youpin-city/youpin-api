@@ -31,7 +31,7 @@ const prepareActivityLog = () => (hook) => {
 
   const pinId = hook.params.pinId;
   const nameOfUser = hook.params.user.name;
-  const departments = hook.params.user.departments;
+  const department = hook.params.user.department;
   const mergedParentPin = hook.data.mergedParentPin;
 
   return Promise.all([
@@ -53,7 +53,7 @@ const prepareActivityLog = () => (hook) => {
     const logInfo = {
       user: nameOfUser,
       organization: childPin.organization,
-      department: departments,
+      department,
       actionType: MERGING,
       action: MERGE_PIN,
       pin_id: pinId,

@@ -12,6 +12,6 @@ module.exports = {
   // hash of 'youpin_admin' password
   password: '$2a$10$iorOMFOPboPeF20W20DKruey2UXXa4eOQSuReOMlxXnqNe5t6Egaq',
   email: 'organization_admin@youpin.city',
-  departments: [DEPARTMENT_ORGANIZATION_ADMIN_ID],
+  department: ObjectId(DEPARTMENT_ORGANIZATION_ADMIN_ID), // eslint-disable-line new-cap
   role: ORGANIZATION_ADMIN,
 };

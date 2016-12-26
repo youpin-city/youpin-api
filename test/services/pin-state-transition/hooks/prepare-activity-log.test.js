@@ -5,13 +5,18 @@ const loadFixture = require('../../../test_helper').loadFixture;
 const stub = require('../../../test_helper').stub;
 
 // Models
-const PinModel = require('../../../../src/services/pin/pin-model');
+const Department = require('../../../../src/services/department/department-model');
+const Pin = require('../../../../src/services/pin/pin-model');
 
 // Fixtures
+const departments = require('../../../fixtures/departments');
 const pins = require('../../../fixtures/pins');
+const DEPARTMENT_GENERAL_ID = require('../../../fixtures/constants').DEPARTMENT_GENERAL_ID;
+const ORGANIZATION_ID = require('../../../fixtures/constants').ORGANIZATION_ID;
+const PIN_UNVERIFIED_ID = require('../../../fixtures/constants').PIN_UNVERIFIED_ID;
 
 // App stuff
-const mongoose = require('mongoose');
+const ObjectId = require('mongoose').Types.ObjectId;
 const actions = require('../../../../src/constants/actions');
 const prepareActivityLog = require('../../../../src/services/pin-state-transition/hooks/prepare-activity-log'); // eslint-disable-line max-len
 
@@ -22,13 +27,19 @@ describe('Prepare Activity Log Hook for State Transition', () => {
   let mockHook;
 
   before((done) => {
-    loadFixture(PinModel, pins)
+    Promise.all([
+      loadFixture(Department, departments),
+      loadFixture(Pin, pins),
+    ])
     .then(() => done())
     .catch(err => done(err));
   });
 
   after((done) => {
-    PinModel.remove({})
+    Promise.all([
+      Pin.remove({}),
+      Department.remove({}),
+    ])
     .then(() => done())
     .catch(err => done(err));
   });
@@ -39,10 +50,10 @@ describe('Prepare Activity Log Hook for State Transition', () => {
       app: {},
       params: {
         // pins[0] is in unverified state
-        pinId: pins[0]._id, // eslint-disable-line no-underscore-dangle
+        pinId: ObjectId(PIN_UNVERIFIED_ID), // eslint-disable-line new-cap
         user: {
           name: 'Aunt You-pin',
-          departments: [mongoose.Types.ObjectId('57933111556362511181bbb1')], // eslint-disable-line new-cap,max-len
+          department: ObjectId(DEPARTMENT_GENERAL_ID), // eslint-disable-line new-cap,max-len
         },
       },
       result: {},
@@ -53,7 +64,7 @@ describe('Prepare Activity Log Hook for State Transition', () => {
   });
 
   it('attaches logInfo to hook.data', (done) => {
-    const pinId = pins[0]._id; // eslint-disable-line no-underscore-dangle
+    const pinId = ObjectId(PIN_UNVERIFIED_ID); // eslint-disable-line new-cap
 
     const dateStub = stub(Date, 'now', () => '2016-11-25');
 
@@ -61,8 +72,8 @@ describe('Prepare Activity Log Hook for State Transition', () => {
     .then(() => {
       const expectedLogInfo = {
         user: 'Aunt You-pin',
-        organization: mongoose.Types.ObjectId('57933111556362511181aaa1'), // eslint-disable-line new-cap,max-len
-        department: [mongoose.Types.ObjectId('57933111556362511181bbb1')], // eslint-disable-line new-cap,max-len
+        organization: ObjectId(ORGANIZATION_ID), // eslint-disable-line new-cap,max-len
+        department: ObjectId(DEPARTMENT_GENERAL_ID), // eslint-disable-line new-cap,max-len
         actionType: actions.types.STATE_TRANSITION,
         action: actions.VERIFY,
         pin_id: pinId,

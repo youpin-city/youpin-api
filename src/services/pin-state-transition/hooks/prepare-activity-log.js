@@ -40,6 +40,7 @@ const prepareActivityLog = () => (hook) => {
 
   const pinId = hook.params.pinId;
   const nameOfUser = hook.params.user.name;
+  const department = hook.params.user.department;
   const nextState = hook.data.state;
 
   // A good convention for a hook is to always return a promise.
@@ -117,14 +118,11 @@ const prepareActivityLog = () => (hook) => {
       throw new errors.BadRequest('Invalid next state');
     }
 
-    // Get user's departments of this organization
-    const departments = hook.params.user.departments;
-
     // Pass logInfo object to after hook by attaching to hook.data
     const logInfo = {
       user: nameOfUser,
       organization: pin.organization,
-      department: departments,
+      department,
       actionType: actions.types.STATE_TRANSITION,
       action,
       pin_id: pinId,
