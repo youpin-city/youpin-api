@@ -5,6 +5,7 @@
   "public": "../public/",
   "auth": {
     "frontendSuccessRedirect": "your url for success login ex. http://youpin.city/success",
+    "frontendFailureRedirect": "your url for failure login ex. http://youpin.city/failure",
     "successRedirect": "/auth/facebook/success",
     "failureRedirect": "/auth/facebook/failure",
     "token": {
