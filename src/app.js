@@ -14,6 +14,7 @@ const socketio = require('feathers-socketio');
 
 const init = require('./init');
 const middleware = require('./middleware');
+const USER = require('./constants/roles').USER;
 
 init();
 
@@ -56,10 +57,18 @@ app.use(compress())
   })
   .use('/auth/facebook/success', (req, res) => {
     res.cookie('feathers-jwt', req.cookies['feathers-jwt'], app.get('auth').cookie);
-    res.redirect(app.get('auth').frontendSuccessRedirect);
+    if (req.cookies.user.role === USER) {
+      res.redirect(app.get('auth').userSuccessRedirect);
+    } else {
+      res.redirect(app.get('auth').staffSuccessRedirect);
+    }
   })
   .use('/auth/facebook/failure', (req, res) => {
-    res.redirect(app.get('auth').frontendFailureRedirect);
+    if (req.cookies.user.role === USER) {
+      res.redirect(app.get('auth').userFailureRedirect);
+    } else {
+      res.redirect(app.get('auth').staffFailureRedirect);
+    }
   })
   .configure(services)
   .configure(views)

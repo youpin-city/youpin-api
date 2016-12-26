@@ -5,8 +5,10 @@
   "mongodb": "mongodb://mongodb:27017/youpin-dev",
   "public": "../public/",
   "auth": {
-    "frontendSuccessRedirect": "your url for success login ex. http://youpin.city/success",
-    "frontendFailureRedirect": "your url for failure login ex. http://youpin.city/failure",
+    "userSuccessRedirect": "your url for user success login ex. http://youpin.city/staff/success",
+    "userFailureRedirect": "your url for user failure login ex. http://youpin.city/staff/failure",
+    "staffSuccessRedirect": "your url for staff success login ex. http://youpin.city/staff/success",
+    "staffFailureRedirect": "your url for staff failure login ex. http://youpin.city/staff/failure",
     "successRedirect": "/auth/facebook/success",
     "failureRedirect": "/auth/facebook/failure",
     "token": {
