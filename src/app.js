@@ -1,6 +1,7 @@
 const bodyParser = require('body-parser');
 const compress = require('compression');
 const configuration = require('feathers-configuration');
+const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const favicon = require('serve-favicon');
 const feathers = require('feathers');
@@ -34,6 +35,7 @@ app.use(compress())
   // set bodyParser to not strict so that API can recieve bare url string
   .use(bodyParser.json({ strict: false }))
   .use(bodyParser.urlencoded({ extended: true }))
+  .use(cookieParser())
   .use(session({
     secret: 'sssshhh',
     resave: false,
@@ -51,6 +53,13 @@ app.use(compress())
         req.get(youpinAppKeyName);
     }
     next();
+  })
+  .use('/auth/facebook/success', (req, res) => {
+    res.cookie('feathers-jwt', req.cookies['feathers-jwt'], app.get('auth').cookie);
+    res.redirect(app.get('auth').frontendSuccessRedirect);
+  })
+  .use('/auth/facebook/failure', (req, res) => {
+    res.redirect(app.get('auth').frontendFailureRedirect);
   })
   .configure(services)
   .configure(views)
