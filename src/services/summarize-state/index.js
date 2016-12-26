@@ -47,13 +47,14 @@ class Service {
         for (let i = 0; i < populatedPins.length; ++i) {
           const department = populatedPins[i].assigned_department;
           const pinStatus = populatedPins[i].status;
+          let departmentName = 'None';
           if (department) {
-            const departmentName = department.name;
-            if (!(departmentName in summaryTable)) {
-              summaryTable[departmentName] = _.cloneDeep(initialSummary);
-            }
-            summaryTable[departmentName][pinStatus]++;
+            departmentName = department.name;
           }
+          if (!(departmentName in summaryTable)) {
+            summaryTable[departmentName] = _.cloneDeep(initialSummary);
+          }
+          summaryTable[departmentName][pinStatus]++;
         }
         return Promise.resolve(summaryTable);
       })

@@ -89,6 +89,14 @@ describe('state summary service', () => {
             [pinStates.RESOLVED]: 0,
             [pinStates.REJECTED]: 0,
           },
+          None: {
+            [pinStates.VERIFIED]: 0,
+            [pinStates.UNVERIFIED]: 0,
+            [pinStates.ASSIGNED]: 0,
+            [pinStates.PROCESSING]: 1,
+            [pinStates.RESOLVED]: 0,
+            [pinStates.REJECTED]: 0,
+          },
         };
         expect(summaries).to.deep.equal(expectedResult);
         done();
