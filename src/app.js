@@ -6,7 +6,6 @@ const cors = require('cors');
 const favicon = require('serve-favicon');
 const feathers = require('feathers');
 const hooks = require('feathers-hooks');
-const jwtDecode = require('jwt-decode');
 const path = require('path');
 const rest = require('feathers-rest');
 const serveStatic = require('feathers').static;
@@ -15,8 +14,6 @@ const socketio = require('feathers-socketio');
 
 const init = require('./init');
 const middleware = require('./middleware');
-const User = require('./services/user/user-model');
-const USER = require('./constants/roles').USER;
 
 init();
 
@@ -26,14 +23,6 @@ app.configure(configuration(path.join(__dirname, '..')));
 
 const views = require('./views');
 const services = require('./services');
-
-const handleFacebookSuccessRedirect = (role, jwt, response) => {
-  if (role === USER) {
-    response.redirect(`${app.get('auth').userSuccessRedirect}?token=${jwt}`);
-  } else {
-    response.redirect(`${app.get('auth').staffSuccessRedirect}?token=${jwt}`);
-  }
-};
 
 app.use(compress())
   .options('*', cors())
@@ -65,24 +54,39 @@ app.use(compress())
     }
     next();
   })
-  .use('/auth/facebook/success', (req, res) => {
-    const jwt = req.cookies['feathers-jwt'];
+  // An endpoint to setting client successRedirect and failureRedirect into config
+  // before forwarding to normal facebook login at /auth/facebook
+  .use('/auth/facebook/login', (req, res) => {
+    const config = app.get('auth');
 
-    if (req.cookies.user) {
-      handleFacebookSuccessRedirect(req.cookies.user.role, jwt, res);
+    if (req.query.successRedirect) {
+      config.clientSuccessRedirect = req.query.successRedirect;
+    }
+    if (req.query.failureRedirect) {
+      config.clientFailureRedirect = req.query.failureRedirect;
+    }
+    app.set('auth', config);
+    res.redirect('/auth/facebook');
+  })
+  .use('/auth/facebook/success', (req, res) => {
+    // Facebook site will set jwt in cookie
+    const jwt = req.cookies['feathers-jwt'];
+    const clientSuccessRedirect = app.get('auth').clientSuccessRedirect;
+
+    if (!clientSuccessRedirect) {
+      res.status(400).send({ error: 'No `successRedirect` provided in querystring' });
     } else {
-      const payload = jwtDecode(jwt);
-      const userId = payload._id; // eslint-disable-line no-underscore-dangle
-      User
-        .find({ _id: userId })
-        .select('role')
-        .then(user => {
-          handleFacebookSuccessRedirect(user.role, jwt, res);
-        });
+      res.redirect(`${clientSuccessRedirect}?token=${jwt}`);
     }
   })
   .use('/auth/facebook/failure', (req, res) => {
-    res.redirect(app.get('auth').userFailureRedirect);
+    const clientFailreRedirect = app.get('auth').clientFailureRedirect;
+
+    if (!clientFailreRedirect) {
+      res.status(400).send({ error: 'No `failureRedirect` provided in querystring' });
+    } else {
+      res.redirect(clientFailreRedirect);
+    }
   })
   .configure(services)
   .configure(views)
