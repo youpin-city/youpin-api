@@ -6,6 +6,7 @@ const cors = require('cors');
 const favicon = require('serve-favicon');
 const feathers = require('feathers');
 const hooks = require('feathers-hooks');
+const jwtDecode = require('jwt-decode');
 const path = require('path');
 const rest = require('feathers-rest');
 const serveStatic = require('feathers').static;
@@ -14,6 +15,7 @@ const socketio = require('feathers-socketio');
 
 const init = require('./init');
 const middleware = require('./middleware');
+const User = require('./services/user/user-model');
 const USER = require('./constants/roles').USER;
 
 init();
@@ -24,6 +26,14 @@ app.configure(configuration(path.join(__dirname, '..')));
 
 const views = require('./views');
 const services = require('./services');
+
+const handleFacebookSuccessRedirect = (role, jwt, response) => {
+  if (role === USER) {
+    response.redirect(`${app.get('auth').userSuccessRedirect}?token=${jwt}`);
+  } else {
+    response.redirect(`${app.get('auth').staffSuccessRedirect}?token=${jwt}`);
+  }
+};
 
 app.use(compress())
   .options('*', cors())
@@ -56,19 +66,23 @@ app.use(compress())
     next();
   })
   .use('/auth/facebook/success', (req, res) => {
-    res.cookie('feathers-jwt', req.cookies['feathers-jwt'], app.get('auth').cookie);
-    if (req.cookies.user.role === USER) {
-      res.redirect(app.get('auth').userSuccessRedirect);
+    const jwt = req.cookies['feathers-jwt'];
+
+    if (req.cookies.user) {
+      handleFacebookSuccessRedirect(req.cookies.user.role, jwt, res);
     } else {
-      res.redirect(app.get('auth').staffSuccessRedirect);
+      const payload = jwtDecode(jwt);
+      const userId = payload._id; // eslint-disable-line no-underscore-dangle
+      User
+        .find({ _id: userId })
+        .select('role')
+        .then(user => {
+          handleFacebookSuccessRedirect(user.role, jwt, res);
+        });
     }
   })
   .use('/auth/facebook/failure', (req, res) => {
-    if (req.cookies.user.role === USER) {
-      res.redirect(app.get('auth').userFailureRedirect);
-    } else {
-      res.redirect(app.get('auth').staffFailureRedirect);
-    }
+    res.redirect(app.get('auth').userFailureRedirect);
   })
   .configure(services)
   .configure(views)
