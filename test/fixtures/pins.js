@@ -4,8 +4,8 @@ const DEPARTMENT_GENERAL_ID = require('./constants').DEPARTMENT_GENERAL_ID;
 const ORGANIZATION_ID = require('./constants').ORGANIZATION_ID;
 const PIN_ASSIGNED_ID = require('./constants').PIN_ASSIGNED_ID;
 const PIN_ASSIGNED_DETAIL = require('./constants').PIN_ASSIGNED_DETAIL;
-const PIN_PROCESSING_ID = require('./constants').PIN_PROCESSING_ID;
-const PIN_PROCESSING_DETAIL = require('./constants').PIN_PROCESSING_DETAIL;
+const PIN_DEPARTMENT_UNASSIGNED_ID = require('./constants').PIN_DEPARTMENT_UNASSIGNED_ID;
+const PIN_DEPARTMENT_UNASSIGNED_DETAIL = require('./constants').PIN_DEPARTMENT_UNASSIGNED_DETAIL;
 const PIN_UNVERIFIED_ID = require('./constants').PIN_UNVERIFIED_ID;
 const PIN_UNVERIFIED_DETAIL = require('./constants').PIN_UNVERIFIED_DETAIL;
 const PIN_VERIFIED_ID = require('./constants').PIN_VERIFIED_ID;
@@ -55,16 +55,16 @@ module.exports = [
     is_archived: false,
   },
   {
-    _id: ObjectId(PIN_PROCESSING_ID), // eslint-disable-line new-cap
+    _id: ObjectId(PIN_DEPARTMENT_UNASSIGNED_ID), // eslint-disable-line new-cap
     created_time: '2016-12-03',
-    detail: PIN_PROCESSING_DETAIL,
+    detail: PIN_DEPARTMENT_UNASSIGNED_DETAIL,
     organization: ORGANIZATION_ID, // organization ObjectId
     owner: '579334c75563625d6281b6f1', // adminUser ObjectId
     provider: '579334c75563625d6281b6f1', // adminUser ObjectId
     location: {
       coordinates: [100.56983534305, 13.730537951107],
     },
-    status: 'processing',
+    status: 'unverified',
     is_archived: false,
   },
 ];

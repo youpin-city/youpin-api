@@ -91,9 +91,9 @@ describe('state summary service', () => {
           },
           None: {
             [pinStates.VERIFIED]: 0,
-            [pinStates.UNVERIFIED]: 0,
+            [pinStates.UNVERIFIED]: 1,
             [pinStates.ASSIGNED]: 0,
-            [pinStates.PROCESSING]: 1,
+            [pinStates.PROCESSING]: 0,
             [pinStates.RESOLVED]: 0,
             [pinStates.REJECTED]: 0,
           },
