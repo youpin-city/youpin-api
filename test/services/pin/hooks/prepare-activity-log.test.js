@@ -87,7 +87,7 @@ describe('Prepare Activity Log Hook', () => {
       const expectedLogInfo = {
         user: adminUser.name,
         organization: mongoose.Types.ObjectId(pins[0].organization), // eslint-disable-line new-cap,max-len
-        department: mongoose.Types.ObjectId(pins[0].assigned_department), // eslint-disable-line new-cap,max-len
+        department: undefined,
         actionType: actions.types.METADATA,
         action: actions.UPDATE_PIN,
         pin_id: pinId,
