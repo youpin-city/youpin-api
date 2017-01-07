@@ -13,7 +13,14 @@ const User = require('../../../src/services/user/user-model');
 // Fixtures
 const adminApp3rd = require('../../fixtures/admin_app3rd');
 const adminUser = require('../../fixtures/admin_user');
+const departmentHeadUser = require('../../fixtures/department_head_user');
+const normalUser = require('../../fixtures/normal_user');
+const superAdminUser = require('../../fixtures/super_admin_user');
 const pins = require('../../fixtures/pins');
+// Fixtures' constants
+const PIN_ASSIGNED_ID = require('../../fixtures/constants').PIN_ASSIGNED_ID;
+const PIN_PROCESSING_ID = require('../../fixtures/constants').PIN_PROCESSING_ID;
+const PIN_VERIFIED_ID = require('../../fixtures/constants').PIN_VERIFIED_ID;
 
 // App stuff
 const app = require('../../../src/app');
@@ -32,6 +39,9 @@ describe('pin service', () => {
       // Create admin user and app3rd for admin
       Promise.all([
         loadFixture(User, adminUser),
+        loadFixture(User, departmentHeadUser),
+        loadFixture(User, normalUser),
+        loadFixture(User, superAdminUser),
         loadFixture(App3rd, adminApp3rd),
         loadFixture(Pin, pins),
       ])
@@ -127,7 +137,7 @@ describe('pin service', () => {
           const token = tokenResp.body.token;
 
           return request(app)
-            .patch(`/pins/${pins[0]._id}`) // eslint-disable-line no-underscore-dangle
+            .patch(`/pins/${PIN_PROCESSING_ID}`) // eslint-disable-line no-underscore-dangle
             .set('Authorization', `Bearer ${token}`)
             .set('Content-type', 'application/json')
             .send(newData)
@@ -140,6 +150,125 @@ describe('pin service', () => {
           expect(updatedPin.detail).to.equal('Updated pin detail');
           done();
         });
+    });
+
+    it('returns 200 allowing super-admin to update other user\'s pin.', (done) => {
+      const newData = {
+        $push: {
+          progresses: {
+            photos: ['New progress photo url'],
+            detail: 'New progress',
+          },
+        },
+        detail: 'Updated pin detail',
+      };
+
+      request(app)
+        .post('/auth/local')
+        .send({
+          email: 'super_admin@youpin.city',
+          password: 'youpin_admin',
+        })
+        .then((tokenResp) => {
+          const token = tokenResp.body.token;
+
+          if (!token) {
+            done(new Error('No token returns'));
+          }
+
+          return request(app)
+            .patch(`/pins/${PIN_VERIFIED_ID}`) // eslint-disable-line no-underscore-dangle
+            .set('Authorization', `Bearer ${token}`)
+            .set('Content-type', 'application/json')
+            .send(newData)
+            .expect(200);
+        })
+        .then((res) => {
+          const updatedPin = res.body;
+          expect(updatedPin.progresses).to.have.lengthOf(1);
+          expect(updatedPin.progresses[0].detail).to.equal('New progress');
+          expect(updatedPin.detail).to.equal('Updated pin detail');
+          done();
+        });
+    });
+
+    it('returns 200 allowing department head to update his/her own assigned pin', (done) => {
+      const newData = {
+        $push: {
+          progresses: {
+            photos: ['New progress photo url'],
+            detail: 'New progress',
+          },
+        },
+      };
+
+      request(app)
+        .post('/auth/local')
+        .send({
+          email: 'department_head@youpin.city',
+          password: 'youpin_admin',
+        })
+        .then((tokenResp) => {
+          const token = tokenResp.body.token;
+
+          if (!token) {
+            done(new Error('No token returns'));
+          }
+          return request(app)
+            .patch(`/pins/${PIN_ASSIGNED_ID}`)
+            .set('Authorization', `Bearer ${token}`)
+            .set('Content-type', 'application/json')
+            .send(newData)
+            .expect(200);
+        })
+        .then(res => {
+          const updatedPin = res.body;
+          expect(updatedPin.progresses).to.have.lengthOf(1);
+          expect(updatedPin.progresses[0].detail).to.equal('New progress');
+          done();
+        });
+    });
+
+    it('returns 401 not allowing normal user to update other user\'s  pin', (done) => {
+      const newData = {
+        owner: normalUser._id, // eslint-disable-line no-underscore-dangle
+        $push: {
+          progresses: {
+            photos: ['New progress photo url'],
+            detail: 'New progress',
+          },
+        },
+      };
+
+      request(app)
+        .post('/auth/local')
+        .send({
+          email: 'user@youpin.city',
+          password: 'youpin_user',
+        })
+        .then((tokenResp) => {
+          const token = tokenResp.body.token;
+
+          if (!token) {
+            done(new Error('No token returns'));
+          }
+          return request(app)
+            .patch(`/pins/${PIN_ASSIGNED_ID}`)
+            .set('Authorization', `Bearer ${token}`)
+            .set('Content-type', 'application/json')
+            .send(newData)
+            .expect(401);
+        })
+        .then((res) => {
+          const error = res.body;
+
+          expect(error.code).to.equal(401);
+          expect(error.name).to.equal('NotAuthenticated');
+          expect(error.message).to.equal(
+            'Owner field (id) does not matched with the token owner id.');
+          done();
+        })
+        .catch(error => console.log(error));
     });
   });
 

@@ -2,9 +2,10 @@ const ObjectId = require('mongoose').Types.ObjectId;
 
 const DEPARTMENT_HEAD = require('../../src/constants/roles').DEPARTMENT_HEAD;
 const DEPARTMENT_GENERAL_ID = require('./constants').DEPARTMENT_GENERAL_ID;
+const USER_DEPARTMENT_HEAD_ID = require('./constants').USER_DEPARTMENT_HEAD_ID;
 
 module.exports = {
-  _id: '579334c75553625d6281b6cc',
+  _id: USER_DEPARTMENT_HEAD_ID, // eslint-disable-line new-cap
   name: 'YouPin Department Head',
   phone: '081-985-2586',
   fb_id: 'youpin_fb_id',
