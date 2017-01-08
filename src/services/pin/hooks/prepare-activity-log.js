@@ -19,41 +19,45 @@ const prepareActivityLog = () => (hook) => {
       const allChangedFields = [];
       const allPreviousValues = [];
       const allNewValues = [];
-      // Add description for updated field
-      if (updatedFieldObjects.length !== 0) {
-        description += `${nameOfUser} edited following field:`;
-        delim = '\n';
-      }
-      // Get all updated fields
-      _.forEach(updatedFieldObjects, (value, key) => {
-        let previousValue = pin[key];
-        let newValue = value;
-        // Add special case for location's coordinates
-        if (key === 'location') {
-          previousValue = pin[key].coordinates.toString();
-          newValue = value.coordinates.toString();
+      if (updatedFieldObjects) {
+        // Add description for updated field
+        if (updatedFieldObjects.length !== 0) {
+          description += `${nameOfUser} edited following field:`;
+          delim = '\n';
         }
-        allChangedFields.push(key);
-        allPreviousValues.push(previousValue);
-        allNewValues.push(newValue);
-        description += `${delim} - Edit [${key}] from "${previousValue}" to "${newValue}"`;
-        delim = '\n';
-      });
-      // Add description for added field
-      if (addedFieldObjects.length !== 0) {
-        description += `${delim}${nameOfUser} added more data to following field:`;
-        delim = '\n';
+        // Get all updated fields
+        _.forEach(updatedFieldObjects, (value, key) => {
+          let previousValue = pin[key];
+          let newValue = value;
+          // Add special case for location's coordinates
+          if (key === 'location') {
+            previousValue = pin[key].coordinates.toString();
+            newValue = value.coordinates.toString();
+          }
+          allChangedFields.push(key);
+          allPreviousValues.push(previousValue);
+          allNewValues.push(newValue);
+          description += `${delim} - Edit [${key}] from "${previousValue}" to "${newValue}"`;
+          delim = '\n';
+        });
       }
-      // Get all added fields
-      _.forEach(addedFieldObjects, (value, key) => {
-        allChangedFields.push(key);
-        allPreviousValues.push('');
-        // Extract detail field if it is a comment object.
-        const newValue = _.isObject(value) ? value.detail : value;
-        allNewValues.push(newValue);
-        description += `${delim} - Add [${key}] with "${newValue}"`;
-        delim = '\n';
-      });
+      if (addedFieldObjects) {
+        // Add description for added field
+        if (addedFieldObjects.length !== 0) {
+          description += `${delim}${nameOfUser} added more data to following field:`;
+          delim = '\n';
+        }
+        // Get all added fields
+        _.forEach(addedFieldObjects, (value, key) => {
+          allChangedFields.push(key);
+          allPreviousValues.push('');
+          // Extract detail field if it is a comment object.
+          const newValue = _.isObject(value) ? value.detail : value;
+          allNewValues.push(newValue);
+          description += `${delim} - Add [${key}] with "${newValue}"`;
+          delim = '\n';
+        });
+      }
       // Pass logInfo object to after hook by attaching to hook.data
       const logInfo = {
         user: nameOfUser,
