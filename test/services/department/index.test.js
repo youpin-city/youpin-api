@@ -6,13 +6,11 @@ const request = require('supertest-as-promised');
 
 // Models
 const Department = require('../../../src/services/department/department-model');
-const Organization = require('../../../src/services/organization/organization-model');
 const User = require('../../../src/services/user/user-model');
 
 // Fixtures
 const departments = require('../../fixtures/departments');
 const organizationAdminUser = require('../../fixtures/organization_admin_user');
-const organizations = require('../../fixtures/organizations');
 const superAdminUser = require('../../fixtures/super_admin_user');
 
 // App stuff
@@ -31,7 +29,6 @@ describe('department service', () => {
       Promise.all([
         loadFixture(User, superAdminUser),
         loadFixture(User, organizationAdminUser),
-        loadFixture(Organization, organizations),
         loadFixture(Department, departments),
       ])
       .then(() => {
@@ -48,7 +45,6 @@ describe('department service', () => {
     Promise.all([
       User.remove({}),
       Department.remove({}),
-      Organization.remove({}),
     ])
     .then(() => {
       server.close((err) => {
@@ -67,7 +63,6 @@ describe('department service', () => {
     it('return 401 (unauthorized) if user is not authenticated', (done) => {
       const newDepartment = {
         name: 'YouPin',
-        organization: organizations[0]._id, // eslint-disable-line no-underscore-dangle
         detail: 'An awesome department', // eslint-disable-line no-underscore-dangle
       };
 
@@ -91,7 +86,6 @@ describe('department service', () => {
     it('return 201 when posting by super admin user', (done) => {
       const newDepartment = {
         name: 'YouPin',
-        organization: organizations[0]._id, // eslint-disable-line no-underscore-dangle
         detail: 'An awesome department', // eslint-disable-line no-underscore-dangle
       };
 
@@ -118,7 +112,7 @@ describe('department service', () => {
             .then((res) => {
               const createddepartment = res.body;
               expect(createddepartment).to.contain.keys(
-                ['_id', 'name', 'detail', 'organization',
+                ['_id', 'name', 'detail',
                   'updated_time', 'created_time']);
               done();
             });
@@ -128,7 +122,6 @@ describe('department service', () => {
     it('return 201 when posting by organization admin user', (done) => {
       const newDepartment = {
         name: 'YouPin',
-        organization: organizations[0]._id, // eslint-disable-line no-underscore-dangle
         detail: 'An awesome department', // eslint-disable-line no-underscore-dangle
       };
 
@@ -155,7 +148,7 @@ describe('department service', () => {
             .then((res) => {
               const createddepartment = res.body;
               expect(createddepartment).to.contain.keys(
-                ['_id', 'name', 'detail', 'organization',
+                ['_id', 'name', 'detail',
                   'updated_time', 'created_time']);
               done();
             });
