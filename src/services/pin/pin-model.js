@@ -67,6 +67,11 @@ pinSchema.pre('find', function populateAssignedDepartment(next) {
   next();
 });
 
+pinSchema.pre('find', function populateOwner(next) {
+  this.populate('owner');
+  next();
+});
+
 const Pin = mongoose.model('Pin', pinSchema);
 
 module.exports = Pin;
