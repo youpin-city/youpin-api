@@ -57,18 +57,19 @@ const pinSchema = new Schema({
 // Index geosearch field
 pinSchema.index({ location: '2dsphere' });
 
-pinSchema.pre('find', function populateAssignedUser(next) {
-  this.populate('assigned_user');
+pinSchema.pre('find', function populateFields(next) {
+  this
+    .populate('assigned_user')
+    .populate('assigned_department')
+    .populate('owner');
   next();
 });
 
-pinSchema.pre('find', function populateAssignedDepartment(next) {
-  this.populate('assigned_department');
-  next();
-});
-
-pinSchema.pre('find', function populateOwner(next) {
-  this.populate('owner');
+pinSchema.pre('findOne', function populateFields(next) {
+  this
+    .populate('assigned_user')
+    .populate('assigned_department')
+    .populate('owner');
   next();
 });
 
