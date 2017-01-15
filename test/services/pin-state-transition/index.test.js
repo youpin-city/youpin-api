@@ -11,6 +11,7 @@ const User = require('../../../src/services/user/user-model');
 
 // Fixture
 const departmentHeadUser = require('../../fixtures/department_head_user');
+const departmentsOfficerUser = require('../../fixtures/department_officer_user');
 const departments = require('../../fixtures/departments');
 const organizationAdminUser = require('../../fixtures/organization_admin_user');
 const pins = require('../../fixtures/pins');
@@ -52,6 +53,7 @@ describe('Pin state transtion service', () => {
         loadFixture(User, superAdminUser),
         loadFixture(User, organizationAdminUser),
         loadFixture(User, departmentHeadUser),
+        loadFixture(User, departmentsOfficerUser),
         loadFixture(Pin, pins),
       ])
       .then(() => {
@@ -441,6 +443,11 @@ describe('Pin state transtion service', () => {
           .send({
             state: 'processing',
             processed_by: '579334c75553625d6281b6cc',
+            assigned_users: [
+              '579334c75553625d6281b6cc',
+              '579334c75553625d6281b6cd',
+              '579334c75553625d6281b6ce',
+            ],
           })
           .expect(201);
         })
@@ -449,6 +456,11 @@ describe('Pin state transtion service', () => {
 
           expect(transition.status).to.equal('processing');
           expect(transition.processed_by).to.equal('579334c75553625d6281b6cc');
+          expect(transition.assigned_users).to.deep.equal([
+            '579334c75553625d6281b6cc',
+            '579334c75553625d6281b6cd',
+            '579334c75553625d6281b6ce',
+          ]);
           expect(transition.pinId).to.equal(String(savedPin._id)); // eslint-disable-line no-underscore-dangle,max-len
 
           return Pin.findOne({ _id: savedPin._id }); // eslint-disable-line no-underscore-dangle,max-len
