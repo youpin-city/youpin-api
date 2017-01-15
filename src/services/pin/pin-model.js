@@ -22,7 +22,7 @@ const commentSchema = new Schema({
 
 const pinSchema = new Schema({
   assigned_department: { type: Schema.Types.ObjectId, ref: 'Department' },
-  assigned_user: { type: Schema.Types.ObjectId, ref: 'User' },
+  assigned_users: [{ type: Schema.Types.ObjectId, ref: 'User' }],
   categories: [String],
   comments: [commentSchema],
   progresses: [commentSchema],
@@ -59,7 +59,7 @@ pinSchema.index({ location: '2dsphere' });
 
 pinSchema.pre('find', function populateFields(next) {
   this
-    .populate('assigned_user')
+    .populate('assigned_users')
     .populate('assigned_department')
     .populate('owner');
   next();
@@ -67,7 +67,7 @@ pinSchema.pre('find', function populateFields(next) {
 
 pinSchema.pre('findOne', function populateFields(next) {
   this
-    .populate('assigned_user')
+    .populate('assigned_users')
     .populate('assigned_department')
     .populate('owner');
   next();
