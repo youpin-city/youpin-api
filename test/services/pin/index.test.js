@@ -7,6 +7,7 @@ const request = require('supertest-as-promised');
 
 // Models
 const App3rd = require('../../../src/services/app3rd/app3rd-model');
+const Department = require('../../../src/services/department/department-model');
 const Pin = require('../../../src/services/pin/pin-model');
 const User = require('../../../src/services/user/user-model');
 
@@ -14,6 +15,7 @@ const User = require('../../../src/services/user/user-model');
 const adminApp3rd = require('../../fixtures/admin_app3rd');
 const adminUser = require('../../fixtures/admin_user');
 const departmentHeadUser = require('../../fixtures/department_head_user');
+const departments = require('../../fixtures/departments');
 const normalUser = require('../../fixtures/normal_user');
 const superAdminUser = require('../../fixtures/super_admin_user');
 const pins = require('../../fixtures/pins');
@@ -43,6 +45,7 @@ describe('pin service', () => {
         loadFixture(User, normalUser),
         loadFixture(User, superAdminUser),
         loadFixture(App3rd, adminApp3rd),
+        loadFixture(Department, departments),
         loadFixture(Pin, pins),
       ])
       .then(() => {
@@ -59,6 +62,7 @@ describe('pin service', () => {
     Promise.all([
       User.remove({}),
       Pin.remove({}),
+      Department.remove({}),
       App3rd.remove({}),
     ])
     .then(() => {

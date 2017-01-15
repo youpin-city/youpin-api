@@ -28,8 +28,11 @@ const restrictToTheRightUserForUpdate = () => (hook) => {
       }
       // Bypass if a user is the department head and the department owns this pin.
       if (user.role === DEPARTMENT_HEAD) {
-        if (!pin.assigned_department.equals(user.department)) {
-          throw new Error('The pin does not belong to the user\'s department.');
+        if (!pin.assigned_department) {
+          throw new Error('This pin is not assigned to any department.');
+        }
+        if (!pin.assigned_department._id.equals(user.department)) { // eslint-disable-line no-underscore-dangle,max-len
+          throw new Error('This pin does not belong to the user\'s department.');
         }
         return Promise.resolve(hook);
       }

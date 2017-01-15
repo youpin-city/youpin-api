@@ -407,7 +407,8 @@ describe('Pin state transtion service', () => {
         })
         .then(updatedPin => {
           expect(updatedPin.status).to.equal('assigned');
-          expect(String(updatedPin.assigned_department)).to.equal('57933111556362511181ccc1');
+          expect(String(updatedPin.assigned_department._id)) // eslint-disable-line no-underscore-dangle,max-len
+            .to.equal('57933111556362511181ccc1');
 
           done();
         });
