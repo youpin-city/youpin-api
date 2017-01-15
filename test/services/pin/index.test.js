@@ -17,6 +17,7 @@ const adminUser = require('../../fixtures/admin_user');
 const departmentHeadUser = require('../../fixtures/department_head_user');
 const departments = require('../../fixtures/departments');
 const normalUser = require('../../fixtures/normal_user');
+const publicRelationsUser = require('../../fixtures/public_relations_user');
 const superAdminUser = require('../../fixtures/super_admin_user');
 const pins = require('../../fixtures/pins');
 // Fixtures' constants
@@ -43,6 +44,7 @@ describe('pin service', () => {
         loadFixture(User, adminUser),
         loadFixture(User, departmentHeadUser),
         loadFixture(User, normalUser),
+        loadFixture(User, publicRelationsUser),
         loadFixture(User, superAdminUser),
         loadFixture(App3rd, adminApp3rd),
         loadFixture(Department, departments),
