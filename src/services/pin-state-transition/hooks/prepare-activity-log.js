@@ -62,32 +62,24 @@ const prepareActivityLog = () => (hook) => {
         action = actions.REJECT;
         description = `${nameOfUser} rejected pin ${shortenDetail}`;
         break;
-      case states.UNVERIFIED:
-        action = actions.UNVERIFY;
-        description = `${nameOfUser} unverified pin ${shortenDetail}`;
-        break;
-      case states.VERIFIED:
-        if (previousState === states.UNVERIFIED) {
-          action = actions.VERIFY;
-          description = `${nameOfUser} verified pin ${shortenDetail}`;
-        } else if (previousState === states.ASSIGNED) {
-          // If a pin has already been assigned to a department (in ASSIGNED state),
-          // but the department denies that assignment,
-          // the pin's next state will go back to VERIFIED (and need to re-assign).
-          // So, we will remove `assigned_department` value from the pin.
-          action = actions.DENY;
-          changedFields.push('assigned_department');
-          previousValues.push(pin.assigned_department);
-          updatedValues.push(null);
-          description = `${nameOfUser} denies pin ${shortenDetail}`;
-        }
+      case states.PENDING:
+        // If a pin has already been assigned to a department (in ASSIGNED state),
+        // but the department denies that assignment,
+        // the pin's next state will go back to PENDING (and need to re-assign).
+        // So, we will remove `assigned_department` value from the pin.
+        action = actions.DENY;
+        changedFields.push('assigned_department');
+        previousValues.push(pin.assigned_department);
+        updatedValues.push(null);
+        description = `${nameOfUser} denies pin ${shortenDetail}`;
         break;
       case states.ASSIGNED:
         action = actions.ASSIGN;
         changedFields.push('assigned_department');
         previousValues.push(pin.assigned_department);
         updatedValues.push(hook.data.assigned_department);
-        description = `${nameOfUser} assigned pin ${shortenDetail} to ${pin.assigned_department}`;
+        description = `${nameOfUser} assigned pin ${shortenDetail} ` +
+                      `to department ${hook.data.assigned_department}`;
         break;
       case states.PROCESSING:
         if (previousState === states.ASSIGNED) {

@@ -35,8 +35,7 @@ class Service {
       .then(populatedPins => {
         // Initialise summary with zeros.
         const initialSummary = {
-          [pinStates.VERIFIED]: 0,
-          [pinStates.UNVERIFIED]: 0,
+          [pinStates.PENDING]: 0,
           [pinStates.ASSIGNED]: 0,
           [pinStates.PROCESSING]: 0,
           [pinStates.RESOLVED]: 0,

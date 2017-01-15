@@ -7,14 +7,14 @@ const Pin = require('../pin/pin-model');
 
 // States
 const ASSIGNED = states.ASSIGNED;
+const PENDING = states.PENDING;
 const PROCESSING = states.PROCESSING;
 const REJECTED = states.REJECTED;
 const RESOLVED = states.RESOLVED;
-const UNVERIFIED = states.UNVERIFIED;
-const VERIFIED = states.VERIFIED;
 
 // Roles
 const DEPARTMENT_HEAD = roles.DEPARTMENT_HEAD;
+const DEPARTMENT_OFFICER = roles.DEPARTMENT_OFFICER;
 const ORGANIZATION_ADMIN = roles.ORGANIZATION_ADMIN;
 const SUPER_ADMIN = roles.SUPER_ADMIN;
 const USER = roles.USER;
@@ -24,40 +24,39 @@ class PinTransitionService {
   static isValidStateTransition(prevState, nextState, role) {
     // Map previous state and role to a list of possible next states
     const possibleNextStates = {
-      [UNVERIFIED]: {
-        [SUPER_ADMIN]: [VERIFIED, ASSIGNED, REJECTED],
-        [ORGANIZATION_ADMIN]: [VERIFIED, ASSIGNED, REJECTED],
+      [PENDING]: {
+        [SUPER_ADMIN]: [ASSIGNED, REJECTED],
+        [ORGANIZATION_ADMIN]: [ASSIGNED, REJECTED],
         [DEPARTMENT_HEAD]: [],
-        [USER]: [],
-      },
-      [VERIFIED]: {
-        [SUPER_ADMIN]: [UNVERIFIED, ASSIGNED, REJECTED],
-        [ORGANIZATION_ADMIN]: [UNVERIFIED, ASSIGNED, REJECTED],
-        [DEPARTMENT_HEAD]: [],
+        [DEPARTMENT_OFFICER]: [],
         [USER]: [],
       },
       [ASSIGNED]: {
-        [SUPER_ADMIN]: [],
+        [SUPER_ADMIN]: [PENDING, PROCESSING],
         [ORGANIZATION_ADMIN]: [],
-        [DEPARTMENT_HEAD]: [VERIFIED, PROCESSING],
+        [DEPARTMENT_HEAD]: [PENDING, PROCESSING],
+        [DEPARTMENT_OFFICER]: [],
         [USER]: [],
       },
       [PROCESSING]: {
-        [SUPER_ADMIN]: [],
+        [SUPER_ADMIN]: [RESOLVED],
         [ORGANIZATION_ADMIN]: [],
         [DEPARTMENT_HEAD]: [RESOLVED],
+        [DEPARTMENT_OFFICER]: [],
         [USER]: [],
       },
       [RESOLVED]: {
         [SUPER_ADMIN]: [PROCESSING],
         [ORGANIZATION_ADMIN]: [PROCESSING],
         [DEPARTMENT_HEAD]: [],
+        [DEPARTMENT_OFFICER]: [],
         [USER]: [],
       },
       [REJECTED]: {
         [SUPER_ADMIN]: [],
         [ORGANIZATION_ADMIN]: [],
         [DEPARTMENT_HEAD]: [],
+        [DEPARTMENT_OFFICER]: [],
         [USER]: [],
       },
     };

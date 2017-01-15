@@ -23,12 +23,12 @@ const pins = require('../../fixtures/pins');
 // Fixtures' constants
 const PIN_ASSIGNED_ID = require('../../fixtures/constants').PIN_ASSIGNED_ID;
 const PIN_PROCESSING_ID = require('../../fixtures/constants').PIN_PROCESSING_ID;
-const PIN_VERIFIED_ID = require('../../fixtures/constants').PIN_VERIFIED_ID;
+const PIN_PENDING_ID = require('../../fixtures/constants').PIN_PENDING_ID;
 
 // App stuff
 const app = require('../../../src/app');
 const mongoose = require('mongoose');
-const UNVERIFIED = require('../../../src/constants/pin-states').UNVERIFIED;
+const PENDING = require('../../../src/constants/pin-states').PENDING;
 
 // Exit test if NODE_ENV is not equal `test`
 assertTestEnv();
@@ -183,7 +183,7 @@ describe('pin service', () => {
           }
 
           return request(app)
-            .patch(`/pins/${PIN_VERIFIED_ID}`) // eslint-disable-line no-underscore-dangle
+            .patch(`/pins/${PIN_PENDING_ID}`) // eslint-disable-line no-underscore-dangle
             .set('Authorization', `Bearer ${token}`)
             .set('Content-type', 'application/json')
             .send(newData)
@@ -394,7 +394,7 @@ describe('pin service', () => {
         });
     });
 
-    it('craetes pin with `unverified` status as default status', (done) => {
+    it('creates pin with `pending` status as default status', (done) => {
       const newPin = {
         detail: casual.text,
         organization: '57933111556362511181aaa1',
@@ -427,7 +427,7 @@ describe('pin service', () => {
             .expect(201)
             .then((res) => {
               const createdPin = res.body;
-              expect(createdPin.status).to.equal(UNVERIFIED);
+              expect(createdPin.status).to.equal(PENDING);
 
               done();
             });
