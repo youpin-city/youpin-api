@@ -16,7 +16,7 @@ const organizationAdminUser = require('../../fixtures/organization_admin_user');
 const pins = require('../../fixtures/pins');
 const superAdminUser = require('../../fixtures/super_admin_user');
 const PIN_ASSIGNED_ID = require('../../fixtures/constants').PIN_ASSIGNED_ID;
-const PIN_VERIFIED_ID = require('../../fixtures/constants').PIN_VERIFIED_ID;
+const PIN_PENDING_ID = require('../../fixtures/constants').PIN_PENDING_ID;
 
 // App stuff
 const app = require('../../../src/app');
@@ -80,7 +80,7 @@ describe('Pin merging service', () => {
       const token = loginResp.body.token;
 
       return request(app)
-      .post(`/pins/${PIN_VERIFIED_ID}/merging`)
+      .post(`/pins/${PIN_PENDING_ID}/merging`)
       .set('Authorization', `Bearer ${token}`)
       .set('Content-type', 'application/json')
       .send({
@@ -96,7 +96,7 @@ describe('Pin merging service', () => {
       expect(updatedChildPinResult.ok).to.equal(1);
       expect(updatedParentPinResult.ok).to.equal(1);
 
-      return Pin.findOne({ _id: PIN_VERIFIED_ID }); // eslint-disable-line no-underscore-dangle
+      return Pin.findOne({ _id: PIN_PENDING_ID }); // eslint-disable-line no-underscore-dangle
     })
     .then(updatedChildPin => {
       expect(updatedChildPin.is_merged).to.equal(true);
@@ -105,7 +105,7 @@ describe('Pin merging service', () => {
       return Pin.findOne({ _id: PIN_ASSIGNED_ID }).lean();
     })
     .then(updatedParentPin => {
-      expect(updatedParentPin.merged_children_pins).to.deep.equal([ObjectId(PIN_VERIFIED_ID)]); // eslint-disable-line new-cap,max-len
+      expect(updatedParentPin.merged_children_pins).to.deep.equal([ObjectId(PIN_PENDING_ID)]); // eslint-disable-line new-cap,max-len
 
       done();
     })

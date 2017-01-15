@@ -15,8 +15,8 @@ const DEPARTMENT_GENERAL_ID = require('../../../fixtures/constants').DEPARTMENT_
 const ORGANIZATION_ID = require('../../../fixtures/constants').ORGANIZATION_ID;
 const PIN_ASSIGNED_ID = require('../../../fixtures/constants').PIN_ASSIGNED_ID;
 const PIN_ASSIGNED_DETAIL = require('../../../fixtures/constants').PIN_ASSIGNED_DETAIL;
-const PIN_VERIFIED_ID = require('../../../fixtures/constants').PIN_VERIFIED_ID;
-const PIN_VERIFIED_DETAIL = require('../../../fixtures/constants').PIN_VERIFIED_DETAIL;
+const PIN_PENDING_ID = require('../../../fixtures/constants').PIN_PENDING_ID;
+const PIN_PENDING_DETAIL = require('../../../fixtures/constants').PIN_PENDING_DETAIL;
 
 // App stuff
 const mongoose = require('mongoose');
@@ -52,7 +52,7 @@ describe('Prepare Activity Log Hook for Pin Merging', () => {
       type: 'before',
       app: {},
       params: {
-        pinId: PIN_VERIFIED_ID,
+        pinId: PIN_PENDING_ID,
         user: {
           name: 'Aunt You-pin',
           department: mongoose.Types.ObjectId(DEPARTMENT_GENERAL_ID), // eslint-disable-line new-cap,max-len
@@ -76,11 +76,11 @@ describe('Prepare Activity Log Hook for Pin Merging', () => {
         department: mongoose.Types.ObjectId(DEPARTMENT_GENERAL_ID), // eslint-disable-line new-cap
         actionType: actions.types.MERGING,
         action: actions.MERGE_PIN,
-        pin_id: PIN_VERIFIED_ID,
+        pin_id: PIN_PENDING_ID,
         changed_fields: ['is_merged', 'merged_parent_pin'],
         previous_values: [false, undefined],
         updated_values: [true, PIN_ASSIGNED_ID],
-        description: `Aunt You-pin merged pin ${PIN_VERIFIED_DETAIL.substring(0, 20)}... ` +
+        description: `Aunt You-pin merged pin ${PIN_PENDING_DETAIL.substring(0, 20)}... ` +
                      `to ${PIN_ASSIGNED_DETAIL.substring(0, 20)}...`,
         timestamp: Date.now(),
       };

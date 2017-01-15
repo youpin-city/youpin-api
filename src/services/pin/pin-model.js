@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const UNVERIFIED = require('../../constants/pin-states').UNVERIFIED;
+const PENDING = require('../../constants/pin-states').PENDING;
 
 const Schema = mongoose.Schema;
 
@@ -47,7 +47,7 @@ const pinSchema = new Schema({
   provider: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   processed_by: { type: Schema.Types.ObjectId, ref: 'User' },
   resolved_time: { type: Date },
-  status: { type: String, required: true, default: UNVERIFIED },
+  status: { type: String, required: true, default: PENDING },
   tags: [String],
   updated_time: { type: Date, required: true, default: Date.now },
   videos: [Schema.Types.ObjectId],

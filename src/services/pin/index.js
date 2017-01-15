@@ -25,7 +25,7 @@ module.exports = function () { // eslint-disable-line func-names
    * @apiParam {String} id Pin unique ID.
    *
    * @apiSuccess {String} _id Pin unique ID.
-   * @apiSuccess {String} status Pin's status ('verified', 'unverfied', '').
+   * @apiSuccess {String} status Pin's status ('pending', 'assigned', 'processing', 'resolved', 'rejected').
    * @apiSuccess {String} owner Pin's owner ID.
    * @apiSuccess {String} provider Pin's provider ID.
    * @apiSuccess {String} detail Pin's detail.
@@ -49,7 +49,7 @@ module.exports = function () { // eslint-disable-line func-names
    *    HTTP/1.1 200 OK
    *    {
    *      "_id": 5798cc78652b2aab35fd663d,
-   *      "status": "verified",
+   *      "status": "pending",
    *      "owner": "5787543e863804aa6045bcde",
    *      "provider": "5787543e863804aa6045bcde",
    *      "detail": "ทางเท้าพัง",
@@ -103,7 +103,7 @@ module.exports = function () { // eslint-disable-line func-names
     *   "photos": [
     *     "https://youpin-asset-test.s3-ap-southeast-1.amazonaws.com/4c9619c7eb53be7793854fb96c3d4d718b53e510ac71371933b20e23f95a3d5e.png"
     *   ],
-    *   "status": "verified",
+    *   "status": "assigned",
     *   "owner": "579910cf17fd0b2b2c93d95a",
     *   "provider": ["5787543e863804aa6045bcde"],
     *   "level": "normal",
@@ -123,7 +123,7 @@ module.exports = function () { // eslint-disable-line func-names
     * @apiParam {Number[]} location.coordinates Latitude and longitude of location
     * @apiParam {String} location.type Type of location (Point).
     * @apiParam {String[]} photos List of URLs of photos in this pin.
-    * @apiParam {String} status Pin's status ('verified', 'unverfied', '').
+    * @apiParam {String} status Pin's status ('pending', 'assigned', 'processing', 'resolved', 'rejected').
     * @apiParam {String} owner Pin's owner ID.
     * @apiParam {String} provider Pin's provider ID.
     * @apiParam {String} level Severity level.
@@ -134,7 +134,7 @@ module.exports = function () { // eslint-disable-line func-names
     * @apiParam {String} created_time Created time in ISO 8601 format.
     * @apiParam {String} updated_time Updated time in ISO 8601 format.
     *
-    * @apiSuccess (Created 201) {String} status Pin's status ('verified', 'unverfied', '').
+    * @apiSuccess (Created 201) {String} status Pin's status ('pending', 'assigned', 'processing', 'resolved', 'rejected').
     * @apiSuccess (Created 201) {String} owner Pin's owner ID.
     * @apiSuccess (Created 201) {String} provider Pin's provider ID.
     * @apiSuccess (Created 201) {String} level Severity level.
@@ -158,7 +158,7 @@ module.exports = function () { // eslint-disable-line func-names
     * @apiSuccessExample Success Response:
     *    HTTP/1.1 201 Created
     *    {
-    *      "status": "verified",
+    *      "status": "pending",
     *      "owner": "579910cf17fd0b2b2c93d95a",
     *      "provider": "5787543e863804aa6045bcde",
     *      "level": "normal",
@@ -218,7 +218,7 @@ module.exports = function () { // eslint-disable-line func-names
     *   "photos": [
     *     "https://youpin-asset-test.s3-ap-southeast-1.amazonaws.com/4c9619c7eb53be7793854fb96c3d4d718b53e510ac71371933b20e23f95a3d5e.png"
     *   ],
-    *   "status": "verified",
+    *   "status": "assigned",
     *   "owner": "579910cf17fd0b2b2c93d95a",
     *   "provider": ["5787543e863804aa6045bcde"],
     *   "level": "normal",
@@ -238,7 +238,7 @@ module.exports = function () { // eslint-disable-line func-names
     * @apiParam {Number[]} location.coordinates Latitude and longitude of location
     * @apiParam {String} location.type Type of location (Point).
     * @apiParam {String[]} photos List of URLs of photos in this pin.
-    * @apiParam {String} status Pin's status ('verified', 'unverfied', '').
+    * @apiParam {String} status Pin's status ('pending', 'assigned', 'processing', 'resolved', 'rejected').
     * @apiParam {String} owner Pin's owner ID.
     * @apiParam {String} provider Pin's provider ID.
     * @apiParam {String} level Severity level.
@@ -250,7 +250,7 @@ module.exports = function () { // eslint-disable-line func-names
     * @apiParam {String} updated_time Updated time in ISO 8601 format.
     *
     * @apiSuccess {String} _id Pin unique ID.
-    * @apiSuccess {String} status Pin's status ('verified', 'unverfied', '').
+    * @apiSuccess {String} status Pin's status ('pending', 'assigned', 'processing', 'resolved', 'rejected').
     * @apiSuccess {String} owner Pin's owner ID.
     * @apiSuccess {String} provider Pin's provider ID.
     * @apiSuccess {String} detail Pin's detail.
@@ -273,7 +273,7 @@ module.exports = function () { // eslint-disable-line func-names
     * @apiSuccessExample Success Response:
     *    HTTP/1.1 200 OK
     *    {
-    *      "status": "verified",
+    *      "status": "assigned",
     *      "owner": "579910cf17fd0b2b2c93d95a",
     *      "provider": "5787543e863804aa6045bcde",
     *      "level": "normal",
@@ -340,7 +340,7 @@ module.exports = function () { // eslint-disable-line func-names
     * @apiParam {Number[]} location.coordinates Latitude and longitude of location
     * @apiParam {String} location.type Type of location (Point).
     * @apiParam {String[]} photos List of URLs of photos in this pin.
-    * @apiParam {String} status Pin's status ('verified', 'unverfied', '').
+    * @apiParam {String} status Pin's status ('pending', 'assigned', 'processing', 'resolved', 'rejected').
     * @apiParam {String} owner Pin's owner ID.
     * @apiParam {String} provider Pin's provider ID.
     * @apiParam {String} level Severity level.
@@ -352,7 +352,7 @@ module.exports = function () { // eslint-disable-line func-names
     * @apiParam {String} updated_time Updated time in ISO 8601 format.
     *
     * @apiSuccess {String} _id Pin unique ID.
-    * @apiSuccess {String} status Pin's status ('verified', 'unverfied', '').
+    * @apiSuccess {String} status Pin's status ('pending', 'assigned', 'processing', 'resolved', 'rejected').
     * @apiSuccess {String} owner Pin's owner ID.
     * @apiSuccess {String} provider Pin's provider ID.
     * @apiSuccess {String} detail Pin's detail.
@@ -375,7 +375,7 @@ module.exports = function () { // eslint-disable-line func-names
     * @apiSuccessExample Success Response:
     *    HTTP/1.1 200 OK
     *    {
-    *      "status": "verified",
+    *      "status": "assigned",
     *      "owner": "579910cf17fd0b2b2c93d95a",
     *      "provider": "5787543e863804aa6045bcde",
     *      "level": "normal",

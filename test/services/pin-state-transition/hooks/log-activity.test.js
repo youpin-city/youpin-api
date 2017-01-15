@@ -17,12 +17,12 @@ describe('Log Activity Hook', () => {
       organization: 'YouPin',
       department: 'Development',
       actionType: 'STATE_TRANSITION',
-      action: 'STATE_TRANSITION/VERIFY',
+      action: 'STATE_TRANSITION/ASSIGNED',
       pin_id: 1234,
-      changed_fields: ['status'],
-      previous_values: ['unverified'],
-      updated_values: ['verified'],
-      description: 'Aunt You-pin verified pin 1234',
+      changed_fields: ['status', 'assigned_department'],
+      previous_values: ['pending', null],
+      updated_values: ['assigned', '57933111556362511181bbb1'],
+      description: 'Aunt You-pin assigned pin 1234 to department 57933111556362511181bbb1',
       timestamp: '2016-11-25',
     };
     const createSpy = spy();

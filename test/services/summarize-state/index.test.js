@@ -74,24 +74,21 @@ describe('state summary service', () => {
         // Change array to dictionary (key is a department).
         const expectedResult = {
           'Department of Nerds': {
-            [pinStates.VERIFIED]: 0,
-            [pinStates.UNVERIFIED]: 0,
+            [pinStates.PENDING]: 0,
             [pinStates.ASSIGNED]: 1,
             [pinStates.PROCESSING]: 0,
             [pinStates.RESOLVED]: 0,
             [pinStates.REJECTED]: 0,
           },
           'Admin Department': {
-            [pinStates.VERIFIED]: 0,
-            [pinStates.UNVERIFIED]: 0,
+            [pinStates.PENDING]: 0,
             [pinStates.ASSIGNED]: 0,
             [pinStates.PROCESSING]: 1,
             [pinStates.RESOLVED]: 0,
             [pinStates.REJECTED]: 0,
           },
           None: {
-            [pinStates.VERIFIED]: 1,
-            [pinStates.UNVERIFIED]: 1,
+            [pinStates.PENDING]: 1,
             [pinStates.ASSIGNED]: 0,
             [pinStates.PROCESSING]: 0,
             [pinStates.RESOLVED]: 0,
