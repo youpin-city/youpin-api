@@ -309,6 +309,53 @@ describe('Pin state transtion service', () => {
       });
     });
 
+    it('updates correct properties for transtion from `assigned` to `pending` state', (done) => {
+      pin._id = ObjectId('579334c75563625d62811124'); // eslint-disable-line no-underscore-dangle,new-cap,max-len
+      pin.status = 'assigned';
+
+      new Pin(pin).save((err, savedPin) => {
+        if (err) {
+          return done(err);
+        }
+
+        return request(app)
+        .post('/auth/local')
+        .set('Content-type', 'application/json')
+        .send({
+          email: 'super_admin@youpin.city',
+          password: 'youpin_admin',
+        })
+        .then((loginResp) => {
+          const token = loginResp.body.token;
+
+          return request(app)
+          .post(`/pins/${savedPin._id}/state_transition`) // eslint-disable-line no-underscore-dangle,max-len
+          .set('Authorization', `Bearer ${token}`)
+          .set('Content-type', 'application/json')
+          .send({
+            state: 'pending',
+          })
+          .expect(201);
+        })
+        .then((transitionResp) => {
+          const transition = transitionResp.body;
+
+          expect(transition.status).to.equal('pending');
+          expect(transition.assigned_department).to.equal(null);
+          expect(transition.pinId).to.equal(String(savedPin._id)); // eslint-disable-line no-underscore-dangle,max-len
+
+          return Pin.findOne({ _id: savedPin._id }); // eslint-disable-line no-underscore-dangle,max-len
+        })
+        .then(updatedPin => {
+          expect(updatedPin.status).to.equal('pending');
+          expect(updatedPin.assigned_department) // eslint-disable-line no-underscore-dangle,max-len
+            .to.equal(null);
+
+          done();
+        });
+      });
+    });
+
     it('updates correct properties for `processing` transtion', (done) => {
       pin._id = ObjectId('579334c75563625d62811115'); // eslint-disable-line no-underscore-dangle,new-cap,max-len
       pin.status = 'assigned';
