@@ -116,6 +116,9 @@ class PinTransitionService {
       }
       updatingProperties.processed_by = data.processed_by;
       updatingProperties.assigned_users = data.assigned_users;
+    } else if (nextState === PENDING) {
+      // Remove assigned_department if this pin is denied by department_head
+      updatingProperties.assigned_department = null;
     }
 
     return Pin.update(
