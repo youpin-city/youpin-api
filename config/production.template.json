@@ -19,6 +19,9 @@
       "profileFields": ["id", "first_name", "last_name", "email"]
     }
   },
+  "bot": {
+    "notificationToken": "your bot notification token"
+  },
   "gcs": {
     "gcsUrl": "https://storage.googleapis.com",
     "bucket": "your GCS bucket name",
