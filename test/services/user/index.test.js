@@ -11,8 +11,10 @@ const User = require('../../../src/services/user/user-model');
 
 // Fixtures
 const adminApp3rd = require('../../fixtures/admin_app3rd');
-const adminUser = require('../../fixtures/admin_user');
+const departmentHeadUser = require('../../fixtures/department_head_user');
 const normalUser = require('../../fixtures/normal_user');
+const organizationAdminUser = require('../../fixtures/organization_admin_user');
+const superAdminUser = require('../../fixtures/super_admin_user');
 
 // App stuff
 const app = require('../../../src/app');
@@ -27,7 +29,9 @@ describe('user service', () => {
     server = app.listen(app.get('port'));
     server.once('listening', () => {
       Promise.all([
-        loadFixture(User, adminUser),
+        loadFixture(User, departmentHeadUser),
+        loadFixture(User, organizationAdminUser),
+        loadFixture(User, superAdminUser),
         loadFixture(App3rd, adminApp3rd),
       ])
       .then(() => {
@@ -61,12 +65,12 @@ describe('user service', () => {
   });
 
   describe('GET /users', () => {
-    it('return user array conatining only admin user', (done) =>
+    it('allows super_admin role to retrive data', (done) =>
       request(app)
         // Login with existing admin account
         .post('/auth/local')
         .send({
-          email: 'contact@youpin.city',
+          email: 'super_admin@youpin.city',
           password: 'youpin_admin',
         })
         .then((tokenResp) => {
@@ -85,15 +89,94 @@ describe('user service', () => {
             .then((userResp) => {
               const body = userResp.body;
               expect(body).to.have.all.keys(['total', 'limit', 'skip', 'data']);
-              expect(body.total).to.equal(1);
+              expect(body.total).to.equal(3);
 
               const userDataList = userResp.body.data;
               expect(userDataList).to.be.a('array');
-              expect(userDataList).to.have.lengthOf(1);
-              expect(userDataList[0]).to.contain.all.keys(
-                ['_id', 'name', 'phone', 'email', 'role', 'owner_app_id',
-                  'customer_app_id', 'updated_time', 'created_time']);
-              expect(userDataList[0].email).to.equal('contact@youpin.city');
+              expect(userDataList).to.have.lengthOf(3);
+              expect(userDataList[0].email).to.equal('department_head@youpin.city');
+              expect(userDataList[1].email).to.equal('organization_admin@youpin.city');
+              expect(userDataList[2].email).to.equal('super_admin@youpin.city');
+              // also check response does not contain password
+              expect(userDataList).to.not.have.keys('password');
+
+              done();
+            });
+        })
+    );
+
+    it('allows organization_admin role to retrive data', (done) =>
+      request(app)
+        // Login with existing admin account
+        .post('/auth/local')
+        .send({
+          email: 'organization_admin@youpin.city',
+          password: 'youpin_admin',
+        })
+        .then((tokenResp) => {
+          const token = tokenResp.body.token;
+
+          if (!token) {
+            return done(new Error('No token returns'));
+          }
+          // Get list of users
+          return request(app)
+            .get('/users')
+            .set('Authorization', `Bearer ${token}`)
+            .set('X-YOUPIN-3-APP-KEY',
+              '579b04ac516706156da5bba1:ed545297-4024-4a75-89b4-c95fed1df436')
+            .expect(200)
+            .then((userResp) => {
+              const body = userResp.body;
+              expect(body).to.have.all.keys(['total', 'limit', 'skip', 'data']);
+              expect(body.total).to.equal(3);
+
+              const userDataList = userResp.body.data;
+              expect(userDataList).to.be.a('array');
+              expect(userDataList).to.have.lengthOf(3);
+              expect(userDataList[0].email).to.equal('department_head@youpin.city');
+              expect(userDataList[1].email).to.equal('organization_admin@youpin.city');
+              expect(userDataList[2].email).to.equal('super_admin@youpin.city');
+              // also check response does not contain password
+              expect(userDataList).to.not.have.keys('password');
+
+              done();
+            });
+        })
+    );
+
+    it('allows department_head role to retrive data', (done) =>
+      request(app)
+        // Login with existing admin account
+        .post('/auth/local')
+        .send({
+          email: 'department_head@youpin.city',
+          password: 'youpin_admin',
+        })
+        .then((tokenResp) => {
+          const token = tokenResp.body.token;
+
+          if (!token) {
+            return done(new Error('No token returns'));
+          }
+          // Get list of users
+          return request(app)
+            .get('/users')
+            .set('Authorization', `Bearer ${token}`)
+            .set('X-YOUPIN-3-APP-KEY',
+              '579b04ac516706156da5bba1:ed545297-4024-4a75-89b4-c95fed1df436')
+            .expect(200)
+            .then((userResp) => {
+              const body = userResp.body;
+              expect(body).to.have.all.keys(['total', 'limit', 'skip', 'data']);
+              expect(body.total).to.equal(3);
+
+              const userDataList = userResp.body.data;
+              expect(userDataList).to.be.a('array');
+              expect(userDataList).to.have.lengthOf(3);
+              expect(userDataList[0].email).to.equal('department_head@youpin.city');
+              expect(userDataList[1].email).to.equal('organization_admin@youpin.city');
+              expect(userDataList[2].email).to.equal('super_admin@youpin.city');
               // also check response does not contain password
               expect(userDataList).to.not.have.keys('password');
 
@@ -109,7 +192,7 @@ describe('user service', () => {
       request(app)
         .post('/auth/local')
         .send({
-          email: 'contact@youpin.city',
+          email: 'super_admin@youpin.city',
           password: 'youpin_admin',
         })
         .then((tokenResp) => {
@@ -139,12 +222,12 @@ describe('user service', () => {
         });
     });
 
-    it('return an admin user object', (done) => {
+    it('return a super_admin user object', (done) => {
       // Login with existing admin account
       request(app)
         .post('/auth/local')
         .send({
-          email: 'contact@youpin.city',
+          email: 'super_admin@youpin.city',
           password: 'youpin_admin',
         })
         .then((tokenResp) => {
@@ -155,7 +238,7 @@ describe('user service', () => {
           }
 
           request(app)
-            .get(`/users/${adminUser._id}`) // eslint-disable-line no-underscore-dangle
+            .get(`/users/${superAdminUser._id}`) // eslint-disable-line no-underscore-dangle
             .set('Authorization', `Bearer ${token}`)
             .set('X-YOUPIN-3-APP-KEY',
               '579b04ac516706156da5bba1:ed545297-4024-4a75-89b4-c95fed1df436')
@@ -167,7 +250,7 @@ describe('user service', () => {
               expect(body).to.contain.all.keys(
                 ['_id', 'name', 'phone', 'email', 'role', 'owner_app_id',
                   'customer_app_id', 'updated_time', 'created_time']);
-              expect(body.email).to.equal('contact@youpin.city');
+              expect(body.email).to.equal('super_admin@youpin.city');
               // also check response does not contain password
               expect(body).to.not.have.keys('password');
 
@@ -191,7 +274,7 @@ describe('user service', () => {
     });
     afterEach((done) => {
       // Delete the normal user after each test.
-      User.remove({ _id: '579334c74443625d6281b699' })
+      User.remove({ _id: normalUser._id }) // eslint-disable-line no-underscore-dangle
         .then(() => {
           done();
         })
@@ -203,7 +286,7 @@ describe('user service', () => {
     it('return 401 "Unauthorized" errors ' +
       'when an unauthorized user attempts to delete other user', (done) => {
       request(app)
-        .delete('/users/579334c74443625d6281b699')
+        .delete(`/users/${normalUser._id}`) // eslint-disable-line no-underscore-dangle
         .expect(401, done);
     });
 
@@ -222,7 +305,7 @@ describe('user service', () => {
           }
 
           request(app)
-            .delete('/users/579334c74443625d6281b699')
+            .delete(`/users/${normalUser._id}`) // eslint-disable-line no-underscore-dangle
             .set('Authorization', `Bearer ${token}`)
             .expect(200, done);
         });
@@ -233,7 +316,7 @@ describe('user service', () => {
       request(app)
         .post('/auth/local')
         .send({
-          email: 'contact@youpin.city',
+          email: 'super_admin@youpin.city',
           password: 'youpin_admin',
         })
         .then((tokenResp) => {
@@ -243,7 +326,7 @@ describe('user service', () => {
           }
 
           request(app)
-            .delete('/users/579334c74443625d6281b699')
+            .delete(`/users/${normalUser._id}`) // eslint-disable-line no-underscore-dangle
             .set('Authorization', `Bearer ${token}`)
             .expect(200, done);
         });
@@ -264,7 +347,7 @@ describe('user service', () => {
           }
 
           request(app)
-            .delete('/users/579334c75563625d6281b6f1') // super-admin user id
+            .delete(`/users/${superAdminUser._id}`) // eslint-disable-line no-underscore-dangle
             .set('Authorization', `Bearer ${token}`)
             .expect(403, done);
         });
