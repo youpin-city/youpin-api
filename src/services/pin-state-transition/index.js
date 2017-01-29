@@ -109,13 +109,17 @@ class PinTransitionService {
     } else if (nextState === PROCESSING) {
       // Need to specify `processed_by` and `assigned_users` if the previousState is ASSIGNED.
       // If the previousState is RESOLVED, the pin already has those values.
-      if (previousState === ASSIGNED && (!data.processed_by || !data.assigned_users)) {
-        throw new errors.BadRequest(
-          'Need `processed_by` and `assigned_users` in body data to change to `processing` state'
-        );
+      if (previousState === ASSIGNED) {
+        if (!data.processed_by || !data.assigned_users) {
+          throw new errors.BadRequest(
+            'Need `processed_by` and `assigned_users` in body data to change to `processing` state'
+          );
+        }
+        updatingProperties.processed_by = data.processed_by;
+        updatingProperties.assigned_users = data.assigned_users;
+      } else if (previousState === RESOLVED) {
+        updatingProperties.resolved_time = null;
       }
-      updatingProperties.processed_by = data.processed_by;
-      updatingProperties.assigned_users = data.assigned_users;
     } else if (nextState === PENDING) {
       // Remove assigned_department if this pin is denied by department_head
       updatingProperties.assigned_department = null;
