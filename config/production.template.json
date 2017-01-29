@@ -20,6 +20,7 @@
     }
   },
   "bot": {
+    "botUrl": "your bot url",
     "notificationToken": "your bot notification token"
   },
   "gcs": {

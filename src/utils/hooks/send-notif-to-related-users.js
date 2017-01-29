@@ -7,7 +7,6 @@ const DEPARTMENT_HEAD_ROLE = require('../../constants/roles').DEPARTMENT_HEAD;
 // Assume that a before hook attach logInfo in proper format already
 const sendNotifToRelatedUsers = () => (hook) => {
   // Find all related users' bot ids.
-  console.log(hook.data.logInfo);
   let relatedUsers = [];
   const relatedDepartment = hook.data.logInfo.notifyDepartments;
   const findUserPromises = relatedDepartment.map((x) => User.find({ department: x, role: DEPARTMENT_HEAD_ROLE }));
