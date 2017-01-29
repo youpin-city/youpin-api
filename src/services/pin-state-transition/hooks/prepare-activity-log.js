@@ -59,12 +59,11 @@ const prepareActivityLog = () => (hook) => {
     let notifyDepartments = [];
     let notifyUsers = [];
     // Add current assigned_department/assigned_users to notification lists.
-    console.log(pin);
     if (pin.assigned_department && pin.assigned_department._id) {
       notifyDepartments.push(pin.assigned_department._id);
     }
     if (pin.assigned_users) {
-      notifyUsers.concat(pin.assigned_users);
+      notifyUsers = notifyUsers.concat(pin.assigned_users);
     }
     /* eslint-disable no-underscore-dangle */
     switch (nextState) {
