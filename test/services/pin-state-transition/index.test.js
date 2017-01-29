@@ -3,6 +3,7 @@ const assertTestEnv = require('../../test_helper').assertTestEnv;
 const expect = require('../../test_helper').expect;
 const loadFixture = require('../../test_helper').loadFixture;
 const request = require('supertest-as-promised');
+const stub = require('../../test_helper').stub;
 
 // Models
 const Department = require('../../../src/services/department/department-model');
@@ -414,6 +415,8 @@ describe('Pin state transtion service', () => {
     });
 
     it('updates correct properties for `resolved` transtion', (done) => {
+      let dateStub;
+
       pin._id = ObjectId('579334c75563625d62811116'); // eslint-disable-line no-underscore-dangle,new-cap,max-len
       pin.status = 'processing';
 
@@ -431,6 +434,8 @@ describe('Pin state transtion service', () => {
         })
         .then((loginResp) => {
           const token = loginResp.body.token;
+          dateStub = stub(Date, 'now', () => '2017-01-29');
+
 
           return request(app)
           .post(`/pins/${savedPin._id}/state_transition`) // eslint-disable-line no-underscore-dangle,max-len
@@ -451,7 +456,10 @@ describe('Pin state transtion service', () => {
         })
         .then(updatedPin => {
           expect(updatedPin.status).to.equal('resolved');
+          expect(updatedPin.resolved_time.toISOString().split('T')[0])
+            .to.equal('2017-01-29');
 
+          dateStub.restore();
           done();
         });
       });
