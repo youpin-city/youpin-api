@@ -94,9 +94,16 @@ describe('user service', () => {
               const userDataList = userResp.body.data;
               expect(userDataList).to.be.a('array');
               expect(userDataList).to.have.lengthOf(3);
-              expect(userDataList[0].email).to.equal('department_head@youpin.city');
-              expect(userDataList[1].email).to.equal('organization_admin@youpin.city');
-              expect(userDataList[2].email).to.equal('super_admin@youpin.city');
+
+              const userEmails = [
+                'department_head@youpin.city',
+                'organization_admin@youpin.city',
+                'super_admin@youpin.city',
+              ];
+
+              for (let i = 0; i < userDataList.length; i++) {
+                expect(userEmails).to.include(userDataList[i].email);
+              }
               // also check response does not contain password
               expect(userDataList).to.not.have.keys('password');
 
@@ -134,9 +141,15 @@ describe('user service', () => {
               const userDataList = userResp.body.data;
               expect(userDataList).to.be.a('array');
               expect(userDataList).to.have.lengthOf(3);
-              expect(userDataList[0].email).to.equal('department_head@youpin.city');
-              expect(userDataList[1].email).to.equal('organization_admin@youpin.city');
-              expect(userDataList[2].email).to.equal('super_admin@youpin.city');
+              const userEmails = [
+                'department_head@youpin.city',
+                'organization_admin@youpin.city',
+                'super_admin@youpin.city',
+              ];
+
+              for (let i = 0; i < userDataList.length; i++) {
+                expect(userEmails).to.include(userDataList[i].email);
+              }
               // also check response does not contain password
               expect(userDataList).to.not.have.keys('password');
 
@@ -174,9 +187,15 @@ describe('user service', () => {
               const userDataList = userResp.body.data;
               expect(userDataList).to.be.a('array');
               expect(userDataList).to.have.lengthOf(3);
-              expect(userDataList[0].email).to.equal('department_head@youpin.city');
-              expect(userDataList[1].email).to.equal('organization_admin@youpin.city');
-              expect(userDataList[2].email).to.equal('super_admin@youpin.city');
+              const userEmails = [
+                'department_head@youpin.city',
+                'organization_admin@youpin.city',
+                'super_admin@youpin.city',
+              ];
+
+              for (let i = 0; i < userDataList.length; i++) {
+                expect(userEmails).to.include(userDataList[i].email);
+              }
               // also check response does not contain password
               expect(userDataList).to.not.have.keys('password');
 
