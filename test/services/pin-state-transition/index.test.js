@@ -357,7 +357,7 @@ describe('Pin state transtion service', () => {
       });
     });
 
-    it('updates correct properties for `processing` transtion', (done) => {
+    it('updates correct properties for transtion from `assigned` to `processing` state', (done) => {
       pin._id = ObjectId('579334c75563625d62811115'); // eslint-disable-line no-underscore-dangle,new-cap,max-len
       pin.status = 'assigned';
 
@@ -408,6 +408,52 @@ describe('Pin state transtion service', () => {
         .then(updatedPin => {
           expect(updatedPin.status).to.equal('processing');
           expect(String(updatedPin.processed_by)).to.equal('579334c75553625d6281b6cc');
+
+          done();
+        });
+      });
+    });
+
+    it('updates correct properties for transtion from `resolved` to `processing` state', (done) => {
+      pin._id = ObjectId('579334c75563625d62811122'); // eslint-disable-line no-underscore-dangle,new-cap,max-len
+      pin.status = 'resolved';
+      pin.resolved_time = Date.now();
+
+      new Pin(pin).save((err, savedPin) => {
+        if (err) {
+          return done(err);
+        }
+
+        return request(app)
+        .post('/auth/local')
+        .set('Content-type', 'application/json')
+        .send({
+          email: 'organization_admin@youpin.city',
+          password: 'youpin_admin',
+        })
+        .then((loginResp) => {
+          const token = loginResp.body.token;
+
+          return request(app)
+          .post(`/pins/${savedPin._id}/state_transition`) // eslint-disable-line no-underscore-dangle,max-len
+          .set('Authorization', `Bearer ${token}`)
+          .set('Content-type', 'application/json')
+          .send({
+            state: 'processing',
+          })
+          .expect(201);
+        })
+        .then((transitionResp) => {
+          const transition = transitionResp.body;
+
+          expect(transition.status).to.equal('processing');
+          expect(transition.pinId).to.equal(String(savedPin._id)); // eslint-disable-line no-underscore-dangle,max-len
+
+          return Pin.findOne({ _id: savedPin._id }); // eslint-disable-line no-underscore-dangle,max-len
+        })
+        .then(updatedPin => {
+          expect(updatedPin.status).to.equal('processing');
+          expect(updatedPin.resolved_time).to.equal(null);
 
           done();
         });
