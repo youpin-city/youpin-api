@@ -119,6 +119,8 @@ class PinTransitionService {
     } else if (nextState === PENDING) {
       // Remove assigned_department if this pin is denied by department_head
       updatingProperties.assigned_department = null;
+    } else if (nextState === RESOLVED) {
+      updatingProperties.resolved_time = Date.now();
     }
 
     return Pin.update(
