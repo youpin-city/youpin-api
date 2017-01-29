@@ -8,8 +8,10 @@ const request = require('supertest-as-promised');
 const Department = require('../../../src/services/department/department-model');
 const Organization = require('../../../src/services/organization/organization-model');
 const Pin = require('../../../src/services/pin/pin-model');
+const User = require('../../../src/services/user/user-model');
 
 // Fixture
+const departmentHeadUser = require('../../fixtures/department_head_user');
 const departments = require('../../fixtures/departments');
 const organizations = require('../../fixtures/organizations');
 const pins = require('../../fixtures/pins');
@@ -31,6 +33,7 @@ describe('state summary service', () => {
       Promise.all([
         loadFixture(Organization, organizations),
         loadFixture(Department, departments),
+        loadFixture(User, departmentHeadUser),
         loadFixture(Pin, pins),
       ])
       .then(() => {
@@ -46,6 +49,7 @@ describe('state summary service', () => {
     // Clear collections after finishing all tests.
     Promise.all([
       Pin.remove({}),
+      User.remove({}),
       Department.remove({}),
       Organization.remove({}),
     ])
@@ -74,25 +78,52 @@ describe('state summary service', () => {
         // Change array to dictionary (key is a department).
         const expectedResult = {
           'Department of Nerds': {
-            [pinStates.PENDING]: 0,
-            [pinStates.ASSIGNED]: 1,
-            [pinStates.PROCESSING]: 0,
-            [pinStates.RESOLVED]: 0,
-            [pinStates.REJECTED]: 0,
+            total: {
+              [pinStates.PENDING]: 0,
+              [pinStates.ASSIGNED]: 1,
+              [pinStates.PROCESSING]: 0,
+              [pinStates.RESOLVED]: 0,
+              [pinStates.REJECTED]: 0,
+            },
+            [departmentHeadUser.name]: {
+              [pinStates.PENDING]: 0,
+              [pinStates.ASSIGNED]: 1,
+              [pinStates.PROCESSING]: 0,
+              [pinStates.RESOLVED]: 0,
+              [pinStates.REJECTED]: 0,
+            },
           },
           'Admin Department': {
-            [pinStates.PENDING]: 0,
-            [pinStates.ASSIGNED]: 0,
-            [pinStates.PROCESSING]: 1,
-            [pinStates.RESOLVED]: 0,
-            [pinStates.REJECTED]: 0,
+            total: {
+              [pinStates.PENDING]: 0,
+              [pinStates.ASSIGNED]: 0,
+              [pinStates.PROCESSING]: 1,
+              [pinStates.RESOLVED]: 0,
+              [pinStates.REJECTED]: 0,
+            },
+            unassigned: {
+              [pinStates.PENDING]: 0,
+              [pinStates.ASSIGNED]: 0,
+              [pinStates.PROCESSING]: 1,
+              [pinStates.RESOLVED]: 0,
+              [pinStates.REJECTED]: 0,
+            },
           },
           None: {
-            [pinStates.PENDING]: 1,
-            [pinStates.ASSIGNED]: 0,
-            [pinStates.PROCESSING]: 0,
-            [pinStates.RESOLVED]: 0,
-            [pinStates.REJECTED]: 0,
+            total: {
+              [pinStates.PENDING]: 1,
+              [pinStates.ASSIGNED]: 0,
+              [pinStates.PROCESSING]: 0,
+              [pinStates.RESOLVED]: 0,
+              [pinStates.REJECTED]: 0,
+            },
+            unassigned: {
+              [pinStates.PENDING]: 1,
+              [pinStates.ASSIGNED]: 0,
+              [pinStates.PROCESSING]: 0,
+              [pinStates.RESOLVED]: 0,
+              [pinStates.REJECTED]: 0,
+            },
           },
         };
         expect(summaries).to.deep.equal(expectedResult);

@@ -4,7 +4,6 @@ const hooks = require('./hooks');
 const pinStates = require('../../constants/pin-states');
 
 // Models
-const Department = require('../department/department-model');
 const Pin = require('../pin/pin-model');
 
 class Service {
@@ -18,7 +17,7 @@ class Service {
     if (!startDate || !endDate) {
       return Promise.reject(new Error('Please specified both start_date and end_date'));
     }
-    // TODO(parnurzeal): Support multiple  organizations. Currently, we are focusing
+    // TODO(parnurzeal): Support multiple organizations. Currently, we are focusing
     // solely on having just one organization per YouPin system.
     // Put params into a mongoose query format.
     const query = {
@@ -28,10 +27,7 @@ class Service {
       },
     };
     // Find pins that belong to the organization
-    return Pin.find(query).select('status assigned_department')
-      // Populate departmnet data
-      .then(foundPins => Department.populate(
-        foundPins, { path: 'assigned_department', model: 'Department' }))
+    return Pin.find(query).select('status assigned_department assigned_users')
       .then(populatedPins => {
         // Initialise summary with zeros.
         const initialSummary = {
@@ -51,9 +47,23 @@ class Service {
             departmentName = department.name;
           }
           if (!(departmentName in summaryTable)) {
-            summaryTable[departmentName] = _.cloneDeep(initialSummary);
+            summaryTable[departmentName] = { total: _.cloneDeep(initialSummary) };
           }
-          summaryTable[departmentName][pinStatus]++;
+          summaryTable[departmentName].total[pinStatus]++;
+
+          // Also populate summary table for each assigned user.
+          let assignedUsers = populatedPins[i].assigned_users;
+          if (assignedUsers.length === 0) {
+            // Assign to 'unassigned' user if pin is not assigned to anyone.
+            assignedUsers = [{ name: 'unassigned' }];
+          }
+          for (let j = 0; j < assignedUsers.length; ++j) {
+            const userName = assignedUsers[j].name;
+            if (!(userName in summaryTable[departmentName])) {
+              summaryTable[departmentName][userName] = _.cloneDeep(initialSummary);
+            }
+            summaryTable[departmentName][userName][pinStatus]++;
+          }
         }
         return Promise.resolve(summaryTable);
       })
