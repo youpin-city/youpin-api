@@ -79,6 +79,8 @@ describe('Prepare Activity Log Hook for State Transition', () => {
         actionType: actions.types.STATE_TRANSITION,
         action: actions.ASSIGN,
         pin_id: pinId,
+        toBeNotifiedDepartments: [DEPARTMENT_GENERAL_ID],
+        toBeNotifiedUsers: [],
         changed_fields: ['status', 'assigned_department'],
         previous_values: ['pending', undefined],
         updated_values: ['assigned', DEPARTMENT_GENERAL_ID],

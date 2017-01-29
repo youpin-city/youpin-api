@@ -56,14 +56,14 @@ const prepareActivityLog = () => (hook) => {
     const updatedValues = [nextState];
     const shortenDetail = `${pin.detail.substring(0, 20)}...`;
     // Variables to keep track of department or people to be notified the change by Bot.
-    let notifyDepartments = [];
-    let notifyUsers = [];
+    const toBeNotifiedDepartments = [];
+    let toBeNotifiedUsers = [];
     // Add current assigned_department/assigned_users to notification lists.
-    if (pin.assigned_department && pin.assigned_department._id) {
-      notifyDepartments.push(pin.assigned_department._id);
+    if (pin.assigned_department && pin.assigned_department._id) { // eslint-disable-line no-underscore-dangle,max-len
+      toBeNotifiedDepartments.push(pin.assigned_department._id); // eslint-disable-line no-underscore-dangle,max-len
     }
     if (pin.assigned_users) {
-      notifyUsers = notifyUsers.concat(pin.assigned_users);
+      toBeNotifiedUsers = toBeNotifiedUsers.concat(pin.assigned_users);
     }
     /* eslint-disable no-underscore-dangle */
     switch (nextState) {
@@ -88,7 +88,7 @@ const prepareActivityLog = () => (hook) => {
         previousValues.push(pin.assigned_department);
         updatedValues.push(hook.data.assigned_department);
         // Add the new assigned_department to notification list.
-        notifyDepartments.push(hook.data.assigned_department);
+        toBeNotifiedDepartments.push(hook.data.assigned_department);
         description = `${nameOfUser} assigned pin ${shortenDetail} ` +
                       `to department ${hook.data.assigned_department}`;
         break;
@@ -126,8 +126,8 @@ const prepareActivityLog = () => (hook) => {
       user: nameOfUser,
       organization: pin.organization,
       department,
-      notifyDepartments,
-      notifyUsers,
+      toBeNotifiedDepartments,
+      toBeNotifiedUsers,
       actionType: actions.types.STATE_TRANSITION,
       action,
       pin_id: pinId,

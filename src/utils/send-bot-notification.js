@@ -8,13 +8,14 @@ const sendBotNotification = (botUrl, notificationToken, id, message) => {
   return new Promise((resolve, reject) => request
     .post(botUrl)
     .query({ NOTIFICATION_TOKEN: notificationToken })
-    .send({ id: id, message: message })
+    .send({ id, message })
     .end((err, res) => {
       if (err) {
         return reject(err);
       }
-      if (res.status != 200) {
-        return reject(`Failed to send notification to Bot:${botUrl} with token:${notificationToken}`);
+      if (res.status !== 200) {
+        return reject(
+          `Failed to send notification to Bot:${botUrl} with token:${notificationToken}`);
       }
       return resolve(res.body);
     })

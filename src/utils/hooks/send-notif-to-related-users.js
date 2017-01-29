@@ -8,26 +8,29 @@ const DEPARTMENT_HEAD_ROLE = require('../../constants/roles').DEPARTMENT_HEAD;
 const sendNotifToRelatedUsers = () => (hook) => {
   // Find all related users' bot ids.
   let relatedUsers = [];
-  const relatedDepartment = hook.data.logInfo.notifyDepartments;
-  const findUserPromises = relatedDepartment.map((x) => User.find({ department: x, role: DEPARTMENT_HEAD_ROLE }));
+  const relatedDepartments = hook.data.logInfo.toBeNotifiedDepartments;
+  const findUserPromises = relatedDepartments.map(
+    (department) => User.find({ department, role: DEPARTMENT_HEAD_ROLE }));
   Promise.all(findUserPromises)
     .then(results => {
       // TODO(A): Using correct facebookId (now using fb login's id instead of bot's id.)
       for (let i = 0; i < results.length; ++i) {
-        const fbIdList = results[i].map((x) => x.facebookId);
+        const fbIdList = results[i].map((user) => user.facebookId);
         relatedUsers = relatedUsers.concat(fbIdList);
       }
+      // TODO(A): Add assigned_user (toBeNotifiedUsers) & pin owner to relatedUsers list.
       // Use message from logInfo.
       const message = hook.data.logInfo.description;
       // Send message to all relatedUsers.
       // Temporarily using just A's bot id to test on Production.
+      // TODO(A): Remove it after we can have bot id for other users.
       relatedUsers = ['1196091530439153'];
       const botConfig = hook.app.get('bot');
       if (!botConfig) {
         throw new Error('No bot config. The notification will not be sent.');
       }
-      const sendMessagePromises = relatedUsers.map(
-        (x) => sendMessage(botConfig.botUrl, botConfig.notificationToken, x, message));
+      const sendMessagePromises = relatedUsers.map((userBotId) =>
+        sendMessage(botConfig.botUrl, botConfig.notificationToken, userBotId, message));
       return Promise.all(sendMessagePromises);
     })
     .then((results) => {
