@@ -25,11 +25,6 @@ const safetyCheck = (hook) => {
   if (hook.data.state === states.ASSIGNED && !hook.data.assigned_department) {
     throw new errors.BadRequest('Need `assigned_department` body data for `assigned` state');
   }
-
-  // hook.data.processed_by must be provided for `processing` state transtion
-  if (hook.data.state === states.PROCESSING && !hook.data.processed_by) {
-    throw new errors.BadRequest('Need `processed_by` body data for `processing` state');
-  }
 };
 
 // For before hook to prepare activity log and will be used by after hook
@@ -94,15 +89,27 @@ const prepareActivityLog = () => (hook) => {
         break;
       case states.PROCESSING:
         if (previousState === states.ASSIGNED) {
+          if (!hook.data.processed_by) {
+            throw new errors.BadRequest('Need `processed_by` body data for `processing` state');
+          }
+          if (!hook.data.assigned_users) {
+            throw new errors.BadRequest('Need `assigned_users` body data for `processing` state');
+          }
           action = actions.PROCESS;
           changedFields.push('processed_by');
           previousValues.push(pin.processed_by);
           updatedValues.push(hook.data.processed_by);
+          changedFields.push('assigned_users');
+          previousValues.push(pin.assigned_users);
+          updatedValues.push(hook.data.assigned_users);
           description = `${nameOfUser} is processing pin ${shortenDetail}`;
         } else if (previousState === states.RESOLVED) {
           // If a department marks a pin as resolved but it does not satisfy an organization admin,
           // the organization admin can send the pin back to be re-processed.
           action = actions.RE_PROCESS;
+          changedFields.push('resolved_time');
+          previousValues.push(pin.resolved_time);
+          updatedValues.push(null);
           description = `${nameOfUser} sent pin ${shortenDetail} back` +
                         ` to be re-processed by ${pin.assigned_department}`;
         }
