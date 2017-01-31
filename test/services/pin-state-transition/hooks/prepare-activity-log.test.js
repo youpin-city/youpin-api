@@ -79,13 +79,13 @@ describe('Prepare Activity Log Hook for State Transition', () => {
         actionType: actions.types.STATE_TRANSITION,
         action: actions.ASSIGN,
         pin_id: pinId,
-        toBeNotifiedDepartments: [DEPARTMENT_GENERAL_ID],
+        toBeNotifiedDepartments: [ObjectId(DEPARTMENT_GENERAL_ID)], // eslint-disable-line new-cap,max-len
         toBeNotifiedUsers: [],
         changed_fields: ['status', 'assigned_department'],
         previous_values: ['pending', undefined],
-        updated_values: ['assigned', DEPARTMENT_GENERAL_ID],
+        updated_values: ['assigned', ObjectId(DEPARTMENT_GENERAL_ID)], // eslint-disable-line new-cap,max-len
         description: `Aunt You-pin assigned pin ${PIN_PENDING_DETAIL.substring(0, 20)}... ` +
-                     `to department ${DEPARTMENT_GENERAL_ID}`,
+                     'to department Department of Nerds',
         timestamp: Date.now(),
       };
       expect(mockHook.data.logInfo).to.deep.equal(expectedLogInfo);

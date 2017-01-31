@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 
 const actions = require('../../../constants/actions');
 const states = require('../../../constants/pin-states');
+const Department = require('../../department/department-model');
 const Pin = require('../../pin/pin-model');
 
 const safetyCheck = (hook) => {
@@ -37,10 +38,21 @@ const prepareActivityLog = () => (hook) => {
   const nameOfUser = hook.params.user.name;
   const department = hook.params.user.department;
   const nextState = hook.data.state;
+  let assignedDepartmentObject;
 
-  // A good convention for a hook is to always return a promise.
-  // See https://docs.feathersjs.com/hooks/readme.html
-  return Pin.findById(pinId)
+  return new Promise((resolve, reject) => {
+    if (hook.data && hook.data.assigned_department) {
+      Department.findById(hook.data.assigned_department)
+        .then((foundDepartment) => {
+          assignedDepartmentObject = foundDepartment;
+          resolve();
+        })
+        .catch(err => reject(err));
+    } else {
+      resolve();
+    }
+  })
+  .then(() => Pin.findById(pinId))
   .then(pin => {
     // Check next state, then, set corresponding action, changed fields, and description
     let action;
@@ -54,8 +66,9 @@ const prepareActivityLog = () => (hook) => {
     const toBeNotifiedDepartments = [];
     let toBeNotifiedUsers = [];
     // Add current assigned_department/assigned_users to notification lists.
-    if (pin.assigned_department && pin.assigned_department._id) { // eslint-disable-line no-underscore-dangle,max-len
-      toBeNotifiedDepartments.push(pin.assigned_department._id); // eslint-disable-line no-underscore-dangle,max-len
+    if (pin.assigned_department) { // eslint-disable-line no-underscore-dangle,max-len
+      assignedDepartmentObject = pin.assigned_department;
+      toBeNotifiedDepartments.push(assignedDepartmentObject._id); // eslint-disable-line no-underscore-dangle,max-len
     }
     if (pin.assigned_users) {
       toBeNotifiedUsers = toBeNotifiedUsers.concat(pin.assigned_users);
@@ -73,19 +86,19 @@ const prepareActivityLog = () => (hook) => {
         // So, we will remove `assigned_department` value from the pin.
         action = actions.DENY;
         changedFields.push('assigned_department');
-        previousValues.push(pin.assigned_department);
-        updatedValues.push(null);
+        previousValues.push(assignedDepartmentObject._id);
+        updatedValues.push(undefined);
         description = `${nameOfUser} denies pin ${shortenDetail}`;
         break;
       case states.ASSIGNED:
         action = actions.ASSIGN;
         changedFields.push('assigned_department');
-        previousValues.push(pin.assigned_department);
-        updatedValues.push(hook.data.assigned_department);
+        previousValues.push(undefined);
+        updatedValues.push(assignedDepartmentObject._id);
         // Add the new assigned_department to notification list.
-        toBeNotifiedDepartments.push(hook.data.assigned_department);
+        toBeNotifiedDepartments.push(assignedDepartmentObject._id);
         description = `${nameOfUser} assigned pin ${shortenDetail} ` +
-                      `to department ${hook.data.assigned_department}`;
+                      `to department ${assignedDepartmentObject.name}`;
         break;
       case states.PROCESSING:
         if (previousState === states.ASSIGNED) {
@@ -111,7 +124,7 @@ const prepareActivityLog = () => (hook) => {
           previousValues.push(pin.resolved_time);
           updatedValues.push(null);
           description = `${nameOfUser} sent pin ${shortenDetail} back` +
-                        ` to be re-processed by ${pin.assigned_department}`;
+                        ` to be re-processed by ${assignedDepartmentObject.name}`;
         }
         break;
       case states.RESOLVED:
