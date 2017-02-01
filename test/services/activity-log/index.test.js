@@ -9,7 +9,7 @@ const app = require('../../../src/app');
 assertTestEnv();
 
 describe('ActivityLog service', () => {
-  it('registered the app3rds service', () => {
+  it('registered the activity_logs service', () => {
     expect(app.service('activity_logs')).to.be.ok();
   });
 });

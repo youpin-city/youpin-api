@@ -39,6 +39,10 @@ const DEPARTMENT_HEAD = roles.DEPARTMENT_HEAD;
 const DEPARTMENT_OFFICER = roles.DEPARTMENT_OFFICER;
 const USER = roles.USER;
 
+// Departments
+const DEPARTMENT_GENERAL_ID = require('../../fixtures/constants').DEPARTMENT_GENERAL_ID;
+
+
 // Exit test if NODE_ENV is not equal `test`
 assertTestEnv();
 
@@ -313,6 +317,7 @@ describe('Pin state transtion service', () => {
     it('updates correct properties for transtion from `assigned` to `pending` state', (done) => {
       pin._id = ObjectId('579334c75563625d62811124'); // eslint-disable-line no-underscore-dangle,new-cap,max-len
       pin.status = 'assigned';
+      pin.assigned_department = ObjectId(DEPARTMENT_GENERAL_ID); // eslint-disable-line no-underscore-dangle,new-cap,max-len
 
       new Pin(pin).save((err, savedPin) => {
         if (err) {
@@ -417,6 +422,7 @@ describe('Pin state transtion service', () => {
     it('updates correct properties for transtion from `resolved` to `processing` state', (done) => {
       pin._id = ObjectId('579334c75563625d62811122'); // eslint-disable-line no-underscore-dangle,new-cap,max-len
       pin.status = 'resolved';
+      pin.assigned_department = Object(DEPARTMENT_GENERAL_ID);
       pin.resolved_time = Date.now();
 
       new Pin(pin).save((err, savedPin) => {
