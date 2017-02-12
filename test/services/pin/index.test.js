@@ -17,6 +17,7 @@ const adminUser = require('../../fixtures/admin_user');
 const departmentHeadUser = require('../../fixtures/department_head_user');
 const departments = require('../../fixtures/departments');
 const normalUser = require('../../fixtures/normal_user');
+const orgnizationAdminUser = require('../../fixtures/organization_admin_user');
 const publicRelationsUser = require('../../fixtures/public_relations_user');
 const superAdminUser = require('../../fixtures/super_admin_user');
 const pins = require('../../fixtures/pins');
@@ -44,6 +45,7 @@ describe('pin service', () => {
         loadFixture(User, adminUser),
         loadFixture(User, departmentHeadUser),
         loadFixture(User, normalUser),
+        loadFixture(User, orgnizationAdminUser),
         loadFixture(User, publicRelationsUser),
         loadFixture(User, superAdminUser),
         loadFixture(App3rd, adminApp3rd),
@@ -231,6 +233,42 @@ describe('pin service', () => {
           const updatedPin = res.body;
           expect(updatedPin.progresses).to.have.lengthOf(1);
           expect(updatedPin.progresses[0].detail).to.equal('New progress');
+          done();
+        });
+    });
+
+    it('returns 200 allowing organization_admin to update a pin in pending state', (done) => {
+      const newData = {
+        level: 'Urgent',
+        tags: [
+          'footpath',
+          'safety',
+        ],
+      };
+
+      request(app)
+        .post('/auth/local')
+        .send({
+          email: 'organization_admin@youpin.city',
+          password: 'youpin_admin',
+        })
+        .then((tokenResp) => {
+          const token = tokenResp.body.token;
+
+          if (!token) {
+            return done(new Error('No token returns'));
+          }
+          return request(app)
+            .patch(`/pins/${PIN_PENDING_ID}`)
+            .set('Authorization', `Bearer ${token}`)
+            .set('Content-type', 'application/json')
+            .send(newData)
+            .expect(200);
+        })
+        .then(res => {
+          const updatedPin = res.body;
+          expect(updatedPin.level).to.equal('Urgent');
+          expect(updatedPin.tags).to.deep.equal(['footpath', 'safety']);
           done();
         });
     });
