@@ -376,7 +376,7 @@ describe('user service', () => {
   describe('POST /users', () => {
     it('return errors when posting an incomplete required field', (done) => {
       const newUser = {
-        name: casual.name,
+        email: casual.email,
       };
 
       request(app)
@@ -391,7 +391,6 @@ describe('user service', () => {
       ' and "pasword" should not be returned', (done) => {
       const newUser = {
         name: casual.name,
-        email: casual.email,
         password: casual.password,
         role: 'user',
       };
@@ -407,7 +406,7 @@ describe('user service', () => {
           const createdUser = res.body;
 
           expect(createdUser).to.contain.keys(
-            ['_id', 'email', 'name', 'role', 'created_time',
+            ['_id', 'name', 'role', 'created_time',
               'updated_time', 'owner_app_id', 'customer_app_id']);
           expect(createdUser).to.not.contain.keys('password');
 
