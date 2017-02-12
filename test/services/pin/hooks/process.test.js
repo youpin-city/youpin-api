@@ -8,7 +8,7 @@ const process = require('../../../../src/services/pin/hooks/process');
 // Exit test if NODE_ENV is not equal `test`
 assertTestEnv();
 
-describe('pin process hook', () => {
+describe('Pin process hook', () => {
   it('hook can be used', () => {
     const mockHook = {
       type: 'before',
