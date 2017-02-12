@@ -12,6 +12,9 @@ config/gcs/youpin_gcs_credentials_production.json
 # Temp files
 *.swp
 
+# macOS files
+.DS_Store
+
 # Logs
 logs
 *.log
