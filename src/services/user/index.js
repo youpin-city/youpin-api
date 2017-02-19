@@ -10,7 +10,7 @@ module.exports = function () { // eslint-disable-line func-names
     Model: User,
     paginate: {
       default: 5,
-      max: 25,
+      max: 50,
     },
     // Convert mongoose document to plain object to fix facebook user patch service
     // Ref: https://github.com/feathersjs/feathers-mongoose/issues/110
