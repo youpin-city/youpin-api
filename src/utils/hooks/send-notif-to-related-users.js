@@ -1,4 +1,5 @@
 const sendMessage = require('../send-bot-notification');
+const sendMail = require('../send-mail-notification');
 
 const User = require('../../services/user/user-model');
 
@@ -15,8 +16,8 @@ const sendNotifToRelatedUsers = () => (hook) => {
     .then(results => {
       // TODO(A): Using correct facebookId (now using fb login's id instead of bot's id.)
       for (let i = 0; i < results.length; ++i) {
-        const fbIdList = results[i].map((user) => user.facebookId);
-        relatedUsers = relatedUsers.concat(fbIdList);
+        const userList = results[i].map((user) => ({ botId: user.facebookId, email: user.email }));
+        relatedUsers = relatedUsers.concat(userList);
       }
       // TODO(A): Add assigned_user (toBeNotifiedUsers) & pin owner to relatedUsers list.
       // Use message from logInfo.
@@ -24,17 +25,28 @@ const sendNotifToRelatedUsers = () => (hook) => {
       // Send message to all relatedUsers.
       // Temporarily using just A's bot id to test on Production.
       // TODO(A): Remove it after we can have bot id for other users.
-      relatedUsers = ['1196091530439153'];
+      relatedUsers = [{ botId: '1196091530439153', email: 'theeraphol.wat@gmail.com' }];
+      const allNotificationPromises = [];
       const botConfig = hook.app.get('bot');
-      if (!botConfig) {
-        throw new Error('No bot config. The notification will not be sent.');
+      if (botConfig) {
+        const sendMessagePromises = relatedUsers.map((user) =>
+          sendMessage(botConfig.botUrl, botConfig.notificationToken, user.botId, message));
+        allNotificationPromises.concat(sendMessagePromises);
       }
-      const sendMessagePromises = relatedUsers.map((userBotId) =>
-        sendMessage(botConfig.botUrl, botConfig.notificationToken, userBotId, message));
-      return Promise.all(sendMessagePromises);
+      const mailServiceConfig = hook.app.get('mailService');
+      if (mailServiceConfig) {
+        const sendMailPromises = relatedUsers.map((user) =>
+          // TODO(A): Add email notification promise here.
+          sendMail(mailServiceConfig, user.email, message));
+        allNotificationPromises.concat(sendMailPromises);
+      }
+      if (allNotificationPromises.length === 0) {
+        throw new Error('No bot/mail config. The notification will not be sent.');
+      }
+      return Promise.all(allNotificationPromises);
     })
     .then((results) => {
-      console.log(`Successfully send notification messages to Bot - ${results}`);
+      console.log(`Successfully send notification messages - ${results}`);
     })
     .catch(err => {
       console.log(err);
