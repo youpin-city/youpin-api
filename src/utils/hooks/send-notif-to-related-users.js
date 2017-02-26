@@ -26,19 +26,19 @@ const sendNotifToRelatedUsers = () => (hook) => {
       // Temporarily using just A's bot id to test on Production.
       // TODO(A): Remove it after we can have bot id for other users.
       relatedUsers = [{ botId: '1196091530439153', email: 'theeraphol.wat@gmail.com' }];
-      const allNotificationPromises = [];
+      let allNotificationPromises = [];
       const botConfig = hook.app.get('bot');
       if (botConfig) {
         const sendMessagePromises = relatedUsers.map((user) =>
           sendMessage(botConfig.botUrl, botConfig.notificationToken, user.botId, message));
-        allNotificationPromises.concat(sendMessagePromises);
+        allNotificationPromises = allNotificationPromises.concat(sendMessagePromises);
       }
       const mailServiceConfig = hook.app.get('mailService');
       if (mailServiceConfig) {
         const sendMailPromises = relatedUsers.map((user) =>
           // TODO(A): Add email notification promise here.
           sendMail(mailServiceConfig, user.email, message));
-        allNotificationPromises.concat(sendMailPromises);
+        allNotificationPromises = allNotificationPromises.concat(sendMailPromises);
       }
       if (allNotificationPromises.length === 0) {
         throw new Error('No bot/mail config. The notification will not be sent.');
