@@ -22,8 +22,15 @@ const publicRelationsUser = require('../../fixtures/public_relations_user');
 const superAdminUser = require('../../fixtures/super_admin_user');
 const pins = require('../../fixtures/pins');
 
+// Organization
+const ORGANIZATION_ID = require('../../fixtures/constants').ORGANIZATION_ID;
+
+// Department
+const DEPARTMENT_SUPER_ADMIN_ID = require('../../fixtures/constants').DEPARTMENT_SUPER_ADMIN_ID;
+
 // State constants
 const PENDING = require('../../../src/constants/pin-states').PENDING;
+const ASSIGNED = require('../../../src/constants/pin-states').ASSIGNED;
 
 // App stuff
 const app = require('../../../src/app');
@@ -149,7 +156,7 @@ describe('Pin - POST', () => {
     'using correct owner id, and filling all required fields', (done) => {
     const newPin = {
       detail: casual.text,
-      organization: '57933111556362511181aaa1',
+      organization: ORGANIZATION_ID,
       owner: adminUser._id, // eslint-disable-line no-underscore-dangle
       provider: adminUser._id, // eslint-disable-line no-underscore-dangle
       location: {
@@ -193,7 +200,7 @@ describe('Pin - POST', () => {
   it('creates pin with `pending` status as default status', (done) => {
     const newPin = {
       detail: casual.text,
-      organization: '57933111556362511181aaa1',
+      organization: ORGANIZATION_ID,
       owner: adminUser._id, // eslint-disable-line no-underscore-dangle
       provider: adminUser._id, // eslint-disable-line no-underscore-dangle
       location: {
@@ -224,6 +231,49 @@ describe('Pin - POST', () => {
           .then((res) => {
             const createdPin = res.body;
             expect(createdPin.status).to.equal(PENDING);
+
+            done();
+          });
+      });
+  });
+
+  it('can creates pin with `assigned` state', (done) => {
+    const newPin = {
+      detail: casual.text,
+      organization: ORGANIZATION_ID,
+      owner: adminUser._id, // eslint-disable-line no-underscore-dangle
+      provider: adminUser._id, // eslint-disable-line no-underscore-dangle
+      location: {
+        coordinates: [10.733626, 10.5253153],
+      },
+      status: ASSIGNED,
+      assigned_department: DEPARTMENT_SUPER_ADMIN_ID,
+    };
+
+    request(app)
+      .post('/auth/local')
+      .send({
+        email: 'contact@youpin.city',
+        password: 'youpin_admin',
+      })
+      .then((tokenResp) => {
+        const token = tokenResp.body.token;
+
+        if (!token) {
+          done(new Error('No token returns'));
+        }
+
+        request(app)
+          .post('/pins')
+          .set('X-YOUPIN-3-APP-KEY',
+            '579b04ac516706156da5bba1:ed545297-4024-4a75-89b4-c95fed1df436')
+          .send(newPin)
+          .set('Authorization', `Bearer ${token}`)
+          .expect(201)
+          .then((res) => {
+            const createdPin = res.body;
+            expect(createdPin.status).to.equal(ASSIGNED);
+            expect(createdPin.assigned_department).to.equal(DEPARTMENT_SUPER_ADMIN_ID);
 
             done();
           });
