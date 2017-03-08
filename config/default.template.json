@@ -24,6 +24,18 @@
     "botUrl": "your bot url",
     "notificationToken": "your bot notification token"
   },
+  "mailService": {
+    "providerConfig": {
+      "service": "your mail service provider",
+      "auth": {
+        "user": "username",
+        "pass": "password"
+      }
+    },
+    "content": {
+      "from": "YouPin Admin <admin@youpin.city>"
+    }
+  },
   "gcs": {
     "gcsUrl": "https://storage.googleapis.com",
     "bucket": "your GCS bucket name",
