@@ -20,7 +20,6 @@ const SUPER_ADMIN = roles.SUPER_ADMIN;
 const USER = roles.USER;
 
 class PinTransitionService {
-
   static isValidStateTransition(prevState, nextState, role) {
     // Map previous state and role to a list of possible next states
     const possibleNextStates = {
@@ -80,14 +79,22 @@ class PinTransitionService {
     }
 
     if (!previousState) {
-      throw new errors.GeneralError('Internal error: Pin has no previous state');
+      throw new errors.GeneralError(
+        'Internal error: Pin has no previous state'
+      );
     }
 
     if (!role) {
       throw new errors.GeneralError('Internal error: User has no role');
     }
 
-    if (!PinTransitionService.isValidStateTransition(previousState, nextState, role)) {
+    if (
+      !PinTransitionService.isValidStateTransition(
+        previousState,
+        nextState,
+        role
+      )
+    ) {
       throw new errors.BadRequest(
         `Cannot change state from ${previousState} to ${nextState} with role ${role}`
       );
@@ -106,6 +113,7 @@ class PinTransitionService {
         );
       }
       updatingProperties.assigned_department = data.assigned_department;
+      updatingProperties.assigned_time = Date.now();
     } else if (nextState === PROCESSING) {
       // Need to specify `processed_by` and `assigned_users` if the previousState is ASSIGNED.
       // If the previousState is RESOLVED, the pin already has those values.
@@ -117,6 +125,7 @@ class PinTransitionService {
         }
         updatingProperties.processed_by = data.processed_by;
         updatingProperties.assigned_users = data.assigned_users;
+        updatingProperties.processing_time = Date.now();
       } else if (previousState === RESOLVED) {
         updatingProperties.resolved_time = null;
       }
@@ -125,14 +134,13 @@ class PinTransitionService {
       updatingProperties.assigned_department = null;
     } else if (nextState === RESOLVED) {
       updatingProperties.resolved_time = Date.now();
+    } else if (nextState === REJECTED) {
+      updatingProperties.rejected_time = Date.now();
     }
 
-    return Pin.update(
-      { _id: pinId },
-      { $set: updatingProperties }
-    )
-    .then(() => Promise.resolve(Object.assign(updatingProperties, { pinId })))
-    .catch(err => Promise.reject(err));
+    return Pin.update({ _id: pinId }, { $set: updatingProperties })
+      .then(() => Promise.resolve(Object.assign(updatingProperties, { pinId })))
+      .catch(err => Promise.reject(err));
   }
 }
 

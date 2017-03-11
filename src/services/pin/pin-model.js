@@ -22,6 +22,7 @@ const commentSchema = new Schema({
 
 const pinSchema = new Schema({
   assigned_department: { type: Schema.Types.ObjectId, ref: 'Department' },
+  assigned_time: { type: Date },
   assigned_users: [{ type: Schema.Types.ObjectId, ref: 'User' }],
   categories: [String],
   comments: [commentSchema],
@@ -41,11 +42,17 @@ const pinSchema = new Schema({
   merged_children_pins: [{ type: Schema.Types.ObjectId, ref: 'Pin' }],
   merged_parent_pin: { type: Schema.Types.ObjectId, ref: 'Pin' },
   neighborhood: [String],
-  organization: { type: Schema.Types.ObjectId, ref: 'Organization', required: true },
+  organization: {
+    type: Schema.Types.ObjectId,
+    ref: 'Organization',
+    required: true,
+  },
   owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   photos: [String],
   provider: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   processed_by: { type: Schema.Types.ObjectId, ref: 'User' },
+  processing_time: { type: Date },
+  rejected_time: { type: Date },
   resolved_time: { type: Date },
   status: { type: String, required: true, default: PENDING },
   tags: [String],
@@ -58,16 +65,14 @@ const pinSchema = new Schema({
 pinSchema.index({ location: '2dsphere' });
 
 pinSchema.pre('find', function populateFields(next) {
-  this
-    .populate('assigned_users')
+  this.populate('assigned_users')
     .populate('assigned_department')
     .populate('owner');
   next();
 });
 
 pinSchema.pre('findOne', function populateFields(next) {
-  this
-    .populate('assigned_users')
+  this.populate('assigned_users')
     .populate('assigned_department')
     .populate('owner');
   next();
