@@ -42,12 +42,15 @@ const USER = roles.USER;
 // Departments
 const DEPARTMENT_GENERAL_ID = require('../../fixtures/constants').DEPARTMENT_GENERAL_ID;
 
+// Stubs
+const STUBBED_DATE = '2017-01-29';
 
 // Exit test if NODE_ENV is not equal `test`
 assertTestEnv();
 
 describe('Pin state transtion service', () => {
   let server;
+  let dateStub;
 
   before((done) => {
     server = app.listen(app.get('port'));
@@ -240,6 +243,7 @@ describe('Pin state transtion service', () => {
         })
         .then((loginResp) => {
           const token = loginResp.body.token;
+          dateStub = stub(Date, 'now', () => STUBBED_DATE);
 
           return request(app)
           .post(`/pins/${savedPin._id}/state_transition`) // eslint-disable-line no-underscore-dangle,max-len
@@ -260,7 +264,10 @@ describe('Pin state transtion service', () => {
         })
         .then(updatedPin => {
           expect(updatedPin.status).to.equal('rejected');
+          expect(updatedPin.rejected_time.toISOString().split('T')[0])
+            .to.equal(STUBBED_DATE);
 
+          dateStub.restore();
           done();
         });
       });
@@ -284,6 +291,7 @@ describe('Pin state transtion service', () => {
         })
         .then((loginResp) => {
           const token = loginResp.body.token;
+          dateStub = stub(Date, 'now', () => STUBBED_DATE);
 
           return request(app)
           .post(`/pins/${savedPin._id}/state_transition`) // eslint-disable-line no-underscore-dangle,max-len
@@ -308,7 +316,10 @@ describe('Pin state transtion service', () => {
           expect(updatedPin.status).to.equal('assigned');
           expect(String(updatedPin.assigned_department._id)) // eslint-disable-line no-underscore-dangle,max-len
             .to.equal('57933111556362511181ccc1');
+          expect(updatedPin.assigned_time.toISOString().split('T')[0])
+            .to.equal(STUBBED_DATE);
 
+          dateStub.restore();
           done();
         });
       });
@@ -318,6 +329,7 @@ describe('Pin state transtion service', () => {
       pin._id = ObjectId('579334c75563625d62811124'); // eslint-disable-line no-underscore-dangle,new-cap,max-len
       pin.status = 'assigned';
       pin.assigned_department = ObjectId(DEPARTMENT_GENERAL_ID); // eslint-disable-line no-underscore-dangle,new-cap,max-len
+      pin.assigned_time = STUBBED_DATE;
 
       new Pin(pin).save((err, savedPin) => {
         if (err) {
@@ -357,6 +369,11 @@ describe('Pin state transtion service', () => {
           expect(updatedPin.assigned_department) // eslint-disable-line no-underscore-dangle,max-len
             .to.equal(null);
 
+          // It should not remove previously assigned time
+          expect(updatedPin.assigned_time.toISOString().split('T')[0])
+            .to.equal(STUBBED_DATE);
+
+          dateStub.restore();
           done();
         });
       });
@@ -380,6 +397,7 @@ describe('Pin state transtion service', () => {
         })
         .then((loginResp) => {
           const token = loginResp.body.token;
+          dateStub = stub(Date, 'now', () => STUBBED_DATE);
 
           return request(app)
           .post(`/pins/${savedPin._id}/state_transition`) // eslint-disable-line no-underscore-dangle,max-len
@@ -413,7 +431,10 @@ describe('Pin state transtion service', () => {
         .then(updatedPin => {
           expect(updatedPin.status).to.equal('processing');
           expect(String(updatedPin.processed_by)).to.equal('579334c75553625d6281b6cc');
+          expect(updatedPin.processing_time.toISOString().split('T')[0])
+            .to.equal(STUBBED_DATE);
 
+          dateStub.restore();
           done();
         });
       });
@@ -467,8 +488,6 @@ describe('Pin state transtion service', () => {
     });
 
     it('updates correct properties for `resolved` transtion', (done) => {
-      let dateStub;
-
       pin._id = ObjectId('579334c75563625d62811116'); // eslint-disable-line no-underscore-dangle,new-cap,max-len
       pin.status = 'processing';
 
@@ -486,8 +505,7 @@ describe('Pin state transtion service', () => {
         })
         .then((loginResp) => {
           const token = loginResp.body.token;
-          dateStub = stub(Date, 'now', () => '2017-01-29');
-
+          dateStub = stub(Date, 'now', () => STUBBED_DATE);
 
           return request(app)
           .post(`/pins/${savedPin._id}/state_transition`) // eslint-disable-line no-underscore-dangle,max-len
@@ -509,7 +527,7 @@ describe('Pin state transtion service', () => {
         .then(updatedPin => {
           expect(updatedPin.status).to.equal('resolved');
           expect(updatedPin.resolved_time.toISOString().split('T')[0])
-            .to.equal('2017-01-29');
+            .to.equal(STUBBED_DATE);
 
           dateStub.restore();
           done();
