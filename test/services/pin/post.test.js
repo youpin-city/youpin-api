@@ -34,6 +34,7 @@ const ASSIGNED = require('../../../src/constants/pin-states').ASSIGNED;
 
 // App stuff
 const app = require('../../../src/app');
+const DEFAULT_LAT_LONG = require('../../../src/constants/defaults').DEFAULT_LAT_LONG;
 
 // Exit test if NODE_ENV is not equal `test`
 assertTestEnv();
@@ -275,6 +276,44 @@ describe('Pin - POST', () => {
             expect(createdPin.status).to.equal(ASSIGNED);
             expect(createdPin.assigned_department).to.equal(DEPARTMENT_SUPER_ADMIN_ID);
 
+            done();
+          });
+      });
+  });
+
+  it('creates pin without provided location.coordinates', (done) => {
+    const newPin = {
+      detail: casual.text,
+      organization: ORGANIZATION_ID,
+      owner: adminUser._id, // eslint-disable-line no-underscore-dangle
+      provider: adminUser._id, // eslint-disable-line no-underscore-dangle
+      location: {},
+    };
+
+    request(app)
+      .post('/auth/local')
+      .send({
+        email: 'contact@youpin.city',
+        password: 'youpin_admin',
+      })
+      .then((tokenResp) => {
+        const token = tokenResp.body.token;
+
+        if (!token) {
+          done(new Error('No token returns'));
+        }
+
+        request(app)
+          .post('/pins')
+          .set('X-YOUPIN-3-APP-KEY',
+            '579b04ac516706156da5bba1:ed545297-4024-4a75-89b4-c95fed1df436')
+          .send(newPin)
+          .set('Authorization', `Bearer ${token}`)
+          .expect(201)
+          .then((res) => {
+            const createdPin = res.body;
+            expect(createdPin.status).to.equal(PENDING);
+            expect(createdPin.location.coordinates).to.deep.equal(DEFAULT_LAT_LONG);
             done();
           });
       });
