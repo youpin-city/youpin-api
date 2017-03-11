@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 
 const PENDING = require('../../constants/pin-states').PENDING;
 
+const DEFAULT_LAT_LONG = require('../../constants/defaults').DEFAULT_LAT_LONG;
+
 const Schema = mongoose.Schema;
 
 const voteSchema = new Schema({
@@ -35,8 +37,7 @@ const pinSchema = new Schema({
   level: String,
   location: {
     type: { type: String, enum: 'Point', default: 'Point' },
-    // default to Thailand Democracy Monument
-    coordinates: { type: [Number], default: [100.5018549, 13.756727] },
+    coordinates: { type: [Number], default: DEFAULT_LAT_LONG },
   },
   mentions: [{ type: Schema.Types.ObjectId, ref: 'User' }],
   merged_children_pins: [{ type: Schema.Types.ObjectId, ref: 'Pin' }],
