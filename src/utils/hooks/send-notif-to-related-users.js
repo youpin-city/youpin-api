@@ -21,7 +21,13 @@ const sendNotifToRelatedUsers = () => (hook) => {
       }
       // TODO(A): Add assigned_user (toBeNotifiedUsers) & pin owner to relatedUsers list.
       // Use message from logInfo.
-      const message = hook.data.logInfo.description;
+      let message = hook.data.logInfo.description;
+      // Also, add a link to a pin in issue list.
+      const adminConfig = hook.app.get('admin');
+      if (adminConfig && adminConfig.adminUrl) {
+        message +=
+          `\nPin link - ${adminConfig.adminUrl}/issue#!issue-id:${hook.data.logInfo.pin_id}`;
+      }
       // Send message to all relatedUsers.
       // Temporarily using just A's bot id to test on Production.
       // TODO(A): Remove it after we can have bot id for other users.
