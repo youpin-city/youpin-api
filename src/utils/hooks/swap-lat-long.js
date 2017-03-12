@@ -3,13 +3,13 @@ const _ = require('lodash');
 function swapLatLongHelper(data) {
   if (Array.isArray(data)) {
     data = data.map(obj => { // eslint-disable-line no-param-reassign
-      if (obj.location) {
+      if (obj.location && obj.location.coordinates) {
         obj.location.coordinates = // eslint-disable-line no-param-reassign
           [obj.location.coordinates[1], obj.location.coordinates[0]];
       }
       return obj;
     });
-  } else if (data.location) {
+  } else if (data.location && data.location.coordinates) {
   // Single object
     data.location.coordinates = // eslint-disable-line no-param-reassign
       [data.location.coordinates[1], data.location.coordinates[0]];
