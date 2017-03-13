@@ -62,16 +62,8 @@ const prepareActivityLog = () => (hook) => {
     const previousValues = [previousState];
     const updatedValues = [nextState];
     const shortenDetail = `${pin.detail.substring(0, 20)}...`;
-    // Variables to keep track of department or people to be notified the change by Bot.
-    const toBeNotifiedDepartments = [];
-    let toBeNotifiedUsers = [];
-    // Add current assigned_department/assigned_users to notification lists.
     if (pin.assigned_department) { // eslint-disable-line no-underscore-dangle,max-len
       assignedDepartmentObject = pin.assigned_department;
-      toBeNotifiedDepartments.push(assignedDepartmentObject._id); // eslint-disable-line no-underscore-dangle,max-len
-    }
-    if (pin.assigned_users) {
-      toBeNotifiedUsers = toBeNotifiedUsers.concat(pin.assigned_users);
     }
     /* eslint-disable no-underscore-dangle */
     switch (nextState) {
@@ -95,8 +87,6 @@ const prepareActivityLog = () => (hook) => {
         changedFields.push('assigned_department');
         previousValues.push(undefined);
         updatedValues.push(assignedDepartmentObject._id);
-        // Add the new assigned_department to notification list.
-        toBeNotifiedDepartments.push(assignedDepartmentObject._id);
         description = `${nameOfUser} assigned pin ${shortenDetail} ` +
                       `to department ${assignedDepartmentObject.name}`;
         break;
@@ -125,6 +115,8 @@ const prepareActivityLog = () => (hook) => {
           updatedValues.push(null);
           description = `${nameOfUser} sent pin ${shortenDetail} back` +
                         ` to be re-processed by ${assignedDepartmentObject.name}`;
+          // Attach assigned department for later use.
+          hook.data.previousAssignedDepartment = assignedDepartmentObject._id; // eslint-disable-line max-len,no-param-reassign
         }
         break;
       case states.RESOLVED:
@@ -146,8 +138,6 @@ const prepareActivityLog = () => (hook) => {
       user: nameOfUser,
       organization: pin.organization,
       department,
-      toBeNotifiedDepartments,
-      toBeNotifiedUsers,
       actionType: actions.types.STATE_TRANSITION,
       action,
       pin_id: pinId,
