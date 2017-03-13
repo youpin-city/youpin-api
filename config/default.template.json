@@ -20,6 +20,9 @@
       "profileFields": ["id", "first_name", "last_name", "email"]
     }
   },
+  "admin": {
+    "adminUrl": "your admin page url"
+  },
   "bot": {
     "botUrl": "your bot url",
     "notificationToken": "your bot notification token"
