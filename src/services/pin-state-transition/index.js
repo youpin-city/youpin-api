@@ -112,6 +112,12 @@ class PinTransitionService {
           'Need `assigned_department` in body data to change to `assigned` state'
         );
       }
+      // pending -> assigned | Notify DEPARTMENT_HEAD to assign pin
+      // to correct a person in his/her department.
+      /* eslint-disable no-param-reassign */
+      data.toBeNotifiedDepartments = [data.assigned_department];
+      data.toBeNotifiedRoles = [DEPARTMENT_HEAD];
+      /* eslint-enable */
       updatingProperties.assigned_department = data.assigned_department;
       updatingProperties.assigned_time = Date.now();
     } else if (nextState === PROCESSING) {
@@ -120,19 +126,36 @@ class PinTransitionService {
       if (previousState === ASSIGNED) {
         if (!data.processed_by || !data.assigned_users) {
           throw new errors.BadRequest(
-            'Need `processed_by` and `assigned_users` in body data to change to `processing` state'
+            'Need `processed_by` and `assigned_users` ' +
+              'in body data to change to `processing` state'
           );
         }
+        // assigned -> processing
+        // Notify to DEPARTMENT_OFFICER or DEPARTMENT_HEAD who gets assigned.
+        data.toBeNotifiedUsers = [data.assigned_users]; // eslint-disable-line no-param-reassign
         updatingProperties.processed_by = data.processed_by;
         updatingProperties.assigned_users = data.assigned_users;
         updatingProperties.processing_time = Date.now();
       } else if (previousState === RESOLVED) {
+        // resolved -> processing
+        // Notify assigned DEPARTMENT_OFFICER and DEPARTMENT_HEAD
+        /* eslint-disable no-param-reassign */
+        data.toBeNotifiedDepartments = [data.previousAssignedDepartment];
+        data.toBeNotifiedRoles = [DEPARTMENT_OFFICER, DEPARTMENT_HEAD];
+        /* eslint-enable */
         updatingProperties.resolved_time = null;
       }
     } else if (nextState === PENDING) {
+      if (previousState === ASSIGNED) {
+        // assigned -> pending
+        // Notify back to ORGANIZATION_ADMIN to again manage pin's assignation.
+        data.toBeNotifiedRoles = [ORGANIZATION_ADMIN]; // eslint-disable-line no-param-reassign
+      }
       // Remove assigned_department if this pin is denied by department_head
       updatingProperties.assigned_department = null;
     } else if (nextState === RESOLVED) {
+      // processing -> resolved | notify ORGANIZATION_ADMIN
+      data.toBeNotifiedRoles = [ORGANIZATION_ADMIN]; // eslint-disable-line no-param-reassign
       updatingProperties.resolved_time = Date.now();
     } else if (nextState === REJECTED) {
       updatingProperties.rejected_time = Date.now();
