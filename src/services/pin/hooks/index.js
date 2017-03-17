@@ -51,9 +51,13 @@ exports.after = {
   find: [],
   get: [],
   create: [
+    prepareNotifInfoForCreatedPin(),
     sendNotifToRelatedUsers(),
   ],
   update: [],
-  patch: [logActivity()],
+  patch: [
+    logActivity(),
+    sendNotifToRelatedUsers(),
+  ],
   remove: [],
 };
