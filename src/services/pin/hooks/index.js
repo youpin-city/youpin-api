@@ -1,8 +1,8 @@
 const auth = require('feathers-authentication').hooks;
 
-const assignRelatedUsersToBeNotified = require('./assign-related-users-to-be-notified');
 const logActivity = require('../../../utils/hooks/log-activity');
 const prepareActivityLog = require('./prepare-activity-log');
+const prepareNotifInfoForCreatedPin = require('./prepare-notif-info-for-created-pin');
 const restrictToOwnerOfPin = require('../../../utils/hooks/restrict-to-owner-of-pin-hook');
 const restrictToTheRightUserForUpdate = require('./restrict-to-the-right-user-for-update');
 const sendNotifToRelatedUsers = require('../../../utils/hooks/send-notif-to-related-users');
@@ -22,7 +22,6 @@ exports.before = {
     auth.populateUser(),
     auth.restrictToAuthenticated(),
     restrictToOwnerOfPin(),
-    assignRelatedUsersToBeNotified(),
   ],
   update: [
     auth.verifyToken(),
@@ -51,6 +50,7 @@ exports.after = {
   find: [],
   get: [],
   create: [
+    prepareNotifInfoForCreatedPin(),
     sendNotifToRelatedUsers(),
   ],
   update: [],
