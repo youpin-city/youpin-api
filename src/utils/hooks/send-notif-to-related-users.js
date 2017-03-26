@@ -7,7 +7,18 @@ const User = require('../../services/user/user-model');
 const ORGANIZATION_ADMIN = require('../../constants/roles').ORGANIZATION_ADMIN;
 
 // Assume that a before hook attach logInfo in proper format already
-const sendNotifToRelatedUsers = () => (hook) => {
+const sendNotifToRelatedUsers = () => (hook) => { // eslint-disable-line consistent-return
+  // If no bot/mail config, just ignore this hook entirely.
+  const botConfig = hook.app.get('bot');
+  const mailServiceConfig = hook.app.get('mailService');
+  if (!botConfig && !mailServiceConfig) {
+    console.log('No bot/mail config. The notification will not be sent.');
+    return hook;
+  }
+  if (!hook.data.logInfo || !hook.data.logInfo.description) {
+    console.log('No proper loginfo. The notification will not be sent.');
+    return hook;
+  }
   // Find all related users' bot ids.
   let relatedUsers = hook.data.toBeNotifiedUsers || [];
   const relatedDepartments = hook.data.toBeNotifiedDepartments || [];
@@ -36,39 +47,39 @@ const sendNotifToRelatedUsers = () => (hook) => {
       let message = hook.data.logInfo.description;
       // Also, add a link to a pin in issue list.
       const adminConfig = hook.app.get('admin');
-      if (adminConfig && adminConfig.adminUrl) {
+      if (adminConfig && adminConfig.adminUrl && hook.data.logInfo.pin_id) {
         message +=
           `\nPin link - ${adminConfig.adminUrl}/issue#!issue-id:${hook.data.logInfo.pin_id}`;
       }
       // Send message to all relatedUsers.
-      let allNotificationPromises = [];
-      const botConfig = hook.app.get('bot');
-      const mailServiceConfig = hook.app.get('mailService');
-      if (!botConfig && !mailServiceConfig) {
-        throw new Error('No bot/mail config. The notification will not be sent.');
+      const allNotificationPromises = [];
+      for (let i = 0; i < relatedUsers.length; ++i) {
+        const user = relatedUsers[i];
+        if (botConfig && botConfig.botUrl && botConfig.notificationToken && user.botId) {
+          allNotificationPromises.push(
+            sendMessage(botConfig.botUrl, botConfig.notificationToken, user.botId, message));
+        }
+        if (mailServiceConfig && user.email) {
+          allNotificationPromises.push(sendMail(mailServiceConfig, user.email, message));
+        }
       }
-      if (botConfig) {
-        const sendMessagePromises = relatedUsers.map((user) =>
-          sendMessage(botConfig.botUrl, botConfig.notificationToken, user.botId, message));
-        allNotificationPromises = allNotificationPromises.concat(sendMessagePromises);
-      }
+      // TODO(A): Remove after ensuring the notif works fine.
+      // This is for only testing in PROD to monitor that every notif mail has come.
       if (mailServiceConfig) {
-        const sendMailPromises = relatedUsers.map((user) =>
-          // TODO(A): Add email notification promise here.
-          sendMail(mailServiceConfig, user.email, message));
-        allNotificationPromises = allNotificationPromises.concat(sendMailPromises);
+        allNotificationPromises.push(sendMail(mailServiceConfig, 'parnurzeal@gmail.com', message));
       }
       if (allNotificationPromises.length === 0) {
-        throw new Error('No legit notification. Nothing will be sent.');
+        console.log('No legit notification. Nothing will be sent.');
+        return [];
       }
       return Promise.all(allNotificationPromises);
     })
     .then((results) => {
-      console.log(`Successfully send notification messages - ${results}`);
+      console.log('Successfully send notification messages -');
+      console.log(results);
     })
-    .catch(err => {
-      console.log(err);
-      throw new Error(err);
+    .catch(error => {
+      console.log(error);
     });
 };
 
