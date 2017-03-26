@@ -54,6 +54,9 @@ exports.after = {
     sendNotifToRelatedUsers(),
   ],
   update: [],
-  patch: [logActivity()],
+  patch: [
+    logActivity(),
+    sendNotifToRelatedUsers(),
+  ],
   remove: [],
 };

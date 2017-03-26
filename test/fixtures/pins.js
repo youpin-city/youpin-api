@@ -51,6 +51,7 @@ module.exports = [
     location: {
       coordinates: [100.56983534305, 13.730537951107],
     },
+    assigned_users: [USER_DEPARTMENT_HEAD_ID],
     status: 'processing',
     is_archived: false,
   },

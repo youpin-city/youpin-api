@@ -3,6 +3,9 @@ const _ = require('lodash');
 const actions = require('../../../constants/actions');
 const Pin = require('../../pin/pin-model');
 
+// States
+const PROCESSING = require('../../../constants/pin-states').PROCESSING;
+
 // For before hook to prepare activity log and will be used by after hook
 // Note: we can't do this in after hook because we need previous pin's properties before updated
 const prepareActivityLog = () => (hook) => {
@@ -74,6 +77,14 @@ const prepareActivityLog = () => (hook) => {
       };
       // Attach data for log-activity hook
       hook.data.logInfo = logInfo; // eslint-disable-line no-param-reassign
+      // Add users to be notified by bot & email
+      if (pin.status === PROCESSING && pin.assigned_users) {
+        // Exclude out the user who updates this pin.
+        // Since he/she is the one who updates, notification is unnecessary.
+        hook.data.toBeNotifiedUsers = // eslint-disable-line no-param-reassign
+          _.differenceBy(pin.assigned_users,
+            [{ _id: hook.params.user._id }], '_id'); // eslint-disable-line no-underscore-dangle
+      }
       return Promise.resolve(hook);
     })
     .catch(err => {
