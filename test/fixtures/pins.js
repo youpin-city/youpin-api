@@ -9,6 +9,8 @@ const PIN_PENDING_ID = require('./constants').PIN_PENDING_ID;
 const PIN_PENDING_DETAIL = require('./constants').PIN_PENDING_DETAIL;
 const PIN_PROCESSING_ID = require('./constants').PIN_PROCESSING_ID;
 const PIN_PROCESSING_DETAIL = require('./constants').PIN_PROCESSING_DETAIL;
+const PROGRESS_DETAIL = require('./constants').PROGRESS_DETAIL;
+const USER_ADMIN_ID = require('./constants').USER_ADMIN_ID;
 const USER_DEPARTMENT_HEAD_ID = require('./constants').USER_DEPARTMENT_HEAD_ID;
 
 module.exports = [
@@ -17,8 +19,8 @@ module.exports = [
     created_time: '2016-12-01',
     detail: PIN_PENDING_DETAIL,
     organization: ORGANIZATION_ID, // organization ObjectId
-    owner: '579334c75563625d6281b6f1', // adminUser ObjectId
-    provider: '579334c75563625d6281b6f1', // adminUser ObjectId
+    owner: USER_ADMIN_ID, // adminUser ObjectId
+    provider: USER_ADMIN_ID, // adminUser ObjectId
     location: {
       coordinates: [100.56983534303, 13.730537951109],
     },
@@ -31,8 +33,8 @@ module.exports = [
     created_time: '2016-12-03',
     detail: PIN_ASSIGNED_DETAIL,
     organization: ORGANIZATION_ID, // organization ObjectId
-    owner: '579334c75563625d6281b6f1', // adminUser ObjectId
-    provider: '579334c75563625d6281b6f1', // adminUser ObjectId
+    owner: USER_ADMIN_ID, // adminUser ObjectId
+    provider: USER_ADMIN_ID, // adminUser ObjectId
     location: {
       coordinates: [100.56983534305, 13.730537951107],
     },
@@ -46,11 +48,18 @@ module.exports = [
     created_time: '2016-12-03',
     detail: PIN_PROCESSING_DETAIL,
     organization: ORGANIZATION_ID, // organization ObjectId
-    owner: '579334c75563625d6281b6f1', // adminUser ObjectId
-    provider: '579334c75563625d6281b6f1', // adminUser ObjectId
+    owner: USER_ADMIN_ID, // adminUser ObjectId
+    provider: USER_ADMIN_ID, // adminUser ObjectId
     location: {
       coordinates: [100.56983534305, 13.730537951107],
     },
+    progresses: [
+      {
+        created_time: '2016-12-03',
+        owner: USER_ADMIN_ID, // adminUser ObjectId
+        detail: PROGRESS_DETAIL,
+      },
+    ],
     assigned_users: [USER_DEPARTMENT_HEAD_ID],
     status: 'processing',
     is_archived: false,

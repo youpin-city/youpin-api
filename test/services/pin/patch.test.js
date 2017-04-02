@@ -24,6 +24,9 @@ const pins = require('../../fixtures/pins');
 const PIN_ASSIGNED_ID = require('../../fixtures/constants').PIN_ASSIGNED_ID;
 const PIN_PROCESSING_ID = require('../../fixtures/constants').PIN_PROCESSING_ID;
 const PIN_PENDING_ID = require('../../fixtures/constants').PIN_PENDING_ID;
+const PROGRESS_DETAIL = require('../../fixtures/constants').PROGRESS_DETAIL;
+const USER_DEPARTMENT_HEAD_ID = require('../../fixtures/constants').USER_DEPARTMENT_HEAD_ID;
+const USER_ADMIN_ID = require('../../fixtures/constants').USER_ADMIN_ID;
 
 // App stuff
 const app = require('../../../src/app');
@@ -79,11 +82,12 @@ describe('Pin - PATCH', () => {
     const newData = {
       $push: {
         progresses: {
+          owner: USER_ADMIN_ID,
           photos: ['New progress photo url'],
           detail: 'New progress',
         },
       },
-      owner: adminUser._id, // eslint-disable-line no-underscore-dangle
+      owner: USER_ADMIN_ID, // eslint-disable-line no-underscore-dangle
       detail: 'Updated pin detail',
     };
     request(app)
@@ -104,8 +108,11 @@ describe('Pin - PATCH', () => {
       })
       .then((res) => {
         const updatedPin = res.body;
-        expect(updatedPin.progresses).to.have.lengthOf(1);
-        expect(updatedPin.progresses[0].detail).to.equal('New progress');
+        expect(updatedPin.progresses).to.have.lengthOf(2);
+        expect(updatedPin.progresses[0].detail).to.equal(PROGRESS_DETAIL);
+        expect(updatedPin.progresses[1].detail).to.equal('New progress');
+        expect(updatedPin.progresses[1].owner._id)  // eslint-disable-line no-underscore-dangle
+          .to.equal(USER_ADMIN_ID);
         expect(updatedPin.detail).to.equal('Updated pin detail');
         done();
       });
@@ -115,6 +122,7 @@ describe('Pin - PATCH', () => {
     const newData = {
       $push: {
         progresses: {
+          owner: USER_ADMIN_ID,
           photos: ['New progress photo url'],
           detail: 'New progress',
         },
@@ -146,6 +154,8 @@ describe('Pin - PATCH', () => {
         const updatedPin = res.body;
         expect(updatedPin.progresses).to.have.lengthOf(1);
         expect(updatedPin.progresses[0].detail).to.equal('New progress');
+        expect(updatedPin.progresses[0].owner._id)  // eslint-disable-line no-underscore-dangle
+          .to.equal(USER_ADMIN_ID);
         expect(updatedPin.detail).to.equal('Updated pin detail');
         done();
       });
@@ -155,6 +165,7 @@ describe('Pin - PATCH', () => {
     const newData = {
       $push: {
         progresses: {
+          owner: USER_DEPARTMENT_HEAD_ID,
           photos: ['New progress photo url'],
           detail: 'New progress',
         },
@@ -184,6 +195,8 @@ describe('Pin - PATCH', () => {
         const updatedPin = res.body;
         expect(updatedPin.progresses).to.have.lengthOf(1);
         expect(updatedPin.progresses[0].detail).to.equal('New progress');
+        expect(updatedPin.progresses[0].owner._id)  // eslint-disable-line no-underscore-dangle
+          .to.equal(USER_DEPARTMENT_HEAD_ID);
         done();
       });
   });
