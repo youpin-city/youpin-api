@@ -28,6 +28,7 @@ const pinSchema = new Schema({
   assigned_time: { type: Date },
   assigned_users: [{ type: Schema.Types.ObjectId, ref: 'User' }],
   categories: [String],
+  closed_reason: { type: String },
   comments: [commentSchema],
   progresses: [commentSchema],
   created_time: { type: Date, required: true, default: Date.now },
