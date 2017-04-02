@@ -1,7 +1,8 @@
 {
   "host": "localhost",
-  "port": 9000,
-  "mongodb": "mongodb://mongodb:27017/youpin",
+  "port": 9100,
+  "nedb": "../data/",
+  "mongodb": "mongodb://mongodb:27017/mafueng",
   "public": "../public/",
   "auth": {
     "successRedirect": "/auth/facebook/success",
@@ -19,31 +20,30 @@
       "profileFields": ["id", "first_name", "last_name", "email"]
     }
   },
-  "enableStateTransitionCheck": false,
   "admin": {
-    "adminUrl": "your admin page url"
+    "adminUrl": "https://admin.icare.eng.chula.ac.th"
   },
   "bot": {
-    "botUrl": "your bot url",
-    "notificationToken": "your bot notification token"
+    "botUrl": "https://bot.icare.eng.chula.ac.th/notifhook",
+    "notificationToken": "mafueng.bot.notification.token"
   },
   "mailService": {
     "providerConfig": {
-      "service": "your mail service provider",
+      "service": "Outlook365",
       "auth": {
-        "user": "username",
-        "pass": "password"
+        "user": "icare@eng.chula.ac.th",
+        "pass": "VRmafuen9"
       }
     },
     "content": {
-      "from": "YouPin Admin <admin@youpin.city>"
+      "from": "iCare <icare@youpin.city>"
     }
   },
   "gcs": {
     "gcsUrl": "https://storage.googleapis.com",
     "bucket": "your GCS bucket name",
-    "projectId": "your GGS project ID",
-    "keyFile": "your credentials key file path (usually putting under config/gcs)."
+    "projectId": "your GCS project ID",
+    "keyFile": "your credentials key file path (usually put under config/gcs/)."
   },
   "logger": {
     "path": "logs",

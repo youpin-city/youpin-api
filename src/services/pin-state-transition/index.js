@@ -64,6 +64,10 @@ class PinTransitionService {
     return possibleNextStates[prevState][role].indexOf(nextState) !== -1;
   }
 
+  // Initializes app to get config values
+  setup(app) {
+    this.app = app;
+  }
   // Create new state transition (i.e. change state)
   create(data, params) {
     const pinId = params.pinId;
@@ -87,9 +91,9 @@ class PinTransitionService {
     if (!role) {
       throw new errors.GeneralError('Internal error: User has no role');
     }
-
+    const enableStateTransitionCheck = this.app.get('enableStateTransitionCheck');
     if (
-      !PinTransitionService.isValidStateTransition(
+      enableStateTransitionCheck && !PinTransitionService.isValidStateTransition(
         previousState,
         nextState,
         role
