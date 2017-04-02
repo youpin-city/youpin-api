@@ -23,6 +23,11 @@ const sendNotifToRelatedUsers = () => (hook) => { // eslint-disable-line consist
   let relatedUsers = hook.data.toBeNotifiedUsers || [];
   const relatedDepartments = hook.data.toBeNotifiedDepartments || [];
   const relatedRoles = hook.data.toBeNotifiedRoles || [];
+  if (relatedUsers.length === 0 && relatedDepartments === 0 && relatedRoles === 0) {
+    console.log('No assigned user/department/role. ' +
+      'The notification will not be sent.');
+    return hook;
+  }
   const findUserPromises = [];
   for (let i = 0; i < relatedRoles.length; ++i) {
     // Since organization admin does not have to depend on related department,

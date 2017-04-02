@@ -101,7 +101,7 @@ describe('state summary service', () => {
               [pinStates.RESOLVED]: 0,
               [pinStates.REJECTED]: 0,
             },
-            unassigned: {
+            'YouPin Department Head': {
               [pinStates.PENDING]: 0,
               [pinStates.ASSIGNED]: 0,
               [pinStates.PROCESSING]: 1,
