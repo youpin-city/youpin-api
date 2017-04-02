@@ -53,6 +53,8 @@ describe('Pin state transtion service', () => {
   let dateStub;
 
   before((done) => {
+    // enable role permission
+    app.set('enableStateTransitionCheck', true);
     server = app.listen(app.get('port'));
     server.once('listening', () => {
       // Create admin user and app3rd for admin
@@ -223,6 +225,41 @@ describe('Pin state transtion service', () => {
         status: 'pending',
         is_archived: false,
       };
+    });
+
+    it('test incorrect transition', (done) => {
+      pin._id = ObjectId('579334c75563625d62811313'); // eslint-disable-line no-underscore-dangle,new-cap,max-len
+      pin.status = PENDING;
+
+      new Pin(pin).save((err, savedPin) => {
+        if (err) {
+          return done(err);
+        }
+
+        return request(app)
+        .post('/auth/local')
+        .set('Content-type', 'application/json')
+        .send({
+          email: 'super_admin@youpin.city',
+          password: 'youpin_admin',
+        })
+        .then((loginResp) => {
+          const token = loginResp.body.token;
+          return request(app)
+          .post(`/pins/${savedPin._id}/state_transition`) // eslint-disable-line no-underscore-dangle,max-len
+          .set('Authorization', `Bearer ${token}`)
+          .set('Content-type', 'application/json')
+          .send({
+            state: RESOLVED,
+          })
+          .expect(400);
+        })
+        .then((stateResp) => {
+          expect(stateResp.body.message)
+            .to.equal('Cannot change state from pending to resolved with role super_admin');
+          done();
+        });
+      });
     });
 
     it('updates correct properties for `rejected` transtion', (done) => {
@@ -489,7 +526,7 @@ describe('Pin state transtion service', () => {
 
     it('updates correct properties for `resolved` transtion', (done) => {
       pin._id = ObjectId('579334c75563625d62811116'); // eslint-disable-line no-underscore-dangle,new-cap,max-len
-      pin.status = 'processing';
+      pin.status = PROCESSING;
 
       new Pin(pin).save((err, savedPin) => {
         if (err) {
@@ -512,7 +549,7 @@ describe('Pin state transtion service', () => {
           .set('Authorization', `Bearer ${token}`)
           .set('Content-type', 'application/json')
           .send({
-            state: 'resolved',
+            state: RESOLVED,
           })
           .expect(201);
         })
