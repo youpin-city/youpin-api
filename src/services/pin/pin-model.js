@@ -14,6 +14,7 @@ const voteSchema = new Schema({
 const commentSchema = new Schema({
   created_time: { type: Date, required: true, default: Date.now },
   detail: { type: String, required: true },
+  owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   mentions: [{ type: Schema.Types.ObjectId, ref: 'User' }],
   photos: [String],
   tags: [String],
@@ -68,14 +69,16 @@ pinSchema.index({ location: '2dsphere' });
 pinSchema.pre('find', function populateFields(next) {
   this.populate('assigned_users')
     .populate('assigned_department')
-    .populate('owner');
+    .populate('owner')
+    .populate('progresses.owner');
   next();
 });
 
 pinSchema.pre('findOne', function populateFields(next) {
   this.populate('assigned_users')
     .populate('assigned_department')
-    .populate('owner');
+    .populate('owner')
+    .populate('progresses.owner');
   next();
 });
 
