@@ -21,6 +21,11 @@ const publicRelationsUser = require('../../fixtures/public_relations_user');
 const superAdminUser = require('../../fixtures/super_admin_user');
 const pins = require('../../fixtures/pins');
 
+// Constants
+const PIN_PENDING_ID = require('../../fixtures/constants').PIN_PENDING_ID;
+const PIN_PROCESSING_ID = require('../../fixtures/constants').PIN_PROCESSING_ID;
+const PROGRESS_DETAIL = require('../../fixtures/constants').PROGRESS_DETAIL;
+
 // App stuff
 const app = require('../../../src/app');
 const mongoose = require('mongoose');
@@ -95,7 +100,7 @@ describe('Pin - GET', () => {
 
   it('returns 200 w/ swapped lat-long by requesting using the correct id', (done) => {
     request(app)
-      .get('/pins/579334c75563625d6281b6f6')
+      .get(`/pins/${PIN_PENDING_ID}`)
       .set('X-YOUPIN-3-APP-KEY',
         '579b04ac516706156da5bba1:ed545297-4024-4a75-89b4-c95fed1df436')
       .expect(200)
@@ -107,6 +112,29 @@ describe('Pin - GET', () => {
 
         expect(foundCoordinates).to.deep.equal([13.730537951109, 100.56983534303]);
 
+        return done();
+      });
+  });
+
+  it('returns 200 + progresses and progresses.owner fields should be populated', (done) => {
+    request(app)
+      .get(`/pins/${PIN_PROCESSING_ID}`)
+      .set('X-YOUPIN-3-APP-KEY',
+        '579b04ac516706156da5bba1:ed545297-4024-4a75-89b4-c95fed1df436')
+      .expect(200)
+      .then((res) => {
+        if (!res.body) {
+          return done(new Error('No data return'));
+        }
+        const pin = res.body;
+        expect(pin.progresses).to.have.lengthOf(1);
+        expect(pin.progresses[0].detail).to.equal(PROGRESS_DETAIL);
+        /* eslint-disable no-underscore-dangle */
+        // Make sure the owner is populated by checking its _id.
+        expect(pin.progresses[0].owner._id).to.equal(adminUser._id.toString());
+        // Make sure the department under owner is populated by checking its _id.
+        expect(pin.progresses[0].owner.department._id).to.equal(adminUser.department.toString());
+        /* eslint-enable */
         return done();
       });
   });
