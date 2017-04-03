@@ -4,6 +4,7 @@ const expect = require('../../test_helper').expect;
 const loadFixture = require('../../test_helper').loadFixture;
 const request = require('supertest-as-promised');
 const stub = require('../../test_helper').stub;
+const login = require('../../test_helper').login;
 
 // Models
 const Department = require('../../../src/services/department/department-model');
@@ -41,6 +42,10 @@ const USER = roles.USER;
 
 // Departments
 const DEPARTMENT_GENERAL_ID = require('../../fixtures/constants').DEPARTMENT_GENERAL_ID;
+
+// Pins
+const PIN_RESOLVED_ID = require('../../fixtures/constants').PIN_RESOLVED_ID;
+const PIN_REJECTED_ID = require('../../fixtures/constants').PIN_REJECTED_ID;
 
 // Stubs
 const STUBBED_DATE = '2017-01-29';
@@ -110,11 +115,11 @@ describe('Pin state transtion service', () => {
       { role: SUPER_ADMIN, prevState: PROCESSING, nextState: REJECTED, expectedResult: false },
       { role: SUPER_ADMIN, prevState: PROCESSING, nextState: ASSIGNED, expectedResult: false },
       { role: SUPER_ADMIN, prevState: PROCESSING, nextState: RESOLVED, expectedResult: true },
-      { role: SUPER_ADMIN, prevState: RESOLVED, nextState: PENDING, expectedResult: false },
+      { role: SUPER_ADMIN, prevState: RESOLVED, nextState: PENDING, expectedResult: true },
       { role: SUPER_ADMIN, prevState: RESOLVED, nextState: REJECTED, expectedResult: false },
       { role: SUPER_ADMIN, prevState: RESOLVED, nextState: ASSIGNED, expectedResult: false },
       { role: SUPER_ADMIN, prevState: RESOLVED, nextState: PROCESSING, expectedResult: true },
-      { role: SUPER_ADMIN, prevState: REJECTED, nextState: PENDING, expectedResult: false },
+      { role: SUPER_ADMIN, prevState: REJECTED, nextState: PENDING, expectedResult: true },
       { role: SUPER_ADMIN, prevState: REJECTED, nextState: ASSIGNED, expectedResult: false },
       { role: SUPER_ADMIN, prevState: REJECTED, nextState: PROCESSING, expectedResult: false },
       { role: SUPER_ADMIN, prevState: REJECTED, nextState: RESOLVED, expectedResult: false },
@@ -130,11 +135,11 @@ describe('Pin state transtion service', () => {
       { role: ORGANIZATION_ADMIN, prevState: PROCESSING, nextState: ASSIGNED, expectedResult: false },
       { role: ORGANIZATION_ADMIN, prevState: PROCESSING, nextState: RESOLVED, expectedResult: false },
       { role: ORGANIZATION_ADMIN, prevState: PROCESSING, nextState: REJECTED, expectedResult: false },
-      { role: ORGANIZATION_ADMIN, prevState: RESOLVED, nextState: PENDING, expectedResult: false },
+      { role: ORGANIZATION_ADMIN, prevState: RESOLVED, nextState: PENDING, expectedResult: true },
       { role: ORGANIZATION_ADMIN, prevState: RESOLVED, nextState: ASSIGNED, expectedResult: false },
       { role: ORGANIZATION_ADMIN, prevState: RESOLVED, nextState: PROCESSING, expectedResult: true },
       { role: ORGANIZATION_ADMIN, prevState: RESOLVED, nextState: REJECTED, expectedResult: false },
-      { role: ORGANIZATION_ADMIN, prevState: REJECTED, nextState: PENDING, expectedResult: false },
+      { role: ORGANIZATION_ADMIN, prevState: REJECTED, nextState: PENDING, expectedResult: true },
       { role: ORGANIZATION_ADMIN, prevState: REJECTED, nextState: ASSIGNED, expectedResult: false },
       { role: ORGANIZATION_ADMIN, prevState: REJECTED, nextState: PROCESSING, expectedResult: false },
       { role: ORGANIZATION_ADMIN, prevState: REJECTED, nextState: RESOLVED, expectedResult: false },
@@ -150,11 +155,11 @@ describe('Pin state transtion service', () => {
       { role: DEPARTMENT_HEAD, prevState: PROCESSING, nextState: ASSIGNED, expectedResult: false },
       { role: DEPARTMENT_HEAD, prevState: PROCESSING, nextState: RESOLVED, expectedResult: true },
       { role: DEPARTMENT_HEAD, prevState: PROCESSING, nextState: REJECTED, expectedResult: false },
-      { role: DEPARTMENT_HEAD, prevState: RESOLVED, nextState: PENDING, expectedResult: false },
+      { role: DEPARTMENT_HEAD, prevState: RESOLVED, nextState: PENDING, expectedResult: true },
       { role: DEPARTMENT_HEAD, prevState: RESOLVED, nextState: ASSIGNED, expectedResult: false },
       { role: DEPARTMENT_HEAD, prevState: RESOLVED, nextState: PROCESSING, expectedResult: false },
       { role: DEPARTMENT_HEAD, prevState: RESOLVED, nextState: REJECTED, expectedResult: false },
-      { role: DEPARTMENT_HEAD, prevState: REJECTED, nextState: PENDING, expectedResult: false },
+      { role: DEPARTMENT_HEAD, prevState: REJECTED, nextState: PENDING, expectedResult: true },
       { role: DEPARTMENT_HEAD, prevState: REJECTED, nextState: ASSIGNED, expectedResult: false },
       { role: DEPARTMENT_HEAD, prevState: REJECTED, nextState: PROCESSING, expectedResult: false },
       { role: DEPARTMENT_HEAD, prevState: REJECTED, nextState: RESOLVED, expectedResult: false },
@@ -262,7 +267,8 @@ describe('Pin state transtion service', () => {
       });
     });
 
-    it('updates correct properties for `rejected` transtion', (done) => {
+    it('updates correct properties for `rejected` transtion from `pending` to `rejected` state',
+    (done) => {
       pin._id = ObjectId('579334c75563625d62811113'); // eslint-disable-line no-underscore-dangle,new-cap,max-len
       pin.status = 'pending';
 
@@ -310,7 +316,8 @@ describe('Pin state transtion service', () => {
       });
     });
 
-    it('updates correct properties for `assigned` transtion', (done) => {
+    it('updates correct properties for `assigned` transtion from `pending` to `assigned` state',
+    (done) => {
       pin._id = ObjectId('579334c75563625d62811114'); // eslint-disable-line no-underscore-dangle,new-cap,max-len
       pin.status = 'pending';
 
@@ -362,7 +369,8 @@ describe('Pin state transtion service', () => {
       });
     });
 
-    it('updates correct properties for transtion from `assigned` to `pending` state', (done) => {
+    it('updates correct properties for `deny` transtion from `assigned` to `pending` state',
+    (done) => {
       pin._id = ObjectId('579334c75563625d62811124'); // eslint-disable-line no-underscore-dangle,new-cap,max-len
       pin.status = 'assigned';
       pin.assigned_department = ObjectId(DEPARTMENT_GENERAL_ID); // eslint-disable-line no-underscore-dangle,new-cap,max-len
@@ -416,7 +424,8 @@ describe('Pin state transtion service', () => {
       });
     });
 
-    it('updates correct properties for transtion from `assigned` to `processing` state', (done) => {
+    it('updates correct properties for `process` transtion from `assigned` to `processing` state',
+    (done) => {
       pin._id = ObjectId('579334c75563625d62811115'); // eslint-disable-line no-underscore-dangle,new-cap,max-len
       pin.status = 'assigned';
 
@@ -477,7 +486,8 @@ describe('Pin state transtion service', () => {
       });
     });
 
-    it('updates correct properties for transtion from `resolved` to `processing` state', (done) => {
+    it('updates correct properties for `re-process` transtion ' +
+       'from `resolved` to `processing` state', (done) => {
       pin._id = ObjectId('579334c75563625d62811122'); // eslint-disable-line no-underscore-dangle,new-cap,max-len
       pin.status = 'resolved';
       pin.assigned_department = Object(DEPARTMENT_GENERAL_ID);
@@ -524,7 +534,8 @@ describe('Pin state transtion service', () => {
       });
     });
 
-    it('updates correct properties for `resolved` transtion', (done) => {
+    it('updates correct properties for `resolved` transtion ' +
+       'from `processing` to `resolved` state', (done) => {
       pin._id = ObjectId('579334c75563625d62811116'); // eslint-disable-line no-underscore-dangle,new-cap,max-len
       pin.status = PROCESSING;
 
@@ -571,5 +582,70 @@ describe('Pin state transtion service', () => {
         });
       });
     });
+
+    it('updates correct properties for `redo` transtion ' +
+       'from `resolved` to `pending` state', (done) =>
+      login(app, 'organization_admin@youpin.city', 'youpin_admin')
+      .then((loginResp) => {
+        const token = loginResp.body.token;
+
+        return request(app)
+        .post(`/pins/${PIN_RESOLVED_ID}/state_transition`)
+        .set('Authorization', `Bearer ${token}`)
+        .set('Content-type', 'application/json')
+        .send({
+          state: PENDING,
+        })
+        .expect(201);
+      })
+      .then((transitionResp) => {
+        const transition = transitionResp.body;
+
+        expect(transition.status).to.equal('pending');
+        expect(transition.pinId).to.equal(String(PIN_RESOLVED_ID));
+
+        return Pin.findOne({ _id: PIN_RESOLVED_ID }); // eslint-disable-line no-underscore-dangle
+      })
+      .then(updatedPin => {
+        expect(updatedPin.status).to.equal('pending');
+        expect(updatedPin.assigned_department).to.equal(null);
+        expect(updatedPin.assigned_users).to.equal(null);
+        expect(updatedPin.resolved_time).to.equal(null);
+
+        done();
+      })
+    );
+
+    it('updates correct properties for `redo` transtion ' +
+       'from `rejected` to `pending` state', (done) =>
+      login(app, 'organization_admin@youpin.city', 'youpin_admin')
+      .then((loginResp) => {
+        const token = loginResp.body.token;
+
+        return request(app)
+        .post(`/pins/${PIN_REJECTED_ID}/state_transition`)
+        .set('Authorization', `Bearer ${token}`)
+        .set('Content-type', 'application/json')
+        .send({
+          state: PENDING,
+        })
+        .expect(201);
+      })
+      .then((transitionResp) => {
+        const transition = transitionResp.body;
+
+        expect(transition.status).to.equal('pending');
+        expect(transition.pinId).to.equal(String(PIN_REJECTED_ID));
+
+        return Pin.findOne({ _id: PIN_REJECTED_ID }); // eslint-disable-line no-underscore-dangle
+      })
+      .then(updatedPin => {
+        expect(updatedPin.status).to.equal('pending');
+        expect(updatedPin.assigned_department).to.equal(undefined);
+        expect(updatedPin.rejected_time).to.equal(null);
+
+        done();
+      })
+    );
   });
 });
