@@ -35,6 +35,7 @@ module.exports = [
   {
     _id: ObjectId(PIN_ASSIGNED_ID), // eslint-disable-line new-cap
     assigned_department: DEPARTMENT_GENERAL_ID, // department ObjectId
+    assigned_time: '2015-12-04',
     created_time: '2016-12-03',
     detail: PIN_ASSIGNED_DETAIL,
     organization: ORGANIZATION_ID, // organization ObjectId
@@ -50,6 +51,7 @@ module.exports = [
   {
     _id: ObjectId(PIN_PROCESSING_ID), // eslint-disable-line new-cap
     assigned_department: DEPARTMENT_SUPER_ADMIN_ID, // department ObjectId
+    assigned_time: '2015-12-04',
     created_time: '2016-12-03',
     detail: PIN_PROCESSING_DETAIL,
     organization: ORGANIZATION_ID, // organization ObjectId
@@ -58,9 +60,10 @@ module.exports = [
     location: {
       coordinates: [100.56983534305, 13.730537951107],
     },
+    processing_time: '2015-12-04',
     progresses: [
       {
-        created_time: '2016-12-03',
+        created_time: '2016-12-04',
         owner: USER_ADMIN_ID, // adminUser ObjectId
         detail: PROGRESS_DETAIL,
       },
@@ -72,6 +75,7 @@ module.exports = [
   {
     _id: ObjectId(PIN_RESOLVED_ID), // eslint-disable-line new-cap
     assigned_department: DEPARTMENT_SUPER_ADMIN_ID, // department ObjectId
+    assigned_time: '2015-12-04',
     created_time: '2016-12-03',
     detail: PIN_RESOLVED_DETAIL,
     organization: ORGANIZATION_ID, // organization ObjectId
@@ -80,6 +84,7 @@ module.exports = [
     location: {
       coordinates: [100.56983534305, 13.730537951107],
     },
+    processing_time: '2015-12-04',
     progresses: [
       {
         created_time: '2016-12-03',

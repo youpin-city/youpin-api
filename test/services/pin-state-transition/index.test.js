@@ -23,7 +23,6 @@ const superAdminUser = require('../../fixtures/super_admin_user');
 const app = require('../../../src/app');
 const roles = require('../../../src/constants/roles');
 const states = require('../../../src/constants/pin-states');
-const ObjectId = require('mongoose').Types.ObjectId;
 const PinTransitionService = require('../../../src/services/pin-state-transition').PinTransitionService; // eslint-disable-line max-len
 
 // States
@@ -40,10 +39,10 @@ const DEPARTMENT_HEAD = roles.DEPARTMENT_HEAD;
 const DEPARTMENT_OFFICER = roles.DEPARTMENT_OFFICER;
 const USER = roles.USER;
 
-// Departments
-const DEPARTMENT_GENERAL_ID = require('../../fixtures/constants').DEPARTMENT_GENERAL_ID;
-
 // Pins
+const PIN_PENDING_ID = require('../../fixtures/constants').PIN_PENDING_ID;
+const PIN_ASSIGNED_ID = require('../../fixtures/constants').PIN_ASSIGNED_ID;
+const PIN_PROCESSING_ID = require('../../fixtures/constants').PIN_PROCESSING_ID;
 const PIN_RESOLVED_ID = require('../../fixtures/constants').PIN_RESOLVED_ID;
 const PIN_REJECTED_ID = require('../../fixtures/constants').PIN_REJECTED_ID;
 
@@ -57,7 +56,7 @@ describe('Pin state transtion service', () => {
   let server;
   let dateStub;
 
-  before((done) => {
+  beforeEach((done) => {
     // enable role permission
     app.set('enableStateTransitionCheck', true);
     server = app.listen(app.get('port'));
@@ -80,7 +79,7 @@ describe('Pin state transtion service', () => {
     });
   });
 
-  after((done) => {
+  afterEach((done) => {
     // Clear collections after finishing all tests.
     Promise.all([
       User.remove({}),
@@ -215,348 +214,223 @@ describe('Pin state transtion service', () => {
   });
 
   describe('Transition check', () => {
-    let pin;
-
-    beforeEach(() => {
-      pin = {
-        _id: ObjectId('579334c75563625d62811111'), // eslint-disable-line new-cap
-        detail: 'Mock Pin',
-        organization: '57933111556362511181aaa1', // organization ObjectId
-        owner: '579334c75563625d6281b6f1', // adminUser ObjectId
-        provider: '579334c75563625d6281b6f1', // adminUser ObjectId
-        location: {
-          coordinates: [100.56983534303, 13.730537951109],
-        },
-        status: 'pending',
-        is_archived: false,
-      };
-    });
-
-    it('test incorrect transition', (done) => {
-      pin._id = ObjectId('579334c75563625d62811313'); // eslint-disable-line no-underscore-dangle,new-cap,max-len
-      pin.status = PENDING;
-
-      new Pin(pin).save((err, savedPin) => {
-        if (err) {
-          return done(err);
-        }
-
+    it('test incorrect transition', (done) =>
+      login(app, 'super_admin@youpin.city', 'youpin_admin')
+      .then((loginResp) => {
+        const token = loginResp.body.token;
         return request(app)
-        .post('/auth/local')
+        .post(`/pins/${PIN_PENDING_ID}/state_transition`)
+        .set('Authorization', `Bearer ${token}`)
         .set('Content-type', 'application/json')
         .send({
-          email: 'super_admin@youpin.city',
-          password: 'youpin_admin',
+          state: RESOLVED,
         })
-        .then((loginResp) => {
-          const token = loginResp.body.token;
-          return request(app)
-          .post(`/pins/${savedPin._id}/state_transition`) // eslint-disable-line no-underscore-dangle,max-len
-          .set('Authorization', `Bearer ${token}`)
-          .set('Content-type', 'application/json')
-          .send({
-            state: RESOLVED,
-          })
-          .expect(400);
-        })
-        .then((stateResp) => {
-          expect(stateResp.body.message)
-            .to.equal('Cannot change state from pending to resolved with role super_admin');
-          done();
-        });
-      });
-    });
+        .expect(400);
+      })
+      .then((stateResp) => {
+        expect(stateResp.body.message)
+          .to.equal('Cannot change state from pending to resolved with role super_admin');
+        done();
+      })
+    );
 
-    it('updates correct properties for `rejected` transtion from `pending` to `rejected` state',
-    (done) => {
-      pin._id = ObjectId('579334c75563625d62811113'); // eslint-disable-line no-underscore-dangle,new-cap,max-len
-      pin.status = 'pending';
-
-      new Pin(pin).save((err, savedPin) => {
-        if (err) {
-          return done(err);
-        }
+    it('updates correct properties for `rejected` transtion ' +
+       'from `pending` to `rejected` state', (done) =>
+      login(app, 'super_admin@youpin.city', 'youpin_admin')
+      .then((loginResp) => {
+        const token = loginResp.body.token;
+        dateStub = stub(Date, 'now', () => STUBBED_DATE);
 
         return request(app)
-        .post('/auth/local')
+        .post(`/pins/${PIN_PENDING_ID}/state_transition`)
+        .set('Authorization', `Bearer ${token}`)
         .set('Content-type', 'application/json')
         .send({
-          email: 'super_admin@youpin.city',
-          password: 'youpin_admin',
+          state: REJECTED,
         })
-        .then((loginResp) => {
-          const token = loginResp.body.token;
-          dateStub = stub(Date, 'now', () => STUBBED_DATE);
+        .expect(201);
+      })
+      .then((transitionResp) => {
+        const transition = transitionResp.body;
 
-          return request(app)
-          .post(`/pins/${savedPin._id}/state_transition`) // eslint-disable-line no-underscore-dangle,max-len
-          .set('Authorization', `Bearer ${token}`)
-          .set('Content-type', 'application/json')
-          .send({
-            state: 'rejected',
-          })
-          .expect(201);
-        })
-        .then((transitionResp) => {
-          const transition = transitionResp.body;
+        expect(transition.status).to.equal(REJECTED);
+        expect(transition.pinId).to.equal(String(PIN_PENDING_ID));
 
-          expect(transition.status).to.equal('rejected');
-          expect(transition.pinId).to.equal(String(savedPin._id)); // eslint-disable-line no-underscore-dangle,max-len
+        return Pin.findOne({ _id: PIN_PENDING_ID });
+      })
+      .then(updatedPin => {
+        expect(updatedPin.status).to.equal(REJECTED);
+        expect(updatedPin.rejected_time.toISOString().split('T')[0])
+          .to.equal(STUBBED_DATE);
 
-          return Pin.findOne({ _id: savedPin._id }); // eslint-disable-line no-underscore-dangle,max-len
-        })
-        .then(updatedPin => {
-          expect(updatedPin.status).to.equal('rejected');
-          expect(updatedPin.rejected_time.toISOString().split('T')[0])
-            .to.equal(STUBBED_DATE);
+        dateStub.restore();
+        done();
+      })
+    );
 
-          dateStub.restore();
-          done();
-        });
-      });
-    });
-
-    it('updates correct properties for `assigned` transtion from `pending` to `assigned` state',
-    (done) => {
-      pin._id = ObjectId('579334c75563625d62811114'); // eslint-disable-line no-underscore-dangle,new-cap,max-len
-      pin.status = 'pending';
-
-      new Pin(pin).save((err, savedPin) => {
-        if (err) {
-          return done(err);
-        }
+    it('updates correct properties for `assigned` transtion ' +
+       'from `pending` to `assigned` state', (done) =>
+      login(app, 'super_admin@youpin.city', 'youpin_admin')
+      .then((loginResp) => {
+        const token = loginResp.body.token;
+        dateStub = stub(Date, 'now', () => STUBBED_DATE);
 
         return request(app)
-        .post('/auth/local')
+        .post(`/pins/${PIN_PENDING_ID}/state_transition`)
+        .set('Authorization', `Bearer ${token}`)
         .set('Content-type', 'application/json')
         .send({
-          email: 'super_admin@youpin.city',
-          password: 'youpin_admin',
+          state: ASSIGNED,
+          assigned_department: '57933111556362511181ccc1',
         })
-        .then((loginResp) => {
-          const token = loginResp.body.token;
-          dateStub = stub(Date, 'now', () => STUBBED_DATE);
+        .expect(201);
+      })
+      .then((transitionResp) => {
+        const transition = transitionResp.body;
 
-          return request(app)
-          .post(`/pins/${savedPin._id}/state_transition`) // eslint-disable-line no-underscore-dangle,max-len
-          .set('Authorization', `Bearer ${token}`)
-          .set('Content-type', 'application/json')
-          .send({
-            state: 'assigned',
-            assigned_department: '57933111556362511181ccc1',
-          })
-          .expect(201);
-        })
-        .then((transitionResp) => {
-          const transition = transitionResp.body;
+        expect(transition.status).to.equal(ASSIGNED);
+        expect(transition.assigned_department).to.equal('57933111556362511181ccc1');
+        expect(transition.pinId).to.equal(String(PIN_PENDING_ID));
 
-          expect(transition.status).to.equal('assigned');
-          expect(transition.assigned_department).to.equal('57933111556362511181ccc1');
-          expect(transition.pinId).to.equal(String(savedPin._id)); // eslint-disable-line no-underscore-dangle,max-len
+        return Pin.findOne({ _id: PIN_PENDING_ID });
+      })
+      .then(updatedPin => {
+        expect(updatedPin.status).to.equal(ASSIGNED);
+        expect(String(updatedPin.assigned_department._id)) // eslint-disable-line no-underscore-dangle,max-len
+          .to.equal('57933111556362511181ccc1');
+        expect(updatedPin.assigned_time.toISOString().split('T')[0])
+          .to.equal(STUBBED_DATE);
 
-          return Pin.findOne({ _id: savedPin._id }); // eslint-disable-line no-underscore-dangle,max-len
-        })
-        .then(updatedPin => {
-          expect(updatedPin.status).to.equal('assigned');
-          expect(String(updatedPin.assigned_department._id)) // eslint-disable-line no-underscore-dangle,max-len
-            .to.equal('57933111556362511181ccc1');
-          expect(updatedPin.assigned_time.toISOString().split('T')[0])
-            .to.equal(STUBBED_DATE);
+        dateStub.restore();
+        done();
+      })
+    );
 
-          dateStub.restore();
-          done();
-        });
-      });
-    });
-
-    it('updates correct properties for `deny` transtion from `assigned` to `pending` state',
-    (done) => {
-      pin._id = ObjectId('579334c75563625d62811124'); // eslint-disable-line no-underscore-dangle,new-cap,max-len
-      pin.status = 'assigned';
-      pin.assigned_department = ObjectId(DEPARTMENT_GENERAL_ID); // eslint-disable-line no-underscore-dangle,new-cap,max-len
-      pin.assigned_time = STUBBED_DATE;
-
-      new Pin(pin).save((err, savedPin) => {
-        if (err) {
-          return done(err);
-        }
+    it('updates correct properties for `deny` transtion ' +
+       'from `assigned` to `pending` state', (done) =>
+      login(app, 'super_admin@youpin.city', 'youpin_admin')
+      .then((loginResp) => {
+        const token = loginResp.body.token;
 
         return request(app)
-        .post('/auth/local')
+        .post(`/pins/${PIN_ASSIGNED_ID}/state_transition`)
+        .set('Authorization', `Bearer ${token}`)
         .set('Content-type', 'application/json')
         .send({
-          email: 'super_admin@youpin.city',
-          password: 'youpin_admin',
+          state: PENDING,
         })
-        .then((loginResp) => {
-          const token = loginResp.body.token;
+        .expect(201);
+      })
+      .then((transitionResp) => {
+        const transition = transitionResp.body;
 
-          return request(app)
-          .post(`/pins/${savedPin._id}/state_transition`) // eslint-disable-line no-underscore-dangle,max-len
-          .set('Authorization', `Bearer ${token}`)
-          .set('Content-type', 'application/json')
-          .send({
-            state: 'pending',
-          })
-          .expect(201);
-        })
-        .then((transitionResp) => {
-          const transition = transitionResp.body;
+        expect(transition.status).to.equal(PENDING);
+        expect(transition.assigned_department).to.equal(null);
+        expect(transition.pinId).to.equal(String(PIN_ASSIGNED_ID));
 
-          expect(transition.status).to.equal('pending');
-          expect(transition.assigned_department).to.equal(null);
-          expect(transition.pinId).to.equal(String(savedPin._id)); // eslint-disable-line no-underscore-dangle,max-len
+        return Pin.findOne({ _id: PIN_ASSIGNED_ID });
+      })
+      .then(updatedPin => {
+        expect(updatedPin.status).to.equal(PENDING);
+        expect(updatedPin.assigned_department)
+          .to.equal(null);
 
-          return Pin.findOne({ _id: savedPin._id }); // eslint-disable-line no-underscore-dangle,max-len
-        })
-        .then(updatedPin => {
-          expect(updatedPin.status).to.equal('pending');
-          expect(updatedPin.assigned_department) // eslint-disable-line no-underscore-dangle,max-len
-            .to.equal(null);
+        // It should not remove previously assigned time
+        expect(updatedPin.assigned_time.toISOString().split('T')[0])
+          .to.equal('2015-12-04');
 
-          // It should not remove previously assigned time
-          expect(updatedPin.assigned_time.toISOString().split('T')[0])
-            .to.equal(STUBBED_DATE);
+        dateStub.restore();
+        done();
+      })
+    );
 
-          dateStub.restore();
-          done();
-        });
-      });
-    });
-
-    it('updates correct properties for `process` transtion from `assigned` to `processing` state',
-    (done) => {
-      pin._id = ObjectId('579334c75563625d62811115'); // eslint-disable-line no-underscore-dangle,new-cap,max-len
-      pin.status = 'assigned';
-
-      new Pin(pin).save((err, savedPin) => {
-        if (err) {
-          return done(err);
-        }
+    it('updates correct properties for `process` transtion ' +
+       'from `assigned` to `processing` state', (done) =>
+      login(app, 'department_head@youpin.city', 'youpin_admin')
+      .then((loginResp) => {
+        const token = loginResp.body.token;
+        dateStub = stub(Date, 'now', () => STUBBED_DATE);
 
         return request(app)
-        .post('/auth/local')
+        .post(`/pins/${PIN_ASSIGNED_ID}/state_transition`)
+        .set('Authorization', `Bearer ${token}`)
         .set('Content-type', 'application/json')
         .send({
-          email: 'department_head@youpin.city',
-          password: 'youpin_admin',
-        })
-        .then((loginResp) => {
-          const token = loginResp.body.token;
-          dateStub = stub(Date, 'now', () => STUBBED_DATE);
-
-          return request(app)
-          .post(`/pins/${savedPin._id}/state_transition`) // eslint-disable-line no-underscore-dangle,max-len
-          .set('Authorization', `Bearer ${token}`)
-          .set('Content-type', 'application/json')
-          .send({
-            state: 'processing',
-            processed_by: '579334c75553625d6281b6cc',
-            assigned_users: [
-              '579334c75553625d6281b6cc',
-              '579334c75553625d6281b6cd',
-              '579334c75553625d6281b6ce',
-            ],
-          })
-          .expect(201);
-        })
-        .then((transitionResp) => {
-          const transition = transitionResp.body;
-
-          expect(transition.status).to.equal('processing');
-          expect(transition.processed_by).to.equal('579334c75553625d6281b6cc');
-          expect(transition.assigned_users).to.deep.equal([
+          state: 'processing',
+          processed_by: '579334c75553625d6281b6cc',
+          assigned_users: [
             '579334c75553625d6281b6cc',
             '579334c75553625d6281b6cd',
             '579334c75553625d6281b6ce',
-          ]);
-          expect(transition.pinId).to.equal(String(savedPin._id)); // eslint-disable-line no-underscore-dangle,max-len
-
-          return Pin.findOne({ _id: savedPin._id }); // eslint-disable-line no-underscore-dangle,max-len
+          ],
         })
-        .then(updatedPin => {
-          expect(updatedPin.status).to.equal('processing');
-          expect(String(updatedPin.processed_by)).to.equal('579334c75553625d6281b6cc');
-          expect(updatedPin.processing_time.toISOString().split('T')[0])
-            .to.equal(STUBBED_DATE);
+        .expect(201);
+      })
+      .then((transitionResp) => {
+        const transition = transitionResp.body;
 
-          dateStub.restore();
-          done();
-        });
-      });
-    });
+        expect(transition.status).to.equal(PROCESSING);
+        expect(transition.processed_by).to.equal('579334c75553625d6281b6cc');
+        expect(transition.assigned_users).to.deep.equal([
+          '579334c75553625d6281b6cc',
+          '579334c75553625d6281b6cd',
+          '579334c75553625d6281b6ce',
+        ]);
+        expect(transition.pinId).to.equal(String(PIN_ASSIGNED_ID));
+
+        return Pin.findOne({ _id: PIN_ASSIGNED_ID });
+      })
+      .then(updatedPin => {
+        expect(updatedPin.status).to.equal(PROCESSING);
+        expect(String(updatedPin.processed_by)).to.equal('579334c75553625d6281b6cc');
+        expect(updatedPin.processing_time.toISOString().split('T')[0])
+          .to.equal(STUBBED_DATE);
+
+        dateStub.restore();
+        done();
+      })
+    );
 
     it('updates correct properties for `re-process` transtion ' +
-       'from `resolved` to `processing` state', (done) => {
-      pin._id = ObjectId('579334c75563625d62811122'); // eslint-disable-line no-underscore-dangle,new-cap,max-len
-      pin.status = 'resolved';
-      pin.assigned_department = Object(DEPARTMENT_GENERAL_ID);
-      pin.resolved_time = Date.now();
-
-      new Pin(pin).save((err, savedPin) => {
-        if (err) {
-          return done(err);
-        }
+       'from `resolved` to `processing` state', (done) =>
+      login(app, 'organization_admin@youpin.city', 'youpin_admin')
+      .then((loginResp) => {
+        const token = loginResp.body.token;
 
         return request(app)
-        .post('/auth/local')
+        .post(`/pins/${PIN_RESOLVED_ID}/state_transition`)
+        .set('Authorization', `Bearer ${token}`)
         .set('Content-type', 'application/json')
         .send({
-          email: 'organization_admin@youpin.city',
-          password: 'youpin_admin',
+          state: PROCESSING,
         })
-        .then((loginResp) => {
-          const token = loginResp.body.token;
+        .expect(201);
+      })
+      .then((transitionResp) => {
+        const transition = transitionResp.body;
 
-          return request(app)
-          .post(`/pins/${savedPin._id}/state_transition`) // eslint-disable-line no-underscore-dangle,max-len
-          .set('Authorization', `Bearer ${token}`)
-          .set('Content-type', 'application/json')
-          .send({
-            state: 'processing',
-          })
-          .expect(201);
-        })
-        .then((transitionResp) => {
-          const transition = transitionResp.body;
+        expect(transition.status).to.equal(PROCESSING);
+        expect(transition.pinId).to.equal(String(PIN_RESOLVED_ID));
 
-          expect(transition.status).to.equal('processing');
-          expect(transition.pinId).to.equal(String(savedPin._id)); // eslint-disable-line no-underscore-dangle,max-len
+        return Pin.findOne({ _id: PIN_RESOLVED_ID });
+      })
+      .then(updatedPin => {
+        expect(updatedPin.status).to.equal(PROCESSING);
+        expect(updatedPin.resolved_time).to.equal(null);
 
-          return Pin.findOne({ _id: savedPin._id }); // eslint-disable-line no-underscore-dangle,max-len
-        })
-        .then(updatedPin => {
-          expect(updatedPin.status).to.equal('processing');
-          expect(updatedPin.resolved_time).to.equal(null);
-
-          done();
-        });
-      });
-    });
+        done();
+      })
+    );
 
     it('updates correct properties for `resolved` transtion ' +
-       'from `processing` to `resolved` state', (done) => {
-      pin._id = ObjectId('579334c75563625d62811116'); // eslint-disable-line no-underscore-dangle,new-cap,max-len
-      pin.status = PROCESSING;
-
-      new Pin(pin).save((err, savedPin) => {
-        if (err) {
-          return done(err);
-        }
-
-        return request(app)
-        .post('/auth/local')
-        .set('Content-type', 'application/json')
-        .send({
-          email: 'department_head@youpin.city',
-          password: 'youpin_admin',
-        })
+       'from `processing` to `resolved` state', (done) =>
+        login(app, 'department_head@youpin.city', 'youpin_admin')
         .then((loginResp) => {
           const token = loginResp.body.token;
           dateStub = stub(Date, 'now', () => STUBBED_DATE);
 
           return request(app)
-          .post(`/pins/${savedPin._id}/state_transition`) // eslint-disable-line no-underscore-dangle,max-len
+          .post(`/pins/${PIN_PROCESSING_ID}/state_transition`)
           .set('Authorization', `Bearer ${token}`)
           .set('Content-type', 'application/json')
           .send({
@@ -567,21 +441,20 @@ describe('Pin state transtion service', () => {
         .then((transitionResp) => {
           const transition = transitionResp.body;
 
-          expect(transition.status).to.equal('resolved');
-          expect(transition.pinId).to.equal(String(savedPin._id)); // eslint-disable-line no-underscore-dangle,max-len
+          expect(transition.status).to.equal(RESOLVED);
+          expect(transition.pinId).to.equal(String(PIN_PROCESSING_ID));
 
-          return Pin.findOne({ _id: savedPin._id }); // eslint-disable-line no-underscore-dangle,max-len
+          return Pin.findOne({ _id: PIN_PROCESSING_ID });
         })
         .then(updatedPin => {
-          expect(updatedPin.status).to.equal('resolved');
+          expect(updatedPin.status).to.equal(RESOLVED);
           expect(updatedPin.resolved_time.toISOString().split('T')[0])
             .to.equal(STUBBED_DATE);
 
           dateStub.restore();
           done();
-        });
-      });
-    });
+        })
+    );
 
     it('updates correct properties for `redo` transtion ' +
        'from `resolved` to `pending` state', (done) =>
@@ -601,13 +474,13 @@ describe('Pin state transtion service', () => {
       .then((transitionResp) => {
         const transition = transitionResp.body;
 
-        expect(transition.status).to.equal('pending');
+        expect(transition.status).to.equal(PENDING);
         expect(transition.pinId).to.equal(String(PIN_RESOLVED_ID));
 
         return Pin.findOne({ _id: PIN_RESOLVED_ID }); // eslint-disable-line no-underscore-dangle
       })
       .then(updatedPin => {
-        expect(updatedPin.status).to.equal('pending');
+        expect(updatedPin.status).to.equal(PENDING);
         expect(updatedPin.assigned_department).to.equal(null);
         expect(updatedPin.assigned_users).to.equal(null);
         expect(updatedPin.resolved_time).to.equal(null);
@@ -634,13 +507,13 @@ describe('Pin state transtion service', () => {
       .then((transitionResp) => {
         const transition = transitionResp.body;
 
-        expect(transition.status).to.equal('pending');
+        expect(transition.status).to.equal(PENDING);
         expect(transition.pinId).to.equal(String(PIN_REJECTED_ID));
 
         return Pin.findOne({ _id: PIN_REJECTED_ID }); // eslint-disable-line no-underscore-dangle
       })
       .then(updatedPin => {
-        expect(updatedPin.status).to.equal('pending');
+        expect(updatedPin.status).to.equal(PENDING);
         expect(updatedPin.assigned_department).to.equal(undefined);
         expect(updatedPin.rejected_time).to.equal(null);
 
