@@ -25,7 +25,7 @@ const triggerCalculation = () => (hook) => {
     timestamp.$lte = endDate;
   }
   if (_.isEmpty(timestamp)) {
-    timestamp = moment().format('YYYY-MM-DD');
+    timestamp = moment().utc().format('YYYY-MM-DD');
   }
   // Start a calculation
   const query = {
@@ -47,7 +47,7 @@ const triggerCalculation = () => (hook) => {
       // Loop through activity log and summarize each day into table.
       const summaryTable = {};
       for (let i = 0; i < logs.length; ++i) {
-        const date = moment(logs[i].timestamp).format('YYYY-MM-DD');
+        const date = moment(logs[i].timestamp).utc().format('YYYY-MM-DD');
         if (!(date in summaryTable)) {
           summaryTable[date] = {};
         }
