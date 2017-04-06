@@ -72,15 +72,30 @@ const prepareActivityLog = () => (hook) => {
         description = `${nameOfUser} rejected pin ${shortenDetail}`;
         break;
       case states.PENDING:
-        // If a pin has already been assigned to a department (in ASSIGNED state),
-        // but the department denies that assignment,
-        // the pin's next state will go back to PENDING (and need to re-assign).
-        // So, we will remove `assigned_department` value from the pin.
-        action = actions.DENY;
-        changedFields.push('assigned_department');
-        previousValues.push(assignedDepartmentObject._id);
-        updatedValues.push(undefined);
-        description = `${nameOfUser} denies pin ${shortenDetail}`;
+        if (previousState === states.ASSIGNED) {
+          // If a pin has already been assigned to a department (in ASSIGNED state),
+          // but the department denies that assignment,
+          // the pin's next state will go back to PENDING (and need to re-assign).
+          // So, we will remove `assigned_department` value from the pin.
+          action = actions.DENY;
+          changedFields.push('assigned_department');
+          previousValues.push(assignedDepartmentObject._id);
+          updatedValues.push(undefined);
+          description = `${nameOfUser} denies pin ${shortenDetail}`;
+        } else if (previousState === states.RESOLVED) {
+          // If a pin has already resolved but it is re-opened again.
+          // Remove `assigned_department` value from the pin
+          // and ORGANIZATION_ADMIN will do assignment again.
+          action = actions.RE_OPEN;
+          changedFields.push('assigned_department');
+          previousValues.push(assignedDepartmentObject._id);
+          updatedValues.push(undefined);
+          description = `${nameOfUser} re-opens pin ${shortenDetail}`;
+        } else if (previousState === states.REJECTED) {
+          // Re-open a rejected pin. No need to change any field.
+          action = actions.RE_OPEN;
+          description = `${nameOfUser} re-opens pin ${shortenDetail}`;
+        }
         break;
       case states.ASSIGNED:
         action = actions.ASSIGN;

@@ -4,6 +4,7 @@ const loadFixture = require('mongoose-fixture-loader');
 const mongoose = require('mongoose');
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
+const request = require('supertest-as-promised');
 
 const expect = chai.expect;
 const spy = sinon.spy;
@@ -26,6 +27,16 @@ const assertTestEnv = () => {
   }
 };
 
+const login = (app, email, password) => (
+  request(app)
+   .post('/auth/local')
+   .set('Content-type', 'application/json')
+   .send({
+     email,
+     password,
+   })
+);
+
 
 module.exports = {
   assertTestEnv,
@@ -33,4 +44,5 @@ module.exports = {
   loadFixture,
   spy,
   stub,
+  login,
 };
