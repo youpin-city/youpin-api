@@ -54,7 +54,7 @@ const sendNotifToRelatedUsers = () => (hook) => { // eslint-disable-line consist
       const adminConfig = hook.app.get('admin');
       let adminIssueBaseUrl;
       if (adminConfig && adminConfig.adminUrl && hook.data.logInfo.pin_id) {
-        adminIssueBaseUrl = `${adminConfig.adminUrl}/issue#!issue-id:`;
+        adminIssueBaseUrl = `${adminConfig.adminUrl}/issue/`;
         message +=
           `\nPin link - ${adminIssueBaseUrl}${hook.data.logInfo.pin_id}`;
       }
