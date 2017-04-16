@@ -67,13 +67,16 @@ const sendNotifToRelatedUsers = () => (hook) => { // eslint-disable-line consist
             sendMessage(botConfig.botUrl, botConfig.notificationToken, user.botId, message));
         }
         if (mailServiceConfig && user.email) {
-          allNotificationPromises.push(sendMail(mailServiceConfig, adminIssueBaseUrl, user.email, hook.data.logInfo));
+          allNotificationPromises.push(
+            sendMail(mailServiceConfig, adminIssueBaseUrl, user.email, hook.data.logInfo));
         }
       }
       // TODO(A): Remove after ensuring the notif works fine.
       // This is for only testing in PROD to monitor that every notif mail has come.
       if (mailServiceConfig) {
-        allNotificationPromises.push(sendMail(mailServiceConfig, adminIssueBaseUrl, 'parnurzeal@gmail.com', hook.data.logInfo));
+        allNotificationPromises.push(
+          sendMail(mailServiceConfig, adminIssueBaseUrl,
+            'parnurzeal@gmail.com', hook.data.logInfo));
       }
       if (allNotificationPromises.length === 0) {
         console.log('No legit notification. Nothing will be sent.');

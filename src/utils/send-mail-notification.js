@@ -24,7 +24,7 @@ const sendMailNotification = (mailServiceConfig, issueBaseUrl, email, logInfo) =
     title: fixedContent.title,
     logoUrl: fixedContent.logoUrl,
     pinLink: `${issueBaseUrl}${logInfo.pin_id}`,
-    message
+    message,
   };
   // TODO(A): Send to multiple emails at once and use a better html text format.
   const templateDir = path.join(__dirname, 'email-templates', 'notification');
