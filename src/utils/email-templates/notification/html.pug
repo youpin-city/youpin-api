@@ -1,0 +1,36 @@
+doctype transitional
+html
+  head
+    meta(http-equiv="Content-Type" content="text/html; charset=UTF-8")
+    style(type='text/css').
+      .pinButton {
+        -moz-border-radius:12px;
+        -webkit-border-radius:12px;
+        background-color:#c74545;
+        border-color: #45b7af;
+        border-collapse:separate !important;
+        border-radius:12px;
+        border:1px solid #ab1919;
+        padding:10px 26px;
+      }
+      .pinButton, .pinButton a {
+        text-shadow:0px 1px 0px #662830;
+        color:#FFFFFF;
+        font-family:Arial;
+        font-size:15px;
+        font-weight:bold;
+        letter-spacing:-.5px;
+        line-height:100%;
+        text-align:center;
+        text-decoration:none;
+      }
+body
+  center
+    img(src=logoUrl)
+    h1= title
+    p= message
+    table.pinButton(border="0" cellpadding="15" cellspacing="0")
+      tr
+        td(valign="middle")
+          div
+            a(href=pinLink) GO TO PIN
