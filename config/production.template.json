@@ -36,7 +36,9 @@
       }
     },
     "content": {
-      "from": "YouPin Admin <admin@youpin.city>"
+      "from": "YouPin Admin <admin@youpin.city>",
+      "title": "YouPin Notification",
+      "logoUrl": "https://youpin.image/public/image/logo@2x.png"
     }
   },
   "gcs": {
