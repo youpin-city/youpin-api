@@ -169,7 +169,7 @@ class PinTransitionService {
     } else if (nextState === RESOLVED) {
       // processing -> resolved | notify ORGANIZATION_ADMIN
       data.toBeNotifiedUsers = [data.assigned_users];
-      data.toBeNotifiedRoles = [ORGANIZATION_ADMIN];
+      data.toBeNotifiedRoles = [ORGANIZATION_ADMIN, DEPARTMENT_HEAD];
       updatingProperties.resolved_time = Date.now();
     } else if (nextState === REJECTED) {
       updatingProperties.rejected_time = Date.now();
