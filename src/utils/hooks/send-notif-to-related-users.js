@@ -62,11 +62,11 @@ const sendNotifToRelatedUsers = () => (hook) => { // eslint-disable-line consist
       const allNotificationPromises = [];
       for (let i = 0; i < relatedUsers.length; ++i) {
         const user = relatedUsers[i];
-        if (botConfig && botConfig.botUrl && botConfig.notificationToken && user.botId) {
+        if (botConfig && botConfig.botUrl && botConfig.notificationToken && user && user.botId) {
           allNotificationPromises.push(
             sendMessage(botConfig.botUrl, botConfig.notificationToken, user.botId, message));
         }
-        if (mailServiceConfig && user.email) {
+        if (mailServiceConfig && user && user.email) {
           allNotificationPromises.push(
             sendMail(mailServiceConfig, adminIssueBaseUrl, user.email, hook.data.logInfo));
         }
