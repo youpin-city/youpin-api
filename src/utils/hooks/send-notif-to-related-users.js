@@ -5,6 +5,7 @@ const User = require('../../services/user/user-model');
 
 // Roles
 const ORGANIZATION_ADMIN = require('../../constants/roles').ORGANIZATION_ADMIN;
+const PUBLIC_RELATIONS = require('../../constants/roles').PUBLIC_RELATIONS;
 
 // Assume that a before hook attach logInfo in proper format already
 const sendNotifToRelatedUsers = () => (hook) => { // eslint-disable-line consistent-return
@@ -32,8 +33,9 @@ const sendNotifToRelatedUsers = () => (hook) => { // eslint-disable-line consist
   for (let i = 0; i < relatedRoles.length; ++i) {
     // Since organization admin does not have to depend on related department,
     // we can just find it globally.
-    if (relatedRoles[i] === ORGANIZATION_ADMIN) {
-      findUserPromises.push(User.find({ role: ORGANIZATION_ADMIN }));
+    if (relatedRoles[i] === ORGANIZATION_ADMIN
+      || relatedRoles[i] === PUBLIC_RELATIONS) {
+      findUserPromises.push(User.find({ role: relatedRoles[i] }));
     } else {
       // Find users in other roles of related departments.
       findUserPromises.push(
