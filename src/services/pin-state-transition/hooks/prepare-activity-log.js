@@ -148,6 +148,11 @@ const prepareActivityLog = () => (hook) => {
       throw new errors.BadRequest('Invalid next state');
     }
 
+    // TODO: Restructure/format all useful data that get utilised after this hook.
+    // Bcoz lots of these data can be acquired by just passing the whole pin.
+    // instead of passing small parts of the data here and there.
+    // (pin.organization, pinId, pin..., etc.)
+
     // Pass logInfo object to after hook by attaching to hook.data
     const logInfo = {
       user: nameOfUser,
@@ -168,6 +173,9 @@ const prepareActivityLog = () => (hook) => {
 
     // Attach data for PinTransitionService
     hook.data.previousState = previousState; // eslint-disable-line no-param-reassign
+
+    // Attach pin owner for notify hook
+    hook.data.pinOwner = pin.owner; // eslint-disable-line no-param-reassign
 
     return Promise.resolve(hook);
   })

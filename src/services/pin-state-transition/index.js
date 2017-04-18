@@ -135,7 +135,8 @@ class PinTransitionService {
         }
         // assigned -> processing
         // Notify to DEPARTMENT_OFFICER or DEPARTMENT_HEAD who gets assigned.
-        data.toBeNotifiedUsers = [data.assigned_users];
+        // Notify pin owner
+        data.toBeNotifiedUsers = [data.assigned_users, data.pinOwner];
         updatingProperties.processed_by = data.processed_by;
         updatingProperties.assigned_users = data.assigned_users;
         updatingProperties.processing_time = Date.now();
