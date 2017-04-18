@@ -118,7 +118,7 @@ class PinTransitionService {
         );
       }
       // pending -> assigned | Notify DEPARTMENT_HEAD to assign pin
-      // to correct a person in his/her department.
+      // to choose a person in his/her department.
       data.toBeNotifiedDepartments = [data.assigned_department];
       data.toBeNotifiedRoles = [DEPARTMENT_HEAD];
       updatingProperties.assigned_department = data.assigned_department;
@@ -167,8 +167,11 @@ class PinTransitionService {
         updatingProperties.rejected_time = null;
       }
     } else if (nextState === RESOLVED) {
-      // processing -> resolved | notify ORGANIZATION_ADMIN
-      data.toBeNotifiedRoles = [ORGANIZATION_ADMIN];
+      // processing -> resolved
+      // Notify ORGANIZATION_ADMIN and DEPARTMENT_HEAD
+      // Notify assigned_user
+      data.toBeNotifiedUsers = [data.assigned_users];
+      data.toBeNotifiedRoles = [ORGANIZATION_ADMIN, DEPARTMENT_HEAD];
       updatingProperties.resolved_time = Date.now();
     } else if (nextState === REJECTED) {
       updatingProperties.rejected_time = Date.now();
