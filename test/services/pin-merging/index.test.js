@@ -103,47 +103,41 @@ describe('Pin merging service', () => {
   });
 
   it('updates correct pin properties', (done) => {
-    request(app)
-    .post('/auth/local')
-    .set('Content-type', 'application/json')
-    .send({
-      email: 'super_admin@youpin.city',
-      password: 'youpin_admin',
-    })
-    .then((loginResp) => {
-      const token = loginResp.body.token;
+    login(app, 'super_admin@youpin.city', 'youpin_admin')
+      .then((loginResp) => {
+        const token = loginResp.body.token;
 
-      return request(app)
-        .post(`/pins/${PIN_PENDING_ID}/merging`)
-        .set('Authorization', `Bearer ${token}`)
-        .set('Content-type', 'application/json')
-        .send({
-          mergedParentPin: PIN_ASSIGNED_ID,
-        })
-        .expect(201);
-    })
-    .then((mergingResp) => {
-      expect(mergingResp.body.length).to.equal(2);
-      const updatedChildPinResult = mergingResp.body[0];
-      const updatedParentPinResult = mergingResp.body[1];
+        return request(app)
+          .post(`/pins/${PIN_PENDING_ID}/merging`)
+          .set('Authorization', `Bearer ${token}`)
+          .set('Content-type', 'application/json')
+          .send({
+            mergedParentPin: PIN_ASSIGNED_ID,
+          })
+          .expect(201);
+      })
+      .then((mergingResp) => {
+        expect(mergingResp.body.length).to.equal(2);
+        const updatedChildPinResult = mergingResp.body[0];
+        const updatedParentPinResult = mergingResp.body[1];
 
-      expect(updatedChildPinResult.ok).to.equal(1);
-      expect(updatedParentPinResult.ok).to.equal(1);
+        expect(updatedChildPinResult.ok).to.equal(1);
+        expect(updatedParentPinResult.ok).to.equal(1);
 
-      return Pin.findOne({ _id: PIN_PENDING_ID }); // eslint-disable-line no-underscore-dangle
-    })
-    .then(updatedChildPin => {
-      expect(updatedChildPin.is_merged).to.equal(true);
-      expect(updatedChildPin.merged_parent_pin).to.deep.equal(ObjectId(PIN_ASSIGNED_ID)); // eslint-disable-line new-cap,max-len
+        return Pin.findOne({ _id: PIN_PENDING_ID }); // eslint-disable-line no-underscore-dangle
+      })
+      .then(updatedChildPin => {
+        expect(updatedChildPin.is_merged).to.equal(true);
+        expect(updatedChildPin.merged_parent_pin).to.deep.equal(ObjectId(PIN_ASSIGNED_ID)); // eslint-disable-line new-cap,max-len
 
-      return Pin.findOne({ _id: PIN_ASSIGNED_ID }).lean();
-    })
-    .then(updatedParentPin => {
-      expect(updatedParentPin.merged_children_pins).to.deep.equal([ObjectId(PIN_PENDING_ID)]); // eslint-disable-line new-cap,max-len
+        return Pin.findOne({ _id: PIN_ASSIGNED_ID }).lean();
+      })
+      .then(updatedParentPin => {
+        expect(updatedParentPin.merged_children_pins).to.deep.equal([ObjectId(PIN_PENDING_ID)]); // eslint-disable-line new-cap,max-len
 
-      done();
-    })
-    .catch(err => done(err));
+        done();
+      })
+      .catch(err => done(err));
   });
 
   describe('allows all roles except normal user to merge pin', () => {
@@ -225,12 +219,7 @@ describe('Pin merging service', () => {
     });
 
     it('returns 401 not allowing normal user to update pin', (done) => (
-      request(app)
-        .post('/auth/local')
-        .send({
-          email: 'user@youpin.city',
-          password: 'youpin_user',
-        })
+      login(app, 'user@youpin.city', 'youpin_user')
         .then((tokenResp) => {
           const token = tokenResp.body.token;
 

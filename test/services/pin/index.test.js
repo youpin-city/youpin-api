@@ -1,6 +1,8 @@
 // Test helper functions
-const assertTestEnv = require('../../test_helper').assertTestEnv;
-const expect = require('../../test_helper').expect;
+const {
+  assertTestEnv,
+  expect,
+} = require('../../test_helper');
 
 // App stuff
 const app = require('../../../src/app');
