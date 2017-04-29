@@ -26,15 +26,15 @@ class PinTransitionService {
       [PENDING]: {
         [SUPER_ADMIN]: [ASSIGNED, REJECTED],
         [ORGANIZATION_ADMIN]: [ASSIGNED, REJECTED],
-        [DEPARTMENT_HEAD]: [],
-        [DEPARTMENT_OFFICER]: [],
+        [DEPARTMENT_HEAD]: [ASSIGNED],
+        [DEPARTMENT_OFFICER]: [ASSIGNED],
         [USER]: [],
       },
       [ASSIGNED]: {
         [SUPER_ADMIN]: [PENDING, PROCESSING],
-        [ORGANIZATION_ADMIN]: [],
+        [ORGANIZATION_ADMIN]: [PENDING],
         [DEPARTMENT_HEAD]: [PENDING, PROCESSING],
-        [DEPARTMENT_OFFICER]: [],
+        [DEPARTMENT_OFFICER]: [PENDING],
         [USER]: [],
       },
       [PROCESSING]: {
