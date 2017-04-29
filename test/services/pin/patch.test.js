@@ -1,8 +1,11 @@
 // Test helper functions
-const assertTestEnv = require('../../test_helper').assertTestEnv;
-const expect = require('../../test_helper').expect;
-const loadFixture = require('../../test_helper').loadFixture;
 const request = require('supertest-as-promised');
+const {
+  assertTestEnv,
+  expect,
+  loadFixture,
+  login,
+} = require('../../test_helper');
 
 // Models
 const App3rd = require('../../../src/services/app3rd/app3rd-model');
@@ -10,23 +13,39 @@ const Department = require('../../../src/services/department/department-model');
 const Pin = require('../../../src/services/pin/pin-model');
 const User = require('../../../src/services/user/user-model');
 
+// Roles
+const {
+  DEPARTMENT_HEAD,
+  DEPARTMENT_OFFICER,
+  ORGANIZATION_ADMIN,
+  PUBLIC_RELATIONS,
+  SUPER_ADMIN,
+} = require('../../../src/constants/roles');
+
 // Fixtures
 const adminApp3rd = require('../../fixtures/admin_app3rd');
 const adminUser = require('../../fixtures/admin_user');
 const departmentHeadUser = require('../../fixtures/department_head_user');
+const departmentOfficerUser = require('../../fixtures/department_officer_user');
 const departments = require('../../fixtures/departments');
 const normalUser = require('../../fixtures/normal_user');
 const orgnizationAdminUser = require('../../fixtures/organization_admin_user');
 const publicRelationsUser = require('../../fixtures/public_relations_user');
 const superAdminUser = require('../../fixtures/super_admin_user');
 const pins = require('../../fixtures/pins');
+
 // Fixtures' constants
-const PIN_ASSIGNED_ID = require('../../fixtures/constants').PIN_ASSIGNED_ID;
-const PIN_PROCESSING_ID = require('../../fixtures/constants').PIN_PROCESSING_ID;
-const PIN_PENDING_ID = require('../../fixtures/constants').PIN_PENDING_ID;
-const PROGRESS_DETAIL = require('../../fixtures/constants').PROGRESS_DETAIL;
-const USER_DEPARTMENT_HEAD_ID = require('../../fixtures/constants').USER_DEPARTMENT_HEAD_ID;
-const USER_ADMIN_ID = require('../../fixtures/constants').USER_ADMIN_ID;
+const {
+  PIN_ASSIGNED_ID,
+  PIN_PROCESSING_ID,
+  PIN_PENDING_ID,
+  PROGRESS_DETAIL,
+  USER_ADMIN_ID,
+  USER_DEPARTMENT_HEAD_ID,
+  USER_DEPARTMENT_OFFICER_ID,
+  USER_ORGANIZATION_ADMIN_ID,
+  USER_PUBLIC_RELATIONS_ID,
+} = require('../../fixtures/constants');
 
 // App stuff
 const app = require('../../../src/app');
@@ -44,13 +63,13 @@ describe('Pin - PATCH', () => {
       Promise.all([
         loadFixture(User, adminUser),
         loadFixture(User, departmentHeadUser),
+        loadFixture(User, departmentOfficerUser),
         loadFixture(User, normalUser),
         loadFixture(User, orgnizationAdminUser),
         loadFixture(User, publicRelationsUser),
         loadFixture(User, superAdminUser),
         loadFixture(App3rd, adminApp3rd),
         loadFixture(Department, departments),
-        loadFixture(Pin, pins),
       ])
       .then(() => {
         done();
@@ -59,6 +78,16 @@ describe('Pin - PATCH', () => {
         done(err);
       });
     });
+  });
+
+  beforeEach((done) => {
+    loadFixture(Pin, pins)
+      .then(() => done());
+  });
+
+  afterEach((done) => {
+    Pin.remove({})
+      .then(() => done());
   });
 
   after((done) => {
@@ -140,7 +169,7 @@ describe('Pin - PATCH', () => {
         const token = tokenResp.body.token;
 
         if (!token) {
-          done(new Error('No token returns'));
+          return done(new Error('No token returns'));
         }
 
         return request(app)
@@ -182,7 +211,7 @@ describe('Pin - PATCH', () => {
         const token = tokenResp.body.token;
 
         if (!token) {
-          done(new Error('No token returns'));
+          return done(new Error('No token returns'));
         }
         return request(app)
           .patch(`/pins/${PIN_ASSIGNED_ID}`)
@@ -237,45 +266,130 @@ describe('Pin - PATCH', () => {
       });
   });
 
-  it('returns 401 not allowing normal user to update other user\'s  pin', (done) => {
-    const newData = {
-      owner: normalUser._id, // eslint-disable-line no-underscore-dangle
-      $push: {
-        progresses: {
-          photos: ['New progress photo url'],
-          detail: 'New progress',
-        },
+  describe('allows all roles except normal user to path progresses of other`s pin', () => {
+    const allowedUpdatingUsers = [
+      {
+        role: DEPARTMENT_HEAD,
+        id: USER_DEPARTMENT_HEAD_ID,
+        email: 'department_head@youpin.city',
+        password: 'youpin_admin',
       },
-    };
+      {
+        role: DEPARTMENT_OFFICER,
+        id: USER_DEPARTMENT_OFFICER_ID,
+        email: 'department_officer@youpin.city',
+        password: 'youpin_department_officer',
+      },
+      {
+        role: ORGANIZATION_ADMIN,
+        id: USER_ORGANIZATION_ADMIN_ID,
+        email: 'organization_admin@youpin.city',
+        password: 'youpin_admin',
+      },
+      {
+        role: PUBLIC_RELATIONS,
+        id: USER_PUBLIC_RELATIONS_ID,
+        email: 'public_relations@youpin.city',
+        password: 'youpin_public_relations',
+      },
+      {
+        role: SUPER_ADMIN,
+        id: USER_ADMIN_ID,
+        email: 'contact@youpin.city',
+        password: 'youpin_admin',
+      },
+    ];
 
-    request(app)
-      .post('/auth/local')
-      .send({
-        email: 'user@youpin.city',
-        password: 'youpin_user',
-      })
-      .then((tokenResp) => {
-        const token = tokenResp.body.token;
+    allowedUpdatingUsers.forEach((user) => {
+      it(`allows ${user.role} to patch progresses of other's pin`, (done) => {
+        const updatedProgressData = {
+          $push: {
+            progresses: {
+              owner: user.id,
+              photos: ['New progress photo url'],
+              detail: 'New progress',
+            },
+          },
+        };
 
-        if (!token) {
-          done(new Error('No token returns'));
-        }
-        return request(app)
-          .patch(`/pins/${PIN_ASSIGNED_ID}`)
-          .set('Authorization', `Bearer ${token}`)
-          .set('Content-type', 'application/json')
-          .send(newData)
-          .expect(401);
-      })
-      .then((res) => {
-        const error = res.body;
+        login(app, user.email, user.password)
+          .then((tokenResp) => {
+            const token = tokenResp.body.token;
 
-        expect(error.code).to.equal(401);
-        expect(error.name).to.equal('NotAuthenticated');
-        expect(error.message).to.equal(
-          'Owner field (id) does not matched with the token owner id.');
-        done();
-      })
-      .catch(error => console.log(error));
+            if (!token) {
+              return done(new Error('No token returns'));
+            }
+
+            return request(app)
+              .patch(`/pins/${PIN_PROCESSING_ID}`)
+              .set('Authorization', `Bearer ${token}`)
+              .set('Content-type', 'application/json')
+              .send(updatedProgressData)
+              .expect(200);
+          })
+          .then(res => {
+            const updatedPin = res.body;
+
+            expect(updatedPin.progresses)
+              .to.have.lengthOf(2);
+
+            // First progress is already in this pin fixture
+            expect(updatedPin.progresses[0].detail)
+              .to.equal(PROGRESS_DETAIL);
+            expect(updatedPin.progresses[0].owner._id)  // eslint-disable-line no-underscore-dangle
+              .to.equal(USER_ADMIN_ID);
+
+            // This is the updated progress
+            expect(updatedPin.progresses[1].detail)
+              .to.equal('New progress');
+            expect(updatedPin.progresses[1].owner._id)  // eslint-disable-line no-underscore-dangle
+              .to.equal(user.id);
+            done();
+          })
+          .catch(error => console.log(error));
+      });
+    });
+
+    it('returns 401 not allowing normal user to update other user\'s  pin', (done) => {
+      const newData = {
+        owner: normalUser._id, // eslint-disable-line no-underscore-dangle
+        $push: {
+          progresses: {
+            photos: ['New progress photo url'],
+            detail: 'New progress',
+          },
+        },
+      };
+
+      request(app)
+        .post('/auth/local')
+        .send({
+          email: 'user@youpin.city',
+          password: 'youpin_user',
+        })
+        .then((tokenResp) => {
+          const token = tokenResp.body.token;
+
+          if (!token) {
+            return done(new Error('No token returns'));
+          }
+          return request(app)
+            .patch(`/pins/${PIN_ASSIGNED_ID}`)
+            .set('Authorization', `Bearer ${token}`)
+            .set('Content-type', 'application/json')
+            .send(newData)
+            .expect(401);
+        })
+        .then((res) => {
+          const error = res.body;
+
+          expect(error.code).to.equal(401);
+          expect(error.name).to.equal('NotAuthenticated');
+          expect(error.message).to.equal(
+            'You are not authorized to update this pin.');
+          done();
+        })
+        .catch(error => console.log(error));
+    });
   });
 });

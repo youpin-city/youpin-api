@@ -3,9 +3,7 @@ const errors = require('feathers-errors');
 
 const Pin = require('../../pin/pin-model');
 
-const DEPARTMENT_HEAD = require('../../../constants/roles').DEPARTMENT_HEAD;
-const ORGANIZATION_ADMIN = require('../../../constants/roles').ORGANIZATION_ADMIN;
-const SUPER_ADMIN = require('../../../constants/roles').SUPER_ADMIN;
+const { USER } = require('../../../constants/roles');
 
 
 const restrictToTheRightUserForUpdate = () => (hook) => {
@@ -22,25 +20,11 @@ const restrictToTheRightUserForUpdate = () => (hook) => {
         hook.data.assigned_department = pin.assigned_department;
         /* eslint-enable no-param-reassign */
       }
-      // Bypass if a user is a super admin or an organization admin.
-      if (user.role === SUPER_ADMIN || user.role === ORGANIZATION_ADMIN) {
-        return Promise.resolve(hook);
+      // Allow all authenticated users except normal users
+      if (user.role === USER) {
+        throw new errors.NotAuthenticated('You are not authorized to update this pin.');
       }
-      // Bypass if a user is the department head and the department owns this pin.
-      if (user.role === DEPARTMENT_HEAD) {
-        if (!pin.assigned_department) {
-          throw new Error('This pin is not assigned to any department.');
-        }
-        if (!pin.assigned_department._id.equals(user.department)) { // eslint-disable-line no-underscore-dangle,max-len
-          throw new Error('This pin does not belong to the user\'s department.');
-        }
-        return Promise.resolve(hook);
-      }
-      // Otherwise, only bypass a pin owner.
-      if (!pin.owner.equals(user._id)) { // eslint-disable-line no-underscore-dangle
-        throw new errors.NotAuthenticated(
-          'Owner field (id) does not matched with the token owner id.');
-      }
+
       return Promise.resolve(hook);
     })
     .catch(error => {
