@@ -44,11 +44,10 @@ const prepareActivityLog = () => (hook) => {
     const changedFields = ['is_merged', 'merged_parent_pin'];
     const previousValues = [childPin.is_merged, childPin.merged_parent_pin];
     const updatedValues = [true, mergedParentPin];
-    const childPinShortenDetail = `${childPin.detail.substring(0, 20)}...`;
-    const parentPinShortenDetail = `${parentPin.detail.substring(0, 20)}...`;
-    const description = `${nameOfUser} merged pin ${childPinShortenDetail} ` +
-                        `to ${parentPinShortenDetail}`;
-
+    /* eslint-disable no-underscore-dangle */
+    const description = `${nameOfUser} merged pin #${childPin._id} ` +
+                        `into #${parentPin._id}`;
+    /* eslint-enable */
     // Pass logInfo object to after hook by attaching to hook.data
     const logInfo = {
       user: nameOfUser,

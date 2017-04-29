@@ -14,7 +14,6 @@ const pins = require('../../../fixtures/pins');
 const DEPARTMENT_GENERAL_ID = require('../../../fixtures/constants').DEPARTMENT_GENERAL_ID;
 const ORGANIZATION_ID = require('../../../fixtures/constants').ORGANIZATION_ID;
 const PIN_PENDING_ID = require('../../../fixtures/constants').PIN_PENDING_ID;
-const PIN_PENDING_DETAIL = require('../../../fixtures/constants').PIN_PENDING_DETAIL;
 
 // App stuff
 const ObjectId = require('mongoose').Types.ObjectId;
@@ -82,7 +81,7 @@ describe('Prepare Activity Log Hook for State Transition', () => {
         changed_fields: ['status', 'assigned_department'],
         previous_values: ['pending', undefined],
         updated_values: ['assigned', ObjectId(DEPARTMENT_GENERAL_ID)], // eslint-disable-line new-cap,max-len
-        description: `Aunt You-pin assigned pin ${PIN_PENDING_DETAIL.substring(0, 20)}... ` +
+        description: `Aunt You-pin assigned pin #${PIN_PENDING_ID} ` +
                      'to department Department of Nerds',
         timestamp: Date.now(),
       };
