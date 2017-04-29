@@ -1,8 +1,11 @@
 // Test helper functions
-const assertTestEnv = require('../../test_helper').assertTestEnv;
-const expect = require('../../test_helper').expect;
-const loadFixture = require('../../test_helper').loadFixture;
 const request = require('supertest-as-promised');
+const {
+  assertTestEnv,
+  expect,
+  loadFixture,
+  login,
+} = require('../../test_helper');
 
 // Models
 const Department = require('../../../src/services/department/department-model');
@@ -89,12 +92,7 @@ describe('department service', () => {
         detail: 'An awesome department', // eslint-disable-line no-underscore-dangle
       };
 
-      request(app)
-        .post('/auth/local')
-        .send({
-          email: 'super_admin@youpin.city',
-          password: 'youpin_admin',
-        })
+      login(app, 'super_admin@youpin.city', 'youpin_admin')
         .then((tokenResp) => {
           const token = tokenResp.body.token;
 
@@ -125,12 +123,7 @@ describe('department service', () => {
         detail: 'An awesome department', // eslint-disable-line no-underscore-dangle
       };
 
-      request(app)
-        .post('/auth/local')
-        .send({
-          email: 'organization_admin@youpin.city',
-          password: 'youpin_admin',
-        })
+      login(app, 'organization_admin@youpin.city', 'youpin_admin')
         .then((tokenResp) => {
           const token = tokenResp.body.token;
 

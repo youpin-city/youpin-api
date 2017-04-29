@@ -1,9 +1,12 @@
 // Test helper functions
-const assertTestEnv = require('../../test_helper').assertTestEnv;
 const casual = require('casual');
-const expect = require('../../test_helper').expect;
-const loadFixture = require('../../test_helper').loadFixture;
 const request = require('supertest-as-promised');
+const {
+  assertTestEnv,
+  expect,
+  loadFixture,
+  login,
+} = require('../../test_helper');
 
 // Models
 const App3rd = require('../../../src/services/app3rd/app3rd-model');
@@ -66,13 +69,7 @@ describe('user service', () => {
 
   describe('GET /users', () => {
     it('allows super_admin role to retrive data', (done) =>
-      request(app)
-        // Login with existing admin account
-        .post('/auth/local')
-        .send({
-          email: 'super_admin@youpin.city',
-          password: 'youpin_admin',
-        })
+      login(app, 'super_admin@youpin.city', 'youpin_admin')
         .then((tokenResp) => {
           const token = tokenResp.body.token;
 
@@ -113,13 +110,7 @@ describe('user service', () => {
     );
 
     it('allows organization_admin role to retrive data', (done) =>
-      request(app)
-        // Login with existing admin account
-        .post('/auth/local')
-        .send({
-          email: 'organization_admin@youpin.city',
-          password: 'youpin_admin',
-        })
+      login(app, 'organization_admin@youpin.city', 'youpin_admin')
         .then((tokenResp) => {
           const token = tokenResp.body.token;
 
@@ -159,13 +150,7 @@ describe('user service', () => {
     );
 
     it('allows department_head role to retrive data', (done) =>
-      request(app)
-        // Login with existing admin account
-        .post('/auth/local')
-        .send({
-          email: 'department_head@youpin.city',
-          password: 'youpin_admin',
-        })
+      login(app, 'department_head@youpin.city', 'youpin_admin')
         .then((tokenResp) => {
           const token = tokenResp.body.token;
 
@@ -208,12 +193,7 @@ describe('user service', () => {
   describe('GET /users/:id', () => {
     it('return 404 NotFound when user does not exist', (done) => {
       // Login with existing admin account
-      request(app)
-        .post('/auth/local')
-        .send({
-          email: 'super_admin@youpin.city',
-          password: 'youpin_admin',
-        })
+      login(app, 'super_admin@youpin.city', 'youpin_admin')
         .then((tokenResp) => {
           const token = tokenResp.body.token;
 
@@ -243,12 +223,7 @@ describe('user service', () => {
 
     it('return a super_admin user object', (done) => {
       // Login with existing admin account
-      request(app)
-        .post('/auth/local')
-        .send({
-          email: 'super_admin@youpin.city',
-          password: 'youpin_admin',
-        })
+      login(app, 'super_admin@youpin.city', 'youpin_admin')
         .then((tokenResp) => {
           const token = tokenResp.body.token;
 
@@ -311,12 +286,7 @@ describe('user service', () => {
 
     it('return 200 ' +
       'when a normal user attempts to delete his/her own user', (done) => {
-      request(app)
-        .post('/auth/local')
-        .send({
-          email: 'user@youpin.city',
-          password: 'youpin_user',
-        })
+      login(app, 'user@youpin.city', 'youpin_user')
         .then((tokenResp) => {
           const token = tokenResp.body.token;
           if (!token) {
@@ -332,12 +302,7 @@ describe('user service', () => {
 
     it('return 200 ' +
       'when a super-admin user attempts to delete other user', (done) => {
-      request(app)
-        .post('/auth/local')
-        .send({
-          email: 'super_admin@youpin.city',
-          password: 'youpin_admin',
-        })
+      login(app, 'super_admin@youpin.city', 'youpin_admin')
         .then((tokenResp) => {
           const token = tokenResp.body.token;
           if (!token) {
@@ -353,12 +318,7 @@ describe('user service', () => {
 
     it('return 403 "Forbidden" ' +
       'when a normal user attempts to delete other user', (done) => {
-      request(app)
-        .post('/auth/local')
-        .send({
-          email: 'user@youpin.city',
-          password: 'youpin_user',
-        })
+      login(app, 'user@youpin.city', 'youpin_user')
         .then((tokenResp) => {
           const token = tokenResp.body.token;
           if (!token) {

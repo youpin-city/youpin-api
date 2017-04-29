@@ -1,9 +1,12 @@
 // Test helper functions
-const assertTestEnv = require('../../test_helper').assertTestEnv;
 const casual = require('casual');
-const expect = require('../../test_helper').expect;
-const loadFixture = require('../../test_helper').loadFixture;
 const request = require('supertest-as-promised');
+const {
+  assertTestEnv,
+  expect,
+  loadFixture,
+  login,
+} = require('../../test_helper');
 
 // Models
 const App3rd = require('../../../src/services/app3rd/app3rd-model');
@@ -22,15 +25,14 @@ const publicRelationsUser = require('../../fixtures/public_relations_user');
 const superAdminUser = require('../../fixtures/super_admin_user');
 const pins = require('../../fixtures/pins');
 
-// Organization
-const ORGANIZATION_ID = require('../../fixtures/constants').ORGANIZATION_ID;
-
-// Department
-const DEPARTMENT_SUPER_ADMIN_ID = require('../../fixtures/constants').DEPARTMENT_SUPER_ADMIN_ID;
+// Fixtures' constants
+const {
+  DEPARTMENT_SUPER_ADMIN_ID,
+  ORGANIZATION_ID,
+} = require('../../fixtures/constants');
 
 // State constants
-const PENDING = require('../../../src/constants/pin-states').PENDING;
-const ASSIGNED = require('../../../src/constants/pin-states').ASSIGNED;
+const { PENDING, ASSIGNED } = require('../../../src/constants/pin-states');
 
 // App stuff
 const app = require('../../../src/app');
@@ -120,12 +122,7 @@ describe('Pin - POST', () => {
       },
     };
 
-    request(app)
-      .post('/auth/local')
-      .send({
-        email: 'contact@youpin.city',
-        password: 'youpin_admin',
-      })
+    login(app, 'contact@youpin.city', 'youpin_admin')
       .then((tokenResp) => {
         const token = tokenResp.body.token;
 
@@ -165,12 +162,7 @@ describe('Pin - POST', () => {
       },
     };
 
-    request(app)
-      .post('/auth/local')
-      .send({
-        email: 'contact@youpin.city',
-        password: 'youpin_admin',
-      })
+    login(app, 'contact@youpin.city', 'youpin_admin')
       .then((tokenResp) => {
         const token = tokenResp.body.token;
 
@@ -210,12 +202,7 @@ describe('Pin - POST', () => {
       },
     };
 
-    request(app)
-      .post('/auth/local')
-      .send({
-        email: 'contact@youpin.city',
-        password: 'youpin_admin',
-      })
+    login(app, 'contact@youpin.city', 'youpin_admin')
       .then((tokenResp) => {
         const token = tokenResp.body.token;
 
@@ -252,12 +239,7 @@ describe('Pin - POST', () => {
       assigned_department: DEPARTMENT_SUPER_ADMIN_ID,
     };
 
-    request(app)
-      .post('/auth/local')
-      .send({
-        email: 'contact@youpin.city',
-        password: 'youpin_admin',
-      })
+    login(app, 'contact@youpin.city', 'youpin_admin')
       .then((tokenResp) => {
         const token = tokenResp.body.token;
 
@@ -291,12 +273,7 @@ describe('Pin - POST', () => {
       location: {},
     };
 
-    request(app)
-      .post('/auth/local')
-      .send({
-        email: 'contact@youpin.city',
-        password: 'youpin_admin',
-      })
+    login(app, 'contact@youpin.city', 'youpin_admin')
       .then((tokenResp) => {
         const token = tokenResp.body.token;
 

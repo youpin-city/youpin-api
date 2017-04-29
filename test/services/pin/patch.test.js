@@ -119,12 +119,8 @@ describe('Pin - PATCH', () => {
       owner: USER_ADMIN_ID, // eslint-disable-line no-underscore-dangle
       detail: 'Updated pin detail',
     };
-    request(app)
-      .post('/auth/local')
-      .send({
-        email: 'contact@youpin.city',
-        password: 'youpin_admin',
-      })
+
+    login(app, 'contact@youpin.city', 'youpin_admin')
       .then((tokenResp) => {
         const token = tokenResp.body.token;
 
@@ -159,12 +155,7 @@ describe('Pin - PATCH', () => {
       detail: 'Updated pin detail',
     };
 
-    request(app)
-      .post('/auth/local')
-      .send({
-        email: 'super_admin@youpin.city',
-        password: 'youpin_admin',
-      })
+    login(app, 'super_admin@youpin.city', 'youpin_admin')
       .then((tokenResp) => {
         const token = tokenResp.body.token;
 
@@ -201,12 +192,7 @@ describe('Pin - PATCH', () => {
       },
     };
 
-    request(app)
-      .post('/auth/local')
-      .send({
-        email: 'department_head@youpin.city',
-        password: 'youpin_admin',
-      })
+    login(app, 'department_head@youpin.city', 'youpin_admin')
       .then((tokenResp) => {
         const token = tokenResp.body.token;
 
@@ -239,12 +225,7 @@ describe('Pin - PATCH', () => {
       ],
     };
 
-    request(app)
-      .post('/auth/local')
-      .send({
-        email: 'organization_admin@youpin.city',
-        password: 'youpin_admin',
-      })
+    login(app, 'organization_admin@youpin.city', 'youpin_admin')
       .then((tokenResp) => {
         const token = tokenResp.body.token;
 
@@ -361,12 +342,7 @@ describe('Pin - PATCH', () => {
         },
       };
 
-      request(app)
-        .post('/auth/local')
-        .send({
-          email: 'user@youpin.city',
-          password: 'youpin_user',
-        })
+      login(app, 'user@youpin.city', 'youpin_user')
         .then((tokenResp) => {
           const token = tokenResp.body.token;
 

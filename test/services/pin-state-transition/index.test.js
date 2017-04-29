@@ -1,10 +1,12 @@
 // Test helper functions
-const assertTestEnv = require('../../test_helper').assertTestEnv;
-const expect = require('../../test_helper').expect;
-const loadFixture = require('../../test_helper').loadFixture;
 const request = require('supertest-as-promised');
-const stub = require('../../test_helper').stub;
-const login = require('../../test_helper').login;
+const {
+  assertTestEnv,
+  expect,
+  loadFixture,
+  login,
+  stub,
+} = require('../../test_helper');
 
 // Models
 const Department = require('../../../src/services/department/department-model');
@@ -21,30 +23,34 @@ const superAdminUser = require('../../fixtures/super_admin_user');
 
 // App stuff
 const app = require('../../../src/app');
-const roles = require('../../../src/constants/roles');
-const states = require('../../../src/constants/pin-states');
 const PinTransitionService = require('../../../src/services/pin-state-transition').PinTransitionService; // eslint-disable-line max-len
 
 // States
-const ASSIGNED = states.ASSIGNED;
-const PENDING = states.PENDING;
-const PROCESSING = states.PROCESSING;
-const RESOLVED = states.RESOLVED;
-const REJECTED = states.REJECTED;
+const {
+  ASSIGNED,
+  PENDING,
+  PROCESSING,
+  RESOLVED,
+  REJECTED,
+} = require('../../../src/constants/pin-states');
 
 // Roles
-const SUPER_ADMIN = roles.SUPER_ADMIN;
-const ORGANIZATION_ADMIN = roles.ORGANIZATION_ADMIN;
-const DEPARTMENT_HEAD = roles.DEPARTMENT_HEAD;
-const DEPARTMENT_OFFICER = roles.DEPARTMENT_OFFICER;
-const USER = roles.USER;
+const {
+  DEPARTMENT_HEAD,
+  DEPARTMENT_OFFICER,
+  ORGANIZATION_ADMIN,
+  SUPER_ADMIN,
+  USER,
+} = require('../../../src/constants/roles');
 
-// Pins
-const PIN_PENDING_ID = require('../../fixtures/constants').PIN_PENDING_ID;
-const PIN_ASSIGNED_ID = require('../../fixtures/constants').PIN_ASSIGNED_ID;
-const PIN_PROCESSING_ID = require('../../fixtures/constants').PIN_PROCESSING_ID;
-const PIN_RESOLVED_ID = require('../../fixtures/constants').PIN_RESOLVED_ID;
-const PIN_REJECTED_ID = require('../../fixtures/constants').PIN_REJECTED_ID;
+// Fixtures' constants
+const {
+  PIN_PENDING_ID,
+  PIN_ASSIGNED_ID,
+  PIN_PROCESSING_ID,
+  PIN_RESOLVED_ID,
+  PIN_REJECTED_ID,
+} = require('../../fixtures/constants');
 
 // Stubs
 const STUBBED_DATE = '2017-01-29';

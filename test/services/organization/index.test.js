@@ -1,8 +1,11 @@
 // Test helper functions
-const assertTestEnv = require('../../test_helper').assertTestEnv;
-const expect = require('../../test_helper').expect;
-const loadFixture = require('../../test_helper').loadFixture;
 const request = require('supertest-as-promised');
+const {
+  assertTestEnv,
+  expect,
+  loadFixture,
+  login,
+} = require('../../test_helper');
 
 // Models
 const User = require('../../../src/services/user/user-model');
@@ -91,12 +94,7 @@ describe('organization service', () => {
         detail: 'An awesome organization',
       };
 
-      request(app)
-        .post('/auth/local')
-        .send({
-          email: 'super_admin@youpin.city',
-          password: 'youpin_admin',
-        })
+      login(app, 'super_admin@youpin.city', 'youpin_admin')
         .then((tokenResp) => {
           const token = tokenResp.body.token;
 
