@@ -35,6 +35,7 @@ const pinSchema = new Schema({
   detail: { type: String, required: true },
   followers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
   is_archived: { type: Boolean, default: false },
+  is_featured: { type: Boolean, default: false },
   is_merged: { type: Boolean, default: false },
   level: String,
   location: {
