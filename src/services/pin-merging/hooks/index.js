@@ -3,8 +3,13 @@ const auth = require('feathers-authentication').hooks;
 const logActivity = require('./log-activity');
 const prepareActivityLog = require('./prepare-activity-log');
 
-const ORGANIZATION_ADMIN = require('../../../constants/roles').ORGANIZATION_ADMIN;
-const SUPER_ADMIN = require('../../../constants/roles').SUPER_ADMIN;
+const {
+  DEPARTMENT_HEAD,
+  DEPARTMENT_OFFICER,
+  ORGANIZATION_ADMIN,
+  PUBLIC_RELATIONS,
+  SUPER_ADMIN,
+} = require('../../../constants/roles');
 
 exports.before = {
   all: [],
@@ -15,7 +20,13 @@ exports.before = {
     auth.populateUser(),
     auth.restrictToAuthenticated(),
     auth.restrictToRoles({
-      roles: [SUPER_ADMIN, ORGANIZATION_ADMIN],
+      roles: [
+        DEPARTMENT_HEAD,
+        DEPARTMENT_OFFICER,
+        ORGANIZATION_ADMIN,
+        PUBLIC_RELATIONS,
+        SUPER_ADMIN,
+      ],
       fieldName: 'role',
     }),
     prepareActivityLog(),
