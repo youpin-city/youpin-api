@@ -61,7 +61,6 @@ const prepareActivityLog = () => (hook) => {
     const changedFields = ['status'];
     const previousValues = [previousState];
     const updatedValues = [nextState];
-    const shortenDetail = `${pin.detail.substring(0, 20)}...`;
     if (pin.assigned_department) { // eslint-disable-line no-underscore-dangle,max-len
       assignedDepartmentObject = pin.assigned_department;
     }
@@ -69,7 +68,7 @@ const prepareActivityLog = () => (hook) => {
     switch (nextState) {
       case states.REJECTED:
         action = actions.REJECT;
-        description = `${nameOfUser} rejected pin ${shortenDetail}`;
+        description = `${nameOfUser} rejected pin #${pinId}`;
         break;
       case states.PENDING:
         if (previousState === states.ASSIGNED) {
@@ -81,7 +80,7 @@ const prepareActivityLog = () => (hook) => {
           changedFields.push('assigned_department');
           previousValues.push(assignedDepartmentObject._id);
           updatedValues.push(undefined);
-          description = `${nameOfUser} denies pin ${shortenDetail}`;
+          description = `${nameOfUser} denies pin #${pinId}`;
         } else if (previousState === states.RESOLVED) {
           // If a pin has already resolved but it is re-opened again.
           // Remove `assigned_department` value from the pin
@@ -90,11 +89,11 @@ const prepareActivityLog = () => (hook) => {
           changedFields.push('assigned_department');
           previousValues.push(assignedDepartmentObject._id);
           updatedValues.push(undefined);
-          description = `${nameOfUser} re-opens pin ${shortenDetail}`;
+          description = `${nameOfUser} re-opens pin #${pinId}`;
         } else if (previousState === states.REJECTED) {
           // Re-open a rejected pin. No need to change any field.
           action = actions.RE_OPEN;
-          description = `${nameOfUser} re-opens pin ${shortenDetail}`;
+          description = `${nameOfUser} re-opens pin #${pinId}`;
         }
         break;
       case states.ASSIGNED:
@@ -102,7 +101,7 @@ const prepareActivityLog = () => (hook) => {
         changedFields.push('assigned_department');
         previousValues.push(undefined);
         updatedValues.push(assignedDepartmentObject._id);
-        description = `${nameOfUser} assigned pin ${shortenDetail} ` +
+        description = `${nameOfUser} assigned pin #${pinId} ` +
                       `to department ${assignedDepartmentObject.name}`;
         break;
       case states.PROCESSING:
@@ -120,7 +119,7 @@ const prepareActivityLog = () => (hook) => {
           changedFields.push('assigned_users');
           previousValues.push(pin.assigned_users);
           updatedValues.push(hook.data.assigned_users);
-          description = `${nameOfUser} is processing pin ${shortenDetail}`;
+          description = `${nameOfUser} is processing pin #${pinId}`;
         } else if (previousState === states.RESOLVED) {
           // If a department marks a pin as resolved but it does not satisfy an organization admin,
           // the organization admin can send the pin back to be re-processed.
@@ -128,7 +127,7 @@ const prepareActivityLog = () => (hook) => {
           changedFields.push('resolved_time');
           previousValues.push(pin.resolved_time);
           updatedValues.push(null);
-          description = `${nameOfUser} sent pin ${shortenDetail} back` +
+          description = `${nameOfUser} sent pin #${pinId} back` +
                         ` to be re-processed by ${assignedDepartmentObject.name}`;
           // Attach assigned department for later use.
           hook.data.previousAssignedDepartment = assignedDepartmentObject._id; // eslint-disable-line max-len,no-param-reassign
@@ -136,7 +135,7 @@ const prepareActivityLog = () => (hook) => {
         break;
       case states.RESOLVED:
         action = actions.RESOLVE;
-        description = `${nameOfUser} marked pin ${shortenDetail} as resolved`;
+        description = `${nameOfUser} marked pin #${pinId} as resolved`;
         break;
       default:
         action = null;

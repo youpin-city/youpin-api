@@ -14,9 +14,7 @@ const pins = require('../../../fixtures/pins');
 const DEPARTMENT_GENERAL_ID = require('../../../fixtures/constants').DEPARTMENT_GENERAL_ID;
 const ORGANIZATION_ID = require('../../../fixtures/constants').ORGANIZATION_ID;
 const PIN_ASSIGNED_ID = require('../../../fixtures/constants').PIN_ASSIGNED_ID;
-const PIN_ASSIGNED_DETAIL = require('../../../fixtures/constants').PIN_ASSIGNED_DETAIL;
 const PIN_PENDING_ID = require('../../../fixtures/constants').PIN_PENDING_ID;
-const PIN_PENDING_DETAIL = require('../../../fixtures/constants').PIN_PENDING_DETAIL;
 
 // App stuff
 const mongoose = require('mongoose');
@@ -80,8 +78,8 @@ describe('Prepare Activity Log Hook for Pin Merging', () => {
         changed_fields: ['is_merged', 'merged_parent_pin'],
         previous_values: [false, undefined],
         updated_values: [true, PIN_ASSIGNED_ID],
-        description: `Aunt You-pin merged pin ${PIN_PENDING_DETAIL.substring(0, 20)}... ` +
-                     `to ${PIN_ASSIGNED_DETAIL.substring(0, 20)}...`,
+        description: `Aunt You-pin merged pin #${PIN_PENDING_ID} ` +
+                     `into #${PIN_ASSIGNED_ID}`,
         timestamp: Date.now(),
       };
 
