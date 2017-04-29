@@ -175,10 +175,10 @@ describe('Pin - POST', () => {
         const token = tokenResp.body.token;
 
         if (!token) {
-          done(new Error('No token returns'));
+          return done(new Error('No token returns'));
         }
 
-        request(app)
+        return request(app)
           .post('/pins')
           .set('X-YOUPIN-3-APP-KEY',
             '579b04ac516706156da5bba1:ed545297-4024-4a75-89b4-c95fed1df436')
@@ -190,8 +190,9 @@ describe('Pin - POST', () => {
             expect(createdPin).to.contain.keys(
               ['_id', 'detail', 'owner', 'provider',
                 'videos', 'voters', 'comments', 'tags',
-                'location', 'photos', 'neighborhood', 'mentions',
-                'followers', 'updated_time', 'created_time', 'categories']);
+                'location', 'photos', 'neighborhood', 'mentions', 'organization',
+                'followers', 'updated_time', 'created_time', 'categories',
+                'is_archived', 'is_featured', 'is_merged']);
 
             done();
           });
