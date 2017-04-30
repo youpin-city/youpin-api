@@ -24,7 +24,8 @@ const sendNotifToRelatedUsers = () => (hook) => { // eslint-disable-line consist
   let relatedUsers = hook.data.toBeNotifiedUsers || [];
   const relatedDepartments = hook.data.toBeNotifiedDepartments || [];
   const relatedRoles = hook.data.toBeNotifiedRoles || [];
-  if (relatedUsers.length === 0 && relatedDepartments === 0 && relatedRoles === 0) {
+  if (relatedUsers.length === 0
+    && relatedDepartments.length === 0 && relatedRoles.length === 0) {
     console.log('No assigned user/department/role. ' +
       'The notification will not be sent.');
     return hook;
