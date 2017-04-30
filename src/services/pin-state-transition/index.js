@@ -121,6 +121,8 @@ class PinTransitionService {
       // to choose a person in his/her department.
       data.toBeNotifiedDepartments = [data.assigned_department];
       data.toBeNotifiedRoles = [DEPARTMENT_HEAD];
+      // Also notify pin owner (see issue #257);
+      data.toBeNotifiedUsers = [data.pinOwner];
       updatingProperties.assigned_department = data.assigned_department;
       updatingProperties.assigned_time = Date.now();
     } else if (nextState === PROCESSING) {
