@@ -1,23 +1,26 @@
 const errors = require('feathers-errors');
 
 const hooks = require('./hooks');
-const roles = require('../../constants/roles');
-const states = require('../../constants/pin-states');
 const Pin = require('../pin/pin-model');
 
 // States
-const ASSIGNED = states.ASSIGNED;
-const PENDING = states.PENDING;
-const PROCESSING = states.PROCESSING;
-const REJECTED = states.REJECTED;
-const RESOLVED = states.RESOLVED;
+const {
+  ASSIGNED,
+  PENDING,
+  PROCESSING,
+  REJECTED,
+  RESOLVED,
+} = require('../../constants/pin-states');
 
 // Roles
-const DEPARTMENT_HEAD = roles.DEPARTMENT_HEAD;
-const DEPARTMENT_OFFICER = roles.DEPARTMENT_OFFICER;
-const ORGANIZATION_ADMIN = roles.ORGANIZATION_ADMIN;
-const SUPER_ADMIN = roles.SUPER_ADMIN;
-const USER = roles.USER;
+const {
+  DEPARTMENT_HEAD,
+  DEPARTMENT_OFFICER,
+  EXECUTIVE_ADMIN,
+  ORGANIZATION_ADMIN,
+  SUPER_ADMIN,
+  USER,
+} = require('../../constants/roles');
 
 class PinTransitionService {
   static isValidStateTransition(prevState, nextState, role) {
@@ -25,6 +28,7 @@ class PinTransitionService {
     const possibleNextStates = {
       [PENDING]: {
         [SUPER_ADMIN]: [ASSIGNED, REJECTED],
+        [EXECUTIVE_ADMIN]: [ASSIGNED, REJECTED],
         [ORGANIZATION_ADMIN]: [ASSIGNED, REJECTED],
         [DEPARTMENT_HEAD]: [ASSIGNED],
         [DEPARTMENT_OFFICER]: [ASSIGNED],
@@ -32,6 +36,7 @@ class PinTransitionService {
       },
       [ASSIGNED]: {
         [SUPER_ADMIN]: [PENDING, PROCESSING],
+        [EXECUTIVE_ADMIN]: [PENDING],
         [ORGANIZATION_ADMIN]: [PENDING],
         [DEPARTMENT_HEAD]: [PENDING, PROCESSING],
         [DEPARTMENT_OFFICER]: [PENDING],
@@ -39,6 +44,7 @@ class PinTransitionService {
       },
       [PROCESSING]: {
         [SUPER_ADMIN]: [RESOLVED],
+        [EXECUTIVE_ADMIN]: [],
         [ORGANIZATION_ADMIN]: [],
         [DEPARTMENT_HEAD]: [RESOLVED],
         [DEPARTMENT_OFFICER]: [],
@@ -46,6 +52,7 @@ class PinTransitionService {
       },
       [RESOLVED]: {
         [SUPER_ADMIN]: [PENDING, PROCESSING],
+        [EXECUTIVE_ADMIN]: [PENDING, PROCESSING],
         [ORGANIZATION_ADMIN]: [PENDING, PROCESSING],
         [DEPARTMENT_HEAD]: [PENDING],
         [DEPARTMENT_OFFICER]: [],
@@ -53,6 +60,7 @@ class PinTransitionService {
       },
       [REJECTED]: {
         [SUPER_ADMIN]: [PENDING],
+        [EXECUTIVE_ADMIN]: [PENDING],
         [ORGANIZATION_ADMIN]: [PENDING],
         [DEPARTMENT_HEAD]: [PENDING],
         [DEPARTMENT_OFFICER]: [],
