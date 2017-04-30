@@ -1,5 +1,11 @@
 {
   "host": "localhost",
   "port": 9191,
-  "mongodb": "mongodb://mongodb:27017/youpin-test"
+  "mongodb": "mongodb://mongodb:27017/youpin-test",
+  "default": {
+    "location": {
+      "lat": 13.756727,
+      "long": 100.5018549
+    }
+  }
 }
