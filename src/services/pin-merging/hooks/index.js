@@ -6,6 +6,7 @@ const prepareActivityLog = require('./prepare-activity-log');
 const {
   DEPARTMENT_HEAD,
   DEPARTMENT_OFFICER,
+  EXECUTIVE_ADMIN,
   ORGANIZATION_ADMIN,
   PUBLIC_RELATIONS,
   SUPER_ADMIN,
@@ -23,6 +24,7 @@ exports.before = {
       roles: [
         DEPARTMENT_HEAD,
         DEPARTMENT_OFFICER,
+        EXECUTIVE_ADMIN,
         ORGANIZATION_ADMIN,
         PUBLIC_RELATIONS,
         SUPER_ADMIN,

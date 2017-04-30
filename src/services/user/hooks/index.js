@@ -3,9 +3,14 @@ const hooks = require('feathers-hooks');
 
 const handleFacebookCreate = require('./handle-facebook-create');
 const validateObjectId = require('../../../utils/hooks/validate-object-id-hook');
-const DEPARTMENT_HEAD = require('../../../constants/roles').DEPARTMENT_HEAD;
-const ORGANIZATION_ADMIN = require('../../../constants/roles').ORGANIZATION_ADMIN;
-const SUPER_ADMIN = require('../../../constants/roles').SUPER_ADMIN;
+
+// roles
+const {
+  DEPARTMENT_HEAD,
+  EXECUTIVE_ADMIN,
+  ORGANIZATION_ADMIN,
+  SUPER_ADMIN,
+} = require('../../../constants/roles');
 
 exports.before = {
   all: [],
@@ -14,7 +19,7 @@ exports.before = {
     auth.populateUser(),
     auth.restrictToAuthenticated(),
     auth.restrictToRoles({
-      roles: [SUPER_ADMIN, ORGANIZATION_ADMIN, DEPARTMENT_HEAD],
+      roles: [SUPER_ADMIN, ORGANIZATION_ADMIN, EXECUTIVE_ADMIN, DEPARTMENT_HEAD],
       fieldName: 'role',
     }),
   ],
@@ -24,7 +29,7 @@ exports.before = {
     auth.restrictToAuthenticated(),
     validateObjectId(),
     auth.restrictToRoles({
-      roles: [SUPER_ADMIN, ORGANIZATION_ADMIN, DEPARTMENT_HEAD],
+      roles: [SUPER_ADMIN, ORGANIZATION_ADMIN, EXECUTIVE_ADMIN, DEPARTMENT_HEAD],
       fieldName: 'role',
       owner: true,
       ownerField: '_id',
@@ -39,7 +44,7 @@ exports.before = {
     auth.populateUser(),
     auth.restrictToAuthenticated(),
     auth.restrictToRoles({
-      roles: [SUPER_ADMIN, ORGANIZATION_ADMIN],
+      roles: [SUPER_ADMIN, ORGANIZATION_ADMIN, EXECUTIVE_ADMIN],
       fieldName: 'role',
       owner: true,
       ownerField: '_id',
@@ -50,7 +55,7 @@ exports.before = {
     auth.populateUser(),
     auth.restrictToAuthenticated(),
     auth.restrictToRoles({
-      roles: [SUPER_ADMIN, ORGANIZATION_ADMIN],
+      roles: [SUPER_ADMIN, ORGANIZATION_ADMIN, EXECUTIVE_ADMIN],
       fieldName: 'role',
       owner: true,
       ownerField: '_id',
@@ -61,7 +66,7 @@ exports.before = {
     auth.populateUser(),
     auth.restrictToAuthenticated(),
     auth.restrictToRoles({
-      roles: [SUPER_ADMIN, ORGANIZATION_ADMIN],
+      roles: [SUPER_ADMIN, ORGANIZATION_ADMIN, EXECUTIVE_ADMIN],
       fieldName: 'role',
       owner: true,
       ownerField: '_id',

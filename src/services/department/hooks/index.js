@@ -1,8 +1,11 @@
 const auth = require('feathers-authentication').hooks;
 
 const validateObjectId = require('../../../utils/hooks/validate-object-id-hook');
-const ORGANIZATION_ADMIN = require('../../../constants/roles').ORGANIZATION_ADMIN;
-const SUPER_ADMIN = require('../../../constants/roles').SUPER_ADMIN;
+const {
+  EXECUTIVE_ADMIN,
+  ORGANIZATION_ADMIN,
+  SUPER_ADMIN,
+} = require('../../../constants/roles');
 
 exports.before = {
   all: [],
@@ -12,7 +15,7 @@ exports.before = {
     auth.verifyToken(),
     auth.populateUser(),
     auth.restrictToRoles({
-      roles: [SUPER_ADMIN, ORGANIZATION_ADMIN],
+      roles: [SUPER_ADMIN, ORGANIZATION_ADMIN, EXECUTIVE_ADMIN],
       fieldName: 'role',
     }),
   ],
@@ -20,7 +23,7 @@ exports.before = {
     auth.verifyToken(),
     auth.populateUser(),
     auth.restrictToRoles({
-      roles: [SUPER_ADMIN, ORGANIZATION_ADMIN],
+      roles: [SUPER_ADMIN, ORGANIZATION_ADMIN, EXECUTIVE_ADMIN],
       fieldName: 'role',
     }),
   ],
@@ -28,7 +31,7 @@ exports.before = {
     auth.verifyToken(),
     auth.populateUser(),
     auth.restrictToRoles({
-      roles: [SUPER_ADMIN, ORGANIZATION_ADMIN],
+      roles: [SUPER_ADMIN, ORGANIZATION_ADMIN, EXECUTIVE_ADMIN],
       fieldName: 'role',
     }),
   ],
@@ -36,7 +39,7 @@ exports.before = {
     auth.verifyToken(),
     auth.populateUser(),
     auth.restrictToRoles({
-      roles: [SUPER_ADMIN, ORGANIZATION_ADMIN],
+      roles: [SUPER_ADMIN, ORGANIZATION_ADMIN, EXECUTIVE_ADMIN],
       fieldName: 'role',
     }),
   ],
