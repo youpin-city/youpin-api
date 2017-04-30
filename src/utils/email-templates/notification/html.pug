@@ -24,13 +24,34 @@ html
         text-align:center;
         text-decoration:none;
       }
+      .infoTable {
+        border-collapse: collapse;
+      }
+      .infoTable th, .infoTable td {
+        border: 1px solid black;
+        text-align: center;
+      }
 body
   center
     img(src=logoUrl)
     h1= title
     p= message
-    table.pinButton(border="0" cellpadding="15" cellspacing="0")
-      tr
-        td(valign="middle")
-          div
-            a(href=pinLink) GO TO PIN
+    p
+      table.pinButton(border="0" cellpadding="15" cellspacing="0")
+        tr
+          td(valign="middle")
+            div
+              a(href=pinLink) GO TO PIN
+    p
+      table.infoTable(height="100%" width="100%")
+        tr
+          th #
+          th Changed Field
+          th Previous Value
+          th Current Value
+        - for (let i = 0; i < changedFields.length; i++)
+          tr
+            td= i + 1
+            td= changedFields[i]
+            td= previousValues[i]
+            td= updatedValues[i]
