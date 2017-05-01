@@ -264,6 +264,9 @@ describe('Pin - POST', () => {
       });
   });
 
+  // TODO: Add a test case if a user creates pin without default.location in config file
+  // Current test is quite flaky because it reads file from config/default.json
+  // which can be changed. We need to mock that file in our test.
   it('creates pin without provided location.coordinates', (done) => {
     const newPin = {
       detail: casual.text,

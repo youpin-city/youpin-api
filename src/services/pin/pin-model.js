@@ -1,10 +1,17 @@
+const feathers = require('feathers');
+const configuration = require('feathers-configuration');
 const mongoose = require('mongoose');
 
 const PENDING = require('../../constants/pin-states').PENDING;
-
 const DEFAULT_LAT_LONG = require('../../constants/defaults').DEFAULT_LAT_LONG;
 
 const Schema = mongoose.Schema;
+
+// Read config file
+const conf = configuration('../../../');
+const app = feathers().configure(conf);
+// Fallback if default location is not set in config file
+const defaultLocation = app.get('default').location || DEFAULT_LAT_LONG;
 
 const voteSchema = new Schema({
   user_id: { type: Schema.Types.ObjectId, required: true, ref: 'User' },
@@ -40,7 +47,10 @@ const pinSchema = new Schema({
   level: String,
   location: {
     type: { type: String, enum: 'Point', default: 'Point' },
-    coordinates: { type: [Number], default: DEFAULT_LAT_LONG },
+    coordinates: {
+      type: [Number],
+      default: [defaultLocation.long, defaultLocation.lat],
+    },
   },
   mentions: [{ type: Schema.Types.ObjectId, ref: 'User' }],
   merged_children_pins: [{ type: Schema.Types.ObjectId, ref: 'Pin' }],
