@@ -34,21 +34,20 @@ describe('user service', () => {
   before((done) => {
     server = app.listen(app.get('port'));
     server.once('listening', () => {
-
-      let userFixtures = [
+      const userFixtures = [
         loadFixture(User, departmentOfficerUser),
         loadFixture(User, departmentHeadUser),
         loadFixture(User, organizationAdminUser),
-        loadFixture(User, superAdminUser)
+        loadFixture(User, superAdminUser),
       ];
 
       totalUsers = userFixtures.length;
 
-      let otherFixtures = [
-        loadFixture(App3rd, adminApp3rd)
+      const otherFixtures = [
+        loadFixture(App3rd, adminApp3rd),
       ];
 
-      let allFixtures = userFixtures.concat(otherFixtures);
+      const allFixtures = userFixtures.concat(otherFixtures);
 
       Promise.all(allFixtures)
       .then(() => {

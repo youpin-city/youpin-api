@@ -20,7 +20,13 @@ exports.before = {
     auth.populateUser(),
     auth.restrictToAuthenticated(),
     auth.restrictToRoles({
-      roles: [SUPER_ADMIN, ORGANIZATION_ADMIN, EXECUTIVE_ADMIN, DEPARTMENT_HEAD, DEPARTMENT_OFFICER],
+      roles: [
+        SUPER_ADMIN,
+        ORGANIZATION_ADMIN,
+        EXECUTIVE_ADMIN,
+        DEPARTMENT_HEAD,
+        DEPARTMENT_OFFICER,
+      ],
       fieldName: 'role',
     }),
   ],
