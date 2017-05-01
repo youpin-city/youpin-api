@@ -310,6 +310,39 @@ describe('user service', () => {
             .catch(done);
         });
     });
+
+    it('department_officer can retrieve super_admin user object', (done) => {
+      // Login with existing admin account
+      login(app, 'department_officer@youpin.city', 'youpin_department_officer')
+        .then((tokenResp) => {
+          const token = tokenResp.body.token;
+
+          if (!token) {
+            done(new Error('No token returns'));
+          }
+
+          request(app)
+            .get(`/users/${superAdminUser._id}`) // eslint-disable-line no-underscore-dangle
+            .set('Authorization', `Bearer ${token}`)
+            .set('X-YOUPIN-3-APP-KEY',
+              '579b04ac516706156da5bba1:ed545297-4024-4a75-89b4-c95fed1df436')
+            .expect(200)
+            .then((userResp) => {
+              const body = userResp.body;
+
+              expect(body).to.not.be.a('array');
+              expect(body).to.contain.all.keys(
+                ['_id', 'name', 'phone', 'email', 'role', 'owner_app_id',
+                  'customer_app_id', 'updated_time', 'created_time']);
+              expect(body.email).to.equal('super_admin@youpin.city');
+              // also check response does not contain password
+              expect(body).to.not.have.keys('password');
+
+              done();
+            })
+            .catch(done);
+        });
+    });
   });
 
   describe('DELETE /users', () => {
