@@ -6,6 +6,7 @@ const validateObjectId = require('../../../utils/hooks/validate-object-id-hook')
 
 // roles
 const {
+  DEPARTMENT_OFFICER,
   DEPARTMENT_HEAD,
   EXECUTIVE_ADMIN,
   ORGANIZATION_ADMIN,
@@ -19,7 +20,13 @@ exports.before = {
     auth.populateUser(),
     auth.restrictToAuthenticated(),
     auth.restrictToRoles({
-      roles: [SUPER_ADMIN, ORGANIZATION_ADMIN, EXECUTIVE_ADMIN, DEPARTMENT_HEAD],
+      roles: [
+        SUPER_ADMIN,
+        ORGANIZATION_ADMIN,
+        EXECUTIVE_ADMIN,
+        DEPARTMENT_HEAD,
+        DEPARTMENT_OFFICER,
+      ],
       fieldName: 'role',
     }),
   ],
@@ -29,7 +36,13 @@ exports.before = {
     auth.restrictToAuthenticated(),
     validateObjectId(),
     auth.restrictToRoles({
-      roles: [SUPER_ADMIN, ORGANIZATION_ADMIN, EXECUTIVE_ADMIN, DEPARTMENT_HEAD],
+      roles: [
+        SUPER_ADMIN,
+        ORGANIZATION_ADMIN,
+        EXECUTIVE_ADMIN,
+        DEPARTMENT_HEAD,
+        DEPARTMENT_OFFICER,
+      ],
       fieldName: 'role',
       owner: true,
       ownerField: '_id',
