@@ -15,6 +15,7 @@ const User = require('../../../src/services/user/user-model');
 // Fixtures
 const adminApp3rd = require('../../fixtures/admin_app3rd');
 const departmentHeadUser = require('../../fixtures/department_head_user');
+const departmentOfficerUser = require('../../fixtures/department_officer_user');
 const normalUser = require('../../fixtures/normal_user');
 const organizationAdminUser = require('../../fixtures/organization_admin_user');
 const superAdminUser = require('../../fixtures/super_admin_user');
@@ -33,6 +34,7 @@ describe('user service', () => {
     server.once('listening', () => {
       Promise.all([
         loadFixture(User, departmentHeadUser),
+        loadFixture(User, departmentOfficerUser),
         loadFixture(User, organizationAdminUser),
         loadFixture(User, superAdminUser),
         loadFixture(App3rd, adminApp3rd),
@@ -86,14 +88,15 @@ describe('user service', () => {
             .then((userResp) => {
               const body = userResp.body;
               expect(body).to.have.all.keys(['total', 'limit', 'skip', 'data']);
-              expect(body.total).to.equal(3);
+              expect(body.total).to.equal(4);
 
               const userDataList = userResp.body.data;
               expect(userDataList).to.be.a('array');
-              expect(userDataList).to.have.lengthOf(3);
+              expect(userDataList).to.have.lengthOf(4);
 
               const userEmails = [
                 'department_head@youpin.city',
+                'department_officer@youpin.city',
                 'organization_admin@youpin.city',
                 'super_admin@youpin.city',
               ];
@@ -127,13 +130,14 @@ describe('user service', () => {
             .then((userResp) => {
               const body = userResp.body;
               expect(body).to.have.all.keys(['total', 'limit', 'skip', 'data']);
-              expect(body.total).to.equal(3);
+              expect(body.total).to.equal(4);
 
               const userDataList = userResp.body.data;
               expect(userDataList).to.be.a('array');
-              expect(userDataList).to.have.lengthOf(3);
+              expect(userDataList).to.have.lengthOf(4);
               const userEmails = [
                 'department_head@youpin.city',
+                'department_officer@youpin.city',
                 'organization_admin@youpin.city',
                 'super_admin@youpin.city',
               ];
@@ -167,13 +171,55 @@ describe('user service', () => {
             .then((userResp) => {
               const body = userResp.body;
               expect(body).to.have.all.keys(['total', 'limit', 'skip', 'data']);
-              expect(body.total).to.equal(3);
+              expect(body.total).to.equal(4);
 
               const userDataList = userResp.body.data;
               expect(userDataList).to.be.a('array');
-              expect(userDataList).to.have.lengthOf(3);
+              expect(userDataList).to.have.lengthOf(4);
               const userEmails = [
                 'department_head@youpin.city',
+                'department_officer@youpin.city',
+                'organization_admin@youpin.city',
+                'super_admin@youpin.city',
+              ];
+
+              for (let i = 0; i < userDataList.length; i++) {
+                expect(userEmails).to.include(userDataList[i].email);
+              }
+              // also check response does not contain password
+              expect(userDataList).to.not.have.keys('password');
+
+              done();
+            });
+        })
+    );
+
+    it('allows department_officer role to retrive data', (done) =>
+      login(app, 'department_officer@youpin.city', 'youpin_department_officer')
+        .then((tokenResp) => {
+          const token = tokenResp.body.token;
+
+          if (!token) {
+            return done(new Error('No token returns'));
+          }
+          // Get list of users
+          return request(app)
+            .get('/users')
+            .set('Authorization', `Bearer ${token}`)
+            .set('X-YOUPIN-3-APP-KEY',
+              '579b04ac516706156da5bba1:ed545297-4024-4a75-89b4-c95fed1df436')
+            .expect(200)
+            .then((userResp) => {
+              const body = userResp.body;
+              expect(body).to.have.all.keys(['total', 'limit', 'skip', 'data']);
+              expect(body.total).to.equal(4);
+
+              const userDataList = userResp.body.data;
+              expect(userDataList).to.be.a('array');
+              expect(userDataList).to.have.lengthOf(4);
+              const userEmails = [
+                'department_head@youpin.city',
+                'department_officer@youpin.city',
                 'organization_admin@youpin.city',
                 'super_admin@youpin.city',
               ];
