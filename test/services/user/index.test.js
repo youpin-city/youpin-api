@@ -28,6 +28,50 @@ assertTestEnv();
 
 let totalUsers = 0;
 
+const testUserCanGetUserList = (user, password) => {
+  it(`allows ${user.role} role to retrive data`, (done) =>
+    login(app, user.email, password)
+      .then((tokenResp) => {
+        const token = tokenResp.body.token;
+
+        if (!token) {
+          return done(new Error('No token returns'));
+        }
+        // Get list of users
+        return request(app)
+          .get('/users')
+          .set('Authorization', `Bearer ${token}`)
+          .set('X-YOUPIN-3-APP-KEY',
+            '579b04ac516706156da5bba1:ed545297-4024-4a75-89b4-c95fed1df436')
+          .expect(200)
+          .then((userResp) => {
+            const body = userResp.body;
+            expect(body).to.have.all.keys(['total', 'limit', 'skip', 'data']);
+            expect(body.total).to.equal(totalUsers);
+
+            const userDataList = userResp.body.data;
+            expect(userDataList).to.be.a('array');
+            expect(userDataList).to.have.lengthOf(totalUsers);
+            const userEmails = [
+              'department_officer@youpin.city',
+              'department_head@youpin.city',
+              'organization_admin@youpin.city',
+              'super_admin@youpin.city',
+            ];
+
+            for (let i = 0; i < userDataList.length; i++) {
+              expect(userEmails).to.include(userDataList[i].email);
+
+              // also check response does not contain password
+              expect(userDataList).to.not.have.keys('password');
+            }
+
+            done();
+          });
+      })
+  );
+};
+
 describe('user service', () => {
   let server;
 
@@ -81,170 +125,10 @@ describe('user service', () => {
   });
 
   describe('GET /users', () => {
-    it('allows super_admin role to retrive data', (done) =>
-      login(app, 'super_admin@youpin.city', 'youpin_admin')
-        .then((tokenResp) => {
-          const token = tokenResp.body.token;
-
-          if (!token) {
-            return done(new Error('No token returns'));
-          }
-          // Get list of users
-          return request(app)
-            .get('/users')
-            .set('Authorization', `Bearer ${token}`)
-            .set('X-YOUPIN-3-APP-KEY',
-              '579b04ac516706156da5bba1:ed545297-4024-4a75-89b4-c95fed1df436')
-            .expect(200)
-            .then((userResp) => {
-              const body = userResp.body;
-              expect(body).to.have.all.keys(['total', 'limit', 'skip', 'data']);
-              expect(body.total).to.equal(totalUsers);
-
-              const userDataList = userResp.body.data;
-              expect(userDataList).to.be.a('array');
-              expect(userDataList).to.have.lengthOf(totalUsers);
-
-              const userEmails = [
-                'department_officer@youpin.city',
-                'department_head@youpin.city',
-                'organization_admin@youpin.city',
-                'super_admin@youpin.city',
-              ];
-
-              for (let i = 0; i < userDataList.length; i++) {
-                expect(userEmails).to.include(userDataList[i].email);
-              }
-              // also check response does not contain password
-              expect(userDataList).to.not.have.keys('password');
-
-              done();
-            });
-        })
-    );
-
-    it('allows organization_admin role to retrive data', (done) =>
-      login(app, 'organization_admin@youpin.city', 'youpin_admin')
-        .then((tokenResp) => {
-          const token = tokenResp.body.token;
-
-          if (!token) {
-            return done(new Error('No token returns'));
-          }
-          // Get list of users
-          return request(app)
-            .get('/users')
-            .set('Authorization', `Bearer ${token}`)
-            .set('X-YOUPIN-3-APP-KEY',
-              '579b04ac516706156da5bba1:ed545297-4024-4a75-89b4-c95fed1df436')
-            .expect(200)
-            .then((userResp) => {
-              const body = userResp.body;
-              expect(body).to.have.all.keys(['total', 'limit', 'skip', 'data']);
-              expect(body.total).to.equal(totalUsers);
-
-              const userDataList = userResp.body.data;
-              expect(userDataList).to.be.a('array');
-              expect(userDataList).to.have.lengthOf(totalUsers);
-              const userEmails = [
-                'department_officer@youpin.city',
-                'department_head@youpin.city',
-                'organization_admin@youpin.city',
-                'super_admin@youpin.city',
-              ];
-
-              for (let i = 0; i < userDataList.length; i++) {
-                expect(userEmails).to.include(userDataList[i].email);
-              }
-              // also check response does not contain password
-              expect(userDataList).to.not.have.keys('password');
-
-              done();
-            });
-        })
-    );
-
-    it('allows department_head role to retrive data', (done) =>
-      login(app, 'department_head@youpin.city', 'youpin_admin')
-        .then((tokenResp) => {
-          const token = tokenResp.body.token;
-
-          if (!token) {
-            return done(new Error('No token returns'));
-          }
-          // Get list of users
-          return request(app)
-            .get('/users')
-            .set('Authorization', `Bearer ${token}`)
-            .set('X-YOUPIN-3-APP-KEY',
-              '579b04ac516706156da5bba1:ed545297-4024-4a75-89b4-c95fed1df436')
-            .expect(200)
-            .then((userResp) => {
-              const body = userResp.body;
-              expect(body).to.have.all.keys(['total', 'limit', 'skip', 'data']);
-              expect(body.total).to.equal(totalUsers);
-
-              const userDataList = userResp.body.data;
-              expect(userDataList).to.be.a('array');
-              expect(userDataList).to.have.lengthOf(totalUsers);
-              const userEmails = [
-                'department_officer@youpin.city',
-                'department_head@youpin.city',
-                'organization_admin@youpin.city',
-                'super_admin@youpin.city',
-              ];
-
-              for (let i = 0; i < userDataList.length; i++) {
-                expect(userEmails).to.include(userDataList[i].email);
-              }
-              // also check response does not contain password
-              expect(userDataList).to.not.have.keys('password');
-
-              done();
-            });
-        })
-    );
-
-    it('allows department_officer role to retrive data', (done) =>
-      login(app, 'department_officer@youpin.city', 'youpin_department_officer')
-        .then((tokenResp) => {
-          const token = tokenResp.body.token;
-
-          if (!token) {
-            return done(new Error('No token returns'));
-          }
-          // Get list of users
-          return request(app)
-            .get('/users')
-            .set('Authorization', `Bearer ${token}`)
-            .set('X-YOUPIN-3-APP-KEY',
-              '579b04ac516706156da5bba1:ed545297-4024-4a75-89b4-c95fed1df436')
-            .expect(200)
-            .then((userResp) => {
-              const body = userResp.body;
-              expect(body).to.have.all.keys(['total', 'limit', 'skip', 'data']);
-              expect(body.total).to.equal(totalUsers);
-
-              const userDataList = userResp.body.data;
-              expect(userDataList).to.be.a('array');
-              expect(userDataList).to.have.lengthOf(totalUsers);
-              const userEmails = [
-                'department_officer@youpin.city',
-                'department_head@youpin.city',
-                'organization_admin@youpin.city',
-                'super_admin@youpin.city',
-              ];
-
-              for (let i = 0; i < userDataList.length; i++) {
-                expect(userEmails).to.include(userDataList[i].email);
-              }
-              // also check response does not contain password
-              expect(userDataList).to.not.have.keys('password');
-
-              done();
-            });
-        })
-    );
+    testUserCanGetUserList(superAdminUser, 'youpin_admin');
+    testUserCanGetUserList(organizationAdminUser, 'youpin_admin');
+    testUserCanGetUserList(departmentHeadUser, 'youpin_admin');
+    testUserCanGetUserList(departmentOfficerUser, 'youpin_department_officer');
   });
 
   describe('GET /users/:id', () => {
