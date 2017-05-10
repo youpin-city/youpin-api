@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const nodemailer = require('nodemailer');
 const EmailTemplate = require('email-templates').EmailTemplate;
 const path = require('path');
@@ -5,7 +6,6 @@ const path = require('path');
 // Trigger a mail service to send structural message from 'logInfo'
 // to the specified user 'id'.
 const sendMailNotification = (mailServiceConfig, issueBaseUrl, email, logInfo) => {
-  // TODO(A): Add proper check to mail service config
   if (!mailServiceConfig.providerConfig
       || !mailServiceConfig.content
       || !mailServiceConfig.content.title
@@ -29,11 +29,50 @@ const sendMailNotification = (mailServiceConfig, issueBaseUrl, email, logInfo) =
     updatedValues: logInfo.updated_values || [],
     message,
   };
+  // Extract name field for better & meaningful email content.
+  const decorateFieldData = (ctx) => new Promise((resolve) => {
+    const newPreviousValues = [];
+    const newUpdatedValues = [];
+    for (const [idx, key] of ctx.changedFields.entries()) {
+      let previousValue = ctx.previousValues[idx];
+      let updatedValue = ctx.updatedValues[idx];
+      switch (key) {
+        case 'processed_by':
+        case 'assigned_department':
+          // If it is an object, we will utilise name instead of id.
+          if (_.isObject(previousValue) && previousValue.name) {
+            previousValue = previousValue.name;
+          }
+          if (_.isObject(updatedValue) && updatedValue.name) {
+            updatedValue = updatedValue.name;
+          }
+          break;
+        case 'assigned_users':
+          for (let i = 0; i < previousValue.length; i++) {
+            // If it is an object, we will utilise name instead of id.
+            if (_.isObject(previousValue[i]) && previousValue[i].name) {
+              previousValue[i] = previousValue[i].name;
+            }
+            if (_.isObject(updatedValue[i]) && updatedValue[i].name) {
+              updatedValue[i] = updatedValue[i].name;
+            }
+          }
+          break;
+        default:
+          break;
+      }
+      newPreviousValues.push(previousValue);
+      newUpdatedValues.push(updatedValue);
+    }
+    ctx.previousValues = newPreviousValues; // eslint-disable-line no-param-reassign
+    ctx.updatedValues = newUpdatedValues; // eslint-disable-line no-param-reassign
+    resolve(ctx);
+  });
   // TODO(A): Send to multiple emails at once and use a better html text format.
   const templateDir = path.join(__dirname, 'email-templates', 'notification');
   const template = new EmailTemplate(templateDir);
-  return template
-    .render(context)
+  return decorateFieldData(context)
+    .then(ctx => template.render(ctx))
     .then(result => {
       const mailOptions = {
         from: mailServiceConfig.content.from,

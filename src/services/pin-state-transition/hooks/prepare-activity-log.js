@@ -5,6 +5,8 @@ const actions = require('../../../constants/actions');
 const states = require('../../../constants/pin-states');
 const Department = require('../../department/department-model');
 const Pin = require('../../pin/pin-model');
+// Constants
+const { EMAIL_NOTI_NON_ASSIGNED_TEXT } = require('../../../constants/strings');
 
 const safetyCheck = (hook) => {
   // hook.params.user must be populated by auth.populateUser before hook
@@ -78,8 +80,8 @@ const prepareActivityLog = () => (hook) => {
           // So, we will remove `assigned_department` value from the pin.
           action = actions.DENY;
           changedFields.push('assigned_department');
-          previousValues.push(assignedDepartmentObject._id);
-          updatedValues.push(undefined);
+          previousValues.push(assignedDepartmentObject);
+          updatedValues.push(EMAIL_NOTI_NON_ASSIGNED_TEXT);
           description = `${nameOfUser} denies pin #${pinId}`;
         } else if (previousState === states.RESOLVED) {
           // If a pin has already resolved but it is re-opened again.
@@ -87,8 +89,8 @@ const prepareActivityLog = () => (hook) => {
           // and ORGANIZATION_ADMIN will do assignment again.
           action = actions.RE_OPEN;
           changedFields.push('assigned_department');
-          previousValues.push(assignedDepartmentObject._id);
-          updatedValues.push(undefined);
+          previousValues.push(assignedDepartmentObject);
+          updatedValues.push(EMAIL_NOTI_NON_ASSIGNED_TEXT);
           description = `${nameOfUser} re-opens pin #${pinId}`;
         } else if (previousState === states.REJECTED) {
           // Re-open a rejected pin. No need to change any field.
@@ -99,8 +101,8 @@ const prepareActivityLog = () => (hook) => {
       case states.ASSIGNED:
         action = actions.ASSIGN;
         changedFields.push('assigned_department');
-        previousValues.push(undefined);
-        updatedValues.push(assignedDepartmentObject._id);
+        previousValues.push(EMAIL_NOTI_NON_ASSIGNED_TEXT);
+        updatedValues.push(assignedDepartmentObject);
         description = `${nameOfUser} assigned pin #${pinId} ` +
                       `to department ${assignedDepartmentObject.name}`;
         break;
@@ -126,7 +128,7 @@ const prepareActivityLog = () => (hook) => {
           action = actions.RE_PROCESS;
           changedFields.push('resolved_time');
           previousValues.push(pin.resolved_time);
-          updatedValues.push(null);
+          updatedValues.push(EMAIL_NOTI_NON_ASSIGNED_TEXT);
           description = `${nameOfUser} sent pin #${pinId} back` +
                         ` to be re-processed by ${assignedDepartmentObject.name}`;
           // Attach assigned department for later use.

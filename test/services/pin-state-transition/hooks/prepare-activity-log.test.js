@@ -11,14 +11,21 @@ const Pin = require('../../../../src/services/pin/pin-model');
 // Fixtures
 const departments = require('../../../fixtures/departments');
 const pins = require('../../../fixtures/pins');
-const DEPARTMENT_GENERAL_ID = require('../../../fixtures/constants').DEPARTMENT_GENERAL_ID;
-const ORGANIZATION_ID = require('../../../fixtures/constants').ORGANIZATION_ID;
-const PIN_PENDING_ID = require('../../../fixtures/constants').PIN_PENDING_ID;
+
+// Constants
+const {
+  DEPARTMENT_GENERAL_ID,
+  ORGANIZATION_ID,
+  PIN_PENDING_ID,
+} = require('../../../fixtures/constants');
+const DEPARTMENT_GENERAL_OBJECT = require('../../../fixtures/departments')[1];
 
 // App stuff
 const ObjectId = require('mongoose').Types.ObjectId;
 const actions = require('../../../../src/constants/actions');
 const prepareActivityLog = require('../../../../src/services/pin-state-transition/hooks/prepare-activity-log'); // eslint-disable-line max-len
+// Constants
+const { EMAIL_NOTI_NON_ASSIGNED_TEXT } = require('../../../../src/constants/strings');
 
 // Exit test if NODE_ENV is not equal `test`
 assertTestEnv();
@@ -79,17 +86,37 @@ describe('Prepare Activity Log Hook for State Transition', () => {
         action: actions.ASSIGN,
         pin_id: pinId,
         changed_fields: ['status', 'assigned_department'],
-        previous_values: ['pending', undefined],
-        updated_values: ['assigned', ObjectId(DEPARTMENT_GENERAL_ID)], // eslint-disable-line new-cap,max-len
+        previous_values: ['pending', EMAIL_NOTI_NON_ASSIGNED_TEXT],
+        updated_values: ['assigned', DEPARTMENT_GENERAL_OBJECT], // eslint-disable-line new-cap,max-len
         description: `Aunt You-pin assigned pin #${PIN_PENDING_ID} ` +
                      'to department Department of Nerds',
         timestamp: Date.now(),
       };
-      expect(mockHook.data.logInfo).to.deep.equal(expectedLogInfo);
+      const actualLogInfo = mockHook.data.logInfo;
+      expect(actualLogInfo.user).to.deep.equal(expectedLogInfo.user);
+      expect(actualLogInfo.organization).to.deep.equal(expectedLogInfo.organization);
+      expect(actualLogInfo.department).to.deep.equal(expectedLogInfo.department);
+      expect(actualLogInfo.actionType).to.deep.equal(expectedLogInfo.actionType);
+      expect(actualLogInfo.action).to.deep.equal(expectedLogInfo.action);
+      expect(actualLogInfo.pin_id).to.deep.equal(expectedLogInfo.pin_id);
+      expect(actualLogInfo.changed_fields).to.have.length(2);
+      expect(actualLogInfo.changed_fields).to.deep.equal(expectedLogInfo.changed_fields);
+      expect(actualLogInfo.previous_values).to.have.length(2);
+      expect(actualLogInfo.previous_values).to.deep.equal(expectedLogInfo.previous_values);
+      expect(actualLogInfo.updated_values).to.have.length(2);
+      expect(actualLogInfo.updated_values[0]).to.deep.equal(expectedLogInfo.updated_values[0]);
+      expect(actualLogInfo.updated_values[1]._id) // eslint-disable-line no-underscore-dangle
+        .to.deep.equal(expectedLogInfo.updated_values[1]._id); // eslint-disable-line no-underscore-dangle,max-len
+      expect(actualLogInfo.updated_values[1].name)
+        .to.deep.equal(expectedLogInfo.updated_values[1].name);
+      expect(actualLogInfo.description).to.deep.equal(expectedLogInfo.description);
+      expect(actualLogInfo.timestamp).to.deep.equal(expectedLogInfo.timestamp);
+      expect(actualLogInfo.pin_id).to.deep.equal(expectedLogInfo.pin_id);
 
       dateStub.restore();
       done();
-    });
+    })
+    .catch(err => done(err));
   });
 
   it('attaches previous status to hook.data', (done) => {
@@ -98,6 +125,7 @@ describe('Prepare Activity Log Hook for State Transition', () => {
       expect(mockHook.data.previousState).to.equal('pending');
 
       done();
-    });
+    })
+    .catch(err => done(err));
   });
 });
