@@ -80,7 +80,7 @@ const prepareActivityLog = () => (hook) => {
           // So, we will remove `assigned_department` value from the pin.
           action = actions.DENY;
           changedFields.push('assigned_department');
-          previousValues.push(assignedDepartmentObject);
+          previousValues.push(assignedDepartmentObject._id);
           updatedValues.push(EMAIL_NOTI_NON_ASSIGNED_TEXT);
           description = `${nameOfUser} denies pin #${pinId}`;
         } else if (previousState === states.RESOLVED) {
@@ -89,7 +89,7 @@ const prepareActivityLog = () => (hook) => {
           // and ORGANIZATION_ADMIN will do assignment again.
           action = actions.RE_OPEN;
           changedFields.push('assigned_department');
-          previousValues.push(assignedDepartmentObject);
+          previousValues.push(assignedDepartmentObject._id);
           updatedValues.push(EMAIL_NOTI_NON_ASSIGNED_TEXT);
           description = `${nameOfUser} re-opens pin #${pinId}`;
         } else if (previousState === states.REJECTED) {
@@ -102,7 +102,7 @@ const prepareActivityLog = () => (hook) => {
         action = actions.ASSIGN;
         changedFields.push('assigned_department');
         previousValues.push(EMAIL_NOTI_NON_ASSIGNED_TEXT);
-        updatedValues.push(assignedDepartmentObject);
+        updatedValues.push(assignedDepartmentObject._id);
         description = `${nameOfUser} assigned pin #${pinId} ` +
                       `to department ${assignedDepartmentObject.name}`;
         break;
