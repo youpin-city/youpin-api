@@ -11,14 +11,20 @@ const Pin = require('../../../../src/services/pin/pin-model');
 // Fixtures
 const departments = require('../../../fixtures/departments');
 const pins = require('../../../fixtures/pins');
-const DEPARTMENT_GENERAL_ID = require('../../../fixtures/constants').DEPARTMENT_GENERAL_ID;
-const ORGANIZATION_ID = require('../../../fixtures/constants').ORGANIZATION_ID;
-const PIN_PENDING_ID = require('../../../fixtures/constants').PIN_PENDING_ID;
+
+// Constants
+const {
+  DEPARTMENT_GENERAL_ID,
+  ORGANIZATION_ID,
+  PIN_PENDING_ID,
+} = require('../../../fixtures/constants');
 
 // App stuff
 const ObjectId = require('mongoose').Types.ObjectId;
 const actions = require('../../../../src/constants/actions');
 const prepareActivityLog = require('../../../../src/services/pin-state-transition/hooks/prepare-activity-log'); // eslint-disable-line max-len
+// Constants
+const { EMAIL_NOTI_NON_ASSIGNED_TEXT } = require('../../../../src/constants/strings');
 
 // Exit test if NODE_ENV is not equal `test`
 assertTestEnv();
@@ -79,7 +85,7 @@ describe('Prepare Activity Log Hook for State Transition', () => {
         action: actions.ASSIGN,
         pin_id: pinId,
         changed_fields: ['status', 'assigned_department'],
-        previous_values: ['pending', undefined],
+        previous_values: ['pending', EMAIL_NOTI_NON_ASSIGNED_TEXT],
         updated_values: ['assigned', ObjectId(DEPARTMENT_GENERAL_ID)], // eslint-disable-line new-cap,max-len
         description: `Aunt You-pin assigned pin #${PIN_PENDING_ID} ` +
                      'to department Department of Nerds',
@@ -89,7 +95,8 @@ describe('Prepare Activity Log Hook for State Transition', () => {
 
       dateStub.restore();
       done();
-    });
+    })
+    .catch(err => done(err));
   });
 
   it('attaches previous status to hook.data', (done) => {
@@ -98,6 +105,7 @@ describe('Prepare Activity Log Hook for State Transition', () => {
       expect(mockHook.data.previousState).to.equal('pending');
 
       done();
-    });
+    })
+    .catch(err => done(err));
   });
 });

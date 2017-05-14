@@ -51,6 +51,9 @@ const {
   PIN_PROCESSING_ID,
   PIN_RESOLVED_ID,
   PIN_REJECTED_ID,
+  USER_DEPARTMENT_HEAD_ID,
+  USER_DEPARTMENT_OFFICER_ID,
+  USER_ORGANIZATION_ADMIN_ID,
 } = require('../../fixtures/constants');
 
 // Stubs
@@ -386,9 +389,9 @@ describe('Pin state transtion service', () => {
           state: 'processing',
           processed_by: '579334c75553625d6281b6cc',
           assigned_users: [
-            '579334c75553625d6281b6cc',
-            '579334c75553625d6281b6cd',
-            '579334c75553625d6281b6ce',
+            USER_DEPARTMENT_HEAD_ID,
+            USER_DEPARTMENT_OFFICER_ID,
+            USER_ORGANIZATION_ADMIN_ID,
           ],
         })
         .expect(201);
@@ -399,9 +402,9 @@ describe('Pin state transtion service', () => {
         expect(transition.status).to.equal(PROCESSING);
         expect(transition.processed_by).to.equal('579334c75553625d6281b6cc');
         expect(transition.assigned_users).to.deep.equal([
-          '579334c75553625d6281b6cc',
-          '579334c75553625d6281b6cd',
-          '579334c75553625d6281b6ce',
+          USER_DEPARTMENT_HEAD_ID,
+          USER_DEPARTMENT_OFFICER_ID,
+          USER_ORGANIZATION_ADMIN_ID,
         ]);
         expect(transition.pinId).to.equal(String(PIN_ASSIGNED_ID));
 
@@ -416,6 +419,7 @@ describe('Pin state transtion service', () => {
         dateStub.restore();
         done();
       })
+      .catch(err => done(err))
     );
 
     it('updates correct properties for `re-process` transtion ' +

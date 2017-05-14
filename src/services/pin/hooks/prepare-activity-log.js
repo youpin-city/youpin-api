@@ -33,7 +33,7 @@ const prepareActivityLog = () => (hook) => {
         _.forEach(updatedFieldObjects, (value, key) => {
           let previousValue = pin[key];
           let newValue = value;
-          // Add special case for location's coordinates
+          // Add special case for location's coordinates.
           if (key === 'location') {
             previousValue = pin[key].coordinates.toString();
             newValue = value.coordinates.toString();
