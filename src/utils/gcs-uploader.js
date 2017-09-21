@@ -1,6 +1,7 @@
 const gcloud = require('google-cloud');
 const request = require('superagent');
 const urlparser = require('url');
+const mime = require('mime-types');
 
 function getGCSBucketFile(gcsFileName, gcsConfig) {
   const gcs = gcloud.storage({
@@ -52,7 +53,7 @@ class GCSUploader {
     return new Promise((resolve, reject) => {
       if (!reqFile) return reject(new Error('No file provided'));
 
-      const gcsFileName = `${Date.now()}_${reqFile.originalname}`;
+      const gcsFileName = `${Date.now()}_${reqFile.originalname}.${mime.extension(reqFile.mimetype)}`;
       const bucketFile = getGCSBucketFile(gcsFileName, this.gcsConfig);
       const stream = bucketFile.createWriteStream();
 
