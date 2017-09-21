@@ -1,14 +1,14 @@
 {
   "apps" : [
     {
-      "name"      : "youpin-api-production",
+      "name"      : "bma-youpin-api",
       "script"    : "src/",
       "no-daemon" : true,
       "log_date_format" : "YYYY-MM-DD HH:mm",
       "watch"     : true,
       "ignore_watch" : ["node_modules", "data", ".git"],
       "env_production": {
-        NODE_ENV: "production"
+        "NODE_ENV": "production"
       }
     }
   ],
@@ -16,13 +16,13 @@
     "production" : {
       "user" : "root",
       "host" : ["128.199.87.142"],
-      "ref"  : "origin/master",
+      "ref"  : "origin/bma",
       "repo" : "git@github.com:youpin-city/youpin-api.git",
-      "path" : "/opt/youpin-api.production",
+      "path" : "/opt/bma/api.production",
       "post-deploy" : "npm install --production && pm2 startOrRestart ecosystem.production.json --env production",
       "pre-deploy-local" : "echo '[production] deploy completed.'",
       "env"  : {
-        NODE_ENV: "production"
+        "NODE_ENV": "production"
       }
     }
   }
