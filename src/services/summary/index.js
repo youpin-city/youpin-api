@@ -1,9 +1,3 @@
-// const service = require('feathers-mongoose');
-
-const hooks = require('./hooks');
-
-const Summary = require('./summary-model');
-
 const mongoose = require('mongoose');
 
 const Pin = mongoose.model('Pin');
@@ -45,21 +39,10 @@ function getSummary(params) {
 module.exports = function () { // eslint-disable-line func-names
   const app = this;
 
-  // const options = {
-  //   Model: Summary,
-  //   paginate: {
-  //     default: 5,
-  //     max: 25,
-  //   },
-  // };
-
   app.use('/summaries', {
     find(params) {
-      console.log('params', params)
       return getSummary(params);
     },
   });
-  const summaryService = app.service('/summaries');
-  summaryService.before(hooks.before);
-  summaryService.after(hooks.after);
+  app.service('/summaries');
 };
