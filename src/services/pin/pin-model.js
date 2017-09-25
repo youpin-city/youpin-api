@@ -1,6 +1,7 @@
 const feathers = require('feathers');
 const configuration = require('feathers-configuration');
 const mongoose = require('mongoose');
+const autoIncrement = require('mongoose-auto-increment');
 
 const PENDING = require('../../constants/pin-states').PENDING;
 const DEFAULT_LAT_LONG = require('../../constants/defaults').DEFAULT_LAT_LONG;
@@ -31,6 +32,10 @@ const commentSchema = new Schema({
 });
 
 const pinSchema = new Schema({
+  reporter: {
+    name: { type: String },
+    line: { type: String },
+  },
   assigned_department: { type: Schema.Types.ObjectId, ref: 'Department' },
   assigned_time: { type: Date },
   assigned_users: [{ type: Schema.Types.ObjectId, ref: 'User' }],
@@ -93,6 +98,9 @@ pinSchema.pre('findOne', function populateFields(next) {
     .populate('progresses.owner');
   next();
 });
+
+autoIncrement.initialize(mongoose);
+pinSchema.plugin(autoIncrement.plugin, { model: 'Pin', field: 'issue_id' });
 
 const Pin = mongoose.model('Pin', pinSchema);
 
