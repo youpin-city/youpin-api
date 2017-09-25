@@ -9,8 +9,8 @@ module.exports = function () { // eslint-disable-line func-names
   const options = {
     Model: Department,
     paginate: {
-      default: 5,
-      max: 25,
+      default: 100,
+      max: 100,
     },
   };
 
