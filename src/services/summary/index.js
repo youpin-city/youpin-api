@@ -1,16 +1,19 @@
 const mongoose = require('mongoose');
+const moment = require('moment');
 
 const Pin = mongoose.model('Pin');
 
 function getSummary(params) {
-  const startdate = new Date(params.start_date);
-  const enddate = (params.query.enddate ? new Date(params.query.end_date) : new Date());
+  const startdate = moment(params.query.start_date);
+  const enddate = (params.query.end_date ?
+    moment(params.query.end_date).startOf('days').add(1, 'days') :
+    moment().startOf('days').add(1, 'days'));
 
   const match = {
     $match: {
       created_time: {
-        $gte: startdate,
-        $lte: enddate,
+        $gte: startdate.toDate(),
+        $lte: enddate.toDate(),
       },
     },
   };
