@@ -100,8 +100,10 @@ pinSchema.pre('findOne', function populateFields(next) {
 });
 
 autoIncrement.initialize(mongoose);
-pinSchema.plugin(autoIncrement.plugin, { model: 'Pin', field: 'issue_id' });
+pinSchema.plugin(autoIncrement.plugin, { model: 'Pin', field: 'issue_id', startAt: 1703 });
 
 const Pin = mongoose.model('Pin', pinSchema);
+
+Pin.resetCount((err, nextCount) => {});
 
 module.exports = Pin;
