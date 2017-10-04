@@ -27,6 +27,7 @@ module.exports = [
     owner: USER_ADMIN_ID, // adminUser ObjectId
     provider: USER_ADMIN_ID, // adminUser ObjectId
     location: {
+      type: 'Point',
       coordinates: [100.56983534303, 13.730537951109],
     },
     status: state.PENDING,
@@ -42,6 +43,7 @@ module.exports = [
     owner: USER_ADMIN_ID, // adminUser ObjectId
     provider: USER_ADMIN_ID, // adminUser ObjectId
     location: {
+      type: 'Point',
       coordinates: [100.56983534305, 13.730537951107],
     },
     assigned_users: [USER_DEPARTMENT_HEAD_ID],
@@ -58,6 +60,7 @@ module.exports = [
     owner: USER_ADMIN_ID, // adminUser ObjectId
     provider: USER_ADMIN_ID, // adminUser ObjectId
     location: {
+      type: 'Point',
       coordinates: [100.56983534305, 13.730537951107],
     },
     processing_time: '2015-12-04',
@@ -82,6 +85,7 @@ module.exports = [
     owner: USER_ADMIN_ID, // adminUser ObjectId
     provider: USER_ADMIN_ID, // adminUser ObjectId
     location: {
+      type: 'Point',
       coordinates: [100.56983534305, 13.730537951107],
     },
     processing_time: '2015-12-04',
@@ -105,6 +109,7 @@ module.exports = [
     owner: USER_ADMIN_ID, // adminUser ObjectId
     provider: USER_ADMIN_ID, // adminUser ObjectId
     location: {
+      type: 'Point',
       coordinates: [100.56983534305, 13.730537951107],
     },
     status: state.REJECTED,

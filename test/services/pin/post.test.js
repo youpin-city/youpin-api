@@ -36,7 +36,6 @@ const { PENDING, ASSIGNED } = require('../../../src/constants/pin-states');
 
 // App stuff
 const app = require('../../../src/app');
-const DEFAULT_LAT_LONG = require('../../../src/constants/defaults').DEFAULT_LAT_LONG;
 
 // Exit test if NODE_ENV is not equal `test`
 assertTestEnv();
@@ -158,6 +157,7 @@ describe('Pin - POST', () => {
       owner: adminUser._id, // eslint-disable-line no-underscore-dangle
       provider: adminUser._id, // eslint-disable-line no-underscore-dangle
       location: {
+        type: 'Point',
         coordinates: [10.733626, 10.5253153],
       },
     };
@@ -198,6 +198,7 @@ describe('Pin - POST', () => {
       owner: adminUser._id, // eslint-disable-line no-underscore-dangle
       provider: adminUser._id, // eslint-disable-line no-underscore-dangle
       location: {
+        type: 'Point',
         coordinates: [10.733626, 10.5253153],
       },
     };
@@ -233,6 +234,7 @@ describe('Pin - POST', () => {
       owner: adminUser._id, // eslint-disable-line no-underscore-dangle
       provider: adminUser._id, // eslint-disable-line no-underscore-dangle
       location: {
+        type: 'Point',
         coordinates: [10.733626, 10.5253153],
       },
       status: ASSIGNED,
@@ -273,7 +275,6 @@ describe('Pin - POST', () => {
       organization: ORGANIZATION_ID,
       owner: adminUser._id, // eslint-disable-line no-underscore-dangle
       provider: adminUser._id, // eslint-disable-line no-underscore-dangle
-      location: {},
     };
 
     login(app, 'contact@youpin.city', 'youpin_admin')
@@ -294,7 +295,7 @@ describe('Pin - POST', () => {
           .then((res) => {
             const createdPin = res.body;
             expect(createdPin.status).to.equal(PENDING);
-            expect(createdPin.location.coordinates).to.deep.equal(DEFAULT_LAT_LONG);
+            expect(createdPin.location).to.be.undefined();
             done();
           });
       });
