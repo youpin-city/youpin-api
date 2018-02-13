@@ -1,6 +1,6 @@
 FROM showpiper/alpine-node-yarn
 
-MAINTAINER YouPin Team <dev@youpin.city>
+LABEL maintainer="YouPin Team <dev@youpin.city>"
 
 RUN apk add --update libc6-compat build-base
 COPY package.json /code/package.json
