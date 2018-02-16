@@ -2,16 +2,11 @@
   "name": "youpin-api",
   "description": "YouPin API",
   "version": "0.0.0",
-  "homepage": "",
   "main": "src/",
   "keywords": [
     "feathers"
   ],
   "license": "MIT",
-  "repository": {},
-  "author": {},
-  "contributors": [],
-  "bugs": {},
   "engines": {
     "node": "6.13.0"
   },
