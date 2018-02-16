@@ -17,8 +17,8 @@
   },
   "scripts": {
     "lint": "eslint .",
+    "pretest": "npm run lint",
     "test": "NODE_ENV=test mocha --recursive",
-    "posttest": "npm run lint",
     "start": "node src/"
   },
   "dependencies": {
