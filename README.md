@@ -17,7 +17,7 @@ Moreover, we also have [POSTMAN examples](https://github.com/youpin-city/youpin-
 
 2. Get credential GCS private key. Currently, YouPin API depends on Google Cloud Storage (GCS) to store photos and videos.
 
-    1. Follow [instruction 1.a to 1.f](https://developers.google.com/identity/protocols/application-default-credentials#howtheywork)  to get GCS private key.
+    1. Follow [instruction 1 to 9](https://cloud.google.com/storage/docs/authentication#generating-a-private-key)  to get GCS private key.
     2. Rename the key to `youpin_gcs_credentials_xxx.json` where xxx is `development` for DEV environment or `production` for PROD environment.
     3. Place it under `config/gcs/` (Ex. `config/gcs/youpin_gcs_credentials_development.json`)
 
